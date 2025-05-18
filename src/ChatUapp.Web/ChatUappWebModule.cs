@@ -50,6 +50,9 @@ using Volo.Abp.OpenIddict;
 using Volo.Abp.Security.Claims;
 using Volo.Abp.SettingManagement.Web;
 using Volo.Abp.Studio.Client.AspNetCore;
+using Volo.Abp.MultiTenancy;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Reflection;
 
 namespace ChatUapp.Web;
 
@@ -73,6 +76,13 @@ public class ChatUappWebModule : AbpModule
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
+
+        context.Services.PreConfigure<AbpMultiTenancyOptions>(options =>
+        {
+            options.IsEnabled = MultiTenancyConsts.IsEnabled;
+        });
+
+        ITenantStore store;
 
         context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
         {
@@ -251,6 +261,27 @@ public class ChatUappWebModule : AbpModule
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatUapp API", Version = "v1" });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
+
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+                options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {securityScheme, Array.Empty<string>()}
+                });
+
             }
         );
     }
@@ -296,6 +327,7 @@ public class ChatUappWebModule : AbpModule
         app.UseAbpSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "ChatUapp API");
+            options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
         });
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();
