@@ -1,0 +1,15 @@
+﻿{
+  "applications": {
+    "ChatUapp.Web": {
+      "type": "dotnet-project",
+      "launchUrl": "https://localhost:44360",
+      "path": "../../../src/ChatUapp.Web/ChatUapp.Web.csproj",
+      "kubernetesService": ".*-web$",
+      "healthCheckEndpoint": "/health-status",
+      "healthUiEndpoint": "/health-ui",
+      "execution": {
+        "order": 2
+      }
+    }
+  }
+}

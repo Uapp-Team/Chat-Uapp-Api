@@ -1,0 +1,105 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.LeptonXLiteTheme": {
+      "version": "4.1.1",
+      "isInstalled": true
+    },
+    "Volo.Abp.Account": {
+      "version": "9.1.1",
+      "isInstalled": true
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "9.1.1",
+      "isInstalled": true
+    },
+    "Volo.Abp.Identity": {
+      "version": "9.1.1",
+      "isInstalled": true
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "9.1.1",
+      "isInstalled": true
+    },
+    "Volo.Abp.SettingManagement": {
+      "version": "9.1.1",
+      "isInstalled": true
+    },
+    "Volo.Abp.PermissionManagement": {
+      "version": "9.1.1",
+      "isInstalled": true
+    },
+    "Volo.Abp.FeatureManagement": {
+      "version": "9.1.1",
+      "isInstalled": true
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "ChatUapp.Application": {
+      "path": "src/ChatUapp.Application/ChatUapp.Application.abppkg",
+      "folder": "src"
+    },
+    "ChatUapp.Application.Tests": {
+      "path": "test/ChatUapp.Application.Tests/ChatUapp.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "ChatUapp.Domain.Shared": {
+      "path": "src/ChatUapp.Domain.Shared/ChatUapp.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "ChatUapp.Application.Contracts": {
+      "path": "src/ChatUapp.Application.Contracts/ChatUapp.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "ChatUapp.HttpApi": {
+      "path": "src/ChatUapp.HttpApi/ChatUapp.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "ChatUapp.HttpApi.Client": {
+      "path": "src/ChatUapp.HttpApi.Client/ChatUapp.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "ChatUapp.Web": {
+      "path": "src/ChatUapp.Web/ChatUapp.Web.abppkg",
+      "folder": "src"
+    },
+    "ChatUapp.Web.Tests": {
+      "path": "test/ChatUapp.Web.Tests/ChatUapp.Web.Tests.abppkg",
+      "folder": "test"
+    },
+    "ChatUapp.EntityFrameworkCore.Tests": {
+      "path": "test/ChatUapp.EntityFrameworkCore.Tests/ChatUapp.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "ChatUapp.EntityFrameworkCore": {
+      "path": "src/ChatUapp.EntityFrameworkCore/ChatUapp.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "ChatUapp.TestBase": {
+      "path": "test/ChatUapp.TestBase/ChatUapp.TestBase.abppkg",
+      "folder": "test"
+    },
+    "ChatUapp.Domain.Tests": {
+      "path": "test/ChatUapp.Domain.Tests/ChatUapp.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "ChatUapp.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/ChatUapp.HttpApi.Client.ConsoleTestApp/ChatUapp.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "ChatUapp.DbMigrator": {
+      "path": "src/ChatUapp.DbMigrator/ChatUapp.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "ChatUapp.Domain": {
+      "path": "src/ChatUapp.Domain/ChatUapp.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}

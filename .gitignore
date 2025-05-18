@@ -248,22 +248,27 @@ paket-files/
 .fake/
 
 # JetBrains Rider
-.idea/
+**/.idea/
 *.sln.iml
 
-# PosSystem
-src/Monir.PosSystem.Web/Logs/*
-src/Monir.PosSystem.Web.Host/Logs/*
-src/Monir.PosSystem.AuthServer/Logs/*
-src/Monir.PosSystem.HttpApi.Host/Logs/*
-src/Monir.PosSystem.HttpApi.Host/Logs/*
-src/Monir.PosSystem.DbMigrator/Logs/*
-src/Monir.PosSystem.Blazor.Server/Logs/*
-src/Monir.PosSystem.Blazor.Server.Tiered/Logs/*
+# ABP Studio
+**/.abpstudio/
+
+# ChatUapp
+src/ChatUapp.Web/Logs/*
+src/ChatUapp.Web.Host/Logs/*
+src/ChatUapp.Web.Public/Logs/*
+src/ChatUapp.Web.Public.Host/Logs/*
+src/ChatUapp.AuthServer/Logs/*
+src/ChatUapp.HttpApi.Host/Logs/*
+src/ChatUapp.HttpApi.HostWithIds/Logs/*
+src/ChatUapp.DbMigrator/Logs/*
+src/ChatUapp.Blazor.Server/Logs/*
+src/ChatUapp.Blazor.Server.Tiered/Logs/*
 
 # Use abp install-libs to restore.
 **/wwwroot/libs/*
 
-
-# ABP Studio
-**/.abpstudio/
+# IdentityServer temp files
+tempkey.rsa
+tempkey.jwk
