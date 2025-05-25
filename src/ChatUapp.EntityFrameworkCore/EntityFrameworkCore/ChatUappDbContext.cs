@@ -78,7 +78,9 @@ public class ChatUappDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
-        
+
+        builder.ApplyConfigurationsFromAssembly(typeof(ChatUappDbContext).Assembly);
+
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>
