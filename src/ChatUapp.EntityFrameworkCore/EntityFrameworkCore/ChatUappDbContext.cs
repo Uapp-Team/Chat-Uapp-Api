@@ -14,6 +14,7 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using ChatUapp.DbEntities.Messages;
 
 namespace ChatUapp.EntityFrameworkCore;
 
@@ -26,7 +27,7 @@ public class ChatUappDbContext :
     IIdentityDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
-
+    public DbSet<PublicMessage> PublicMessages { get; set; }
 
     #region Entities from the modules
 
@@ -66,9 +67,8 @@ public class ChatUappDbContext :
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
         /* Include modules to your migration db context */
-
+        builder.Ignore<Volo.Abp.Data.ExtraPropertyDictionary>();
         builder.ConfigurePermissionManagement();
         builder.ConfigureSettingManagement();
         builder.ConfigureBackgroundJobs();
@@ -78,7 +78,9 @@ public class ChatUappDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
-        
+
+        builder.ApplyConfigurationsFromAssembly(typeof(ChatUappDbContext).Assembly);
+
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>
