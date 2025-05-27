@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using ChatUapp.EntityFrameworkCore;
 using ChatUapp.Localization;
 using ChatUapp.MultiTenancy;
@@ -134,6 +135,7 @@ public class ChatUappWebModule : AbpModule
             });
         }
 
+        ConfigureCors(context, configuration);
         ConfigureBundles();
         ConfigureUrls(configuration);
         ConfigureHealthChecks(context);
@@ -150,6 +152,26 @@ public class ChatUappWebModule : AbpModule
         });
     }
 
+    private void ConfigureCors(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        context.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(builder =>
+            {
+                builder
+                    //.WithOrigins(
+                    //    configuration["App:CorsOrigins"]
+                    //        .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                    //        .Select(o => o.RemovePostFix("/"))
+                    //        .ToArray()
+                    //)
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials(); // Important for cookies or token auth
+            });
+        });
+    }
 
     private void ConfigureHealthChecks(ServiceConfigurationContext context)
     {
@@ -282,6 +304,7 @@ public class ChatUappWebModule : AbpModule
         var app = context.GetApplicationBuilder();
         var env = context.GetEnvironment();
 
+        app.UseCors(); // <-- This enables CORS middleware globally
         app.UseForwardedHeaders();
 
         if (env.IsDevelopment())
