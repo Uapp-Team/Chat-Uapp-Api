@@ -43,7 +43,7 @@ public class ChatMessageService: ApplicationService
                 {
                     role = "user",
                     content = userQuery
-                }
+                },
             }
         };
 
