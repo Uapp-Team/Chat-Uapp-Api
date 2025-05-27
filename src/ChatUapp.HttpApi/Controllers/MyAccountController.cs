@@ -5,6 +5,7 @@ using Volo.Abp.Identity;
 
 namespace ChatUapp.Controllers
 {
+    [Route("MyAccount")]
     public class MyAccountController : AccountController
     {
         private readonly IIdentityUserAppService _identityUserAppService;
@@ -15,27 +16,25 @@ namespace ChatUapp.Controllers
             _identityUserAppService = identityUserAppService;
             _accountAppService = accountAppService;
         }
+
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register(myRegisterDto data)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            await _accountAppService.RegisterAsync(data);
 
-            // Call your service method
-          
-
-           
+            var user = await _identityUserAppService.FindByUsernameAsync(data.UserName);
+            if(User != null)
+            {
+                user.Name = data.FirstName;
+                user.Surname = data.LastName;
+                await _identityUserAppService.UpdateAsync(user.Id,user);
+            }
             return Ok(); // Or return CreatedAtAction(...)
         }
     }
     
-    public class RegistarDTo
+    public class myRegisterDto : RegisterDto
     {
-        public string Email { get; set; }
-        // Add other necessary properties like:
-        public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
-        public string UserName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }
