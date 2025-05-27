@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Volo.Abp.Identity;
-using Volo.Abp.ObjectExtending;
-using Volo.Abp.Threading;
+﻿using Volo.Abp.Threading;
 
 namespace ChatUapp;
 
@@ -37,6 +34,8 @@ public static class ChatUappModuleExtensionConfigurator
 
     private static void ConfigureExtraProperties()
     {
+
+        
         /* You can configure extra properties for the
          * entities defined in the modules used by your application.
          *

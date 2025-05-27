@@ -6,6 +6,12 @@ using Volo.Abp.AutoMapper;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Modularity;
 using Volo.Abp.TenantManagement;
+using ChatUapp.Message.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using ChatUapp.HttpClients;
+using Refit;
+using System;
+using System.Net.Http.Headers;
 
 namespace ChatUapp;
 
@@ -23,9 +29,28 @@ public class ChatUappApplicationModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        var configuration = context.Services.GetConfiguration();
+
         Configure<AbpAutoMapperOptions>(options =>
         {
             options.AddMaps<ChatUappApplicationModule>();
         });
+
+        var apikey = configuration["ChatBotEngine:ChatGptAPIKey"];
+
+        context.Services.AddRefitClient<IChatGPTApi>()
+           .ConfigureHttpClient(c =>
+           {
+               c.BaseAddress = new Uri("https://api.openai.com"); // e.g., "https://api.openai.com"
+               c.DefaultRequestHeaders.Authorization =
+                   new AuthenticationHeaderValue("Bearer", configuration["ChatBotEngine:ChatGptAPIKey"]);
+           })
+           .AddPolicyHandler(PollyPolicies.GetRetryPolicy());
+
+        context.Services.AddRefitClient<IChatBotEngineApi>()
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri(configuration["ChatBotEngine:BaseUrl"]))
+            .AddPolicyHandler(PollyPolicies.GetRetryPolicy());
+
+       
     }
 }

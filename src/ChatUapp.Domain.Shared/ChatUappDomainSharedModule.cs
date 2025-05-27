@@ -33,6 +33,7 @@ public class ChatUappDomainSharedModule : AbpModule
     {
         ChatUappGlobalFeatureConfigurator.Configure();
         ChatUappModuleExtensionConfigurator.Configure();
+        MyUserExtensions.Configure();
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)

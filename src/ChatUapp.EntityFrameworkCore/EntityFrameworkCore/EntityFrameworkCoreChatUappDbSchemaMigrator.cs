@@ -25,7 +25,7 @@ public class EntityFrameworkCoreChatUappDbSchemaMigrator
          * current scope.
          */
 
-        await _serviceProvider
+         await _serviceProvider
             .GetRequiredService<ChatUappDbContext>()
             .Database
             .MigrateAsync();
