@@ -159,13 +159,12 @@ public class ChatUappWebModule : AbpModule
             options.AddDefaultPolicy(builder =>
             {
                 builder
-                    //.WithOrigins(
-                    //    configuration["App:CorsOrigins"]
-                    //        .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                    //        .Select(o => o.RemovePostFix("/"))
-                    //        .ToArray()
-                    //)
-                    .AllowAnyOrigin()
+                    .WithOrigins(
+                        configuration["App:CorsOrigins"]
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(o => o.RemovePostFix("/"))
+                            .ToArray()
+                    )
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials(); // Important for cookies or token auth
