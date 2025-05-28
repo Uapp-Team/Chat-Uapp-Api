@@ -12,6 +12,8 @@ using ChatUapp.HttpClients;
 using Refit;
 using System;
 using System.Net.Http.Headers;
+using Volo.Abp.MailKit;
+using Volo.Abp.Emailing;
 
 namespace ChatUapp;
 
@@ -23,7 +25,9 @@ namespace ChatUapp;
     typeof(AbpIdentityApplicationModule),
     typeof(AbpAccountApplicationModule),
     typeof(AbpTenantManagementApplicationModule),
-    typeof(AbpSettingManagementApplicationModule)
+    typeof(AbpSettingManagementApplicationModule),
+    typeof(AbpEmailingModule),
+    typeof(AbpMailKitModule)
     )]
 public class ChatUappApplicationModule : AbpModule
 {
@@ -36,7 +40,6 @@ public class ChatUappApplicationModule : AbpModule
             options.AddMaps<ChatUappApplicationModule>();
         });
 
-        var apikey = configuration["ChatBotEngine:ChatGptAPIKey"];
 
         context.Services.AddRefitClient<IChatGPTApi>()
            .ConfigureHttpClient(c =>

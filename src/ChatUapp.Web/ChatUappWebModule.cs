@@ -32,6 +32,7 @@ using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity.Web;
+using Volo.Abp.MailKit;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict;
