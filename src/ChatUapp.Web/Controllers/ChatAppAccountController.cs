@@ -1,5 +1,5 @@
-﻿using ChatUapp.AppIdentity;
-using ChatUapp.DTPs;
+﻿using ChatUapp.Accounts.DTOs;
+using ChatUapp.AppIdentity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Volo.Abp.Account;

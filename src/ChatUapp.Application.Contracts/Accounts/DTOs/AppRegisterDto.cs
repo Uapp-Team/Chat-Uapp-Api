@@ -1,7 +1,6 @@
-﻿
-using Volo.Abp.Account;
+﻿using Volo.Abp.Account;
 
-namespace ChatUapp.DTPs
+namespace ChatUapp.Accounts.DTOs
 {
     public class AppRegisterDto : RegisterDto
     {
