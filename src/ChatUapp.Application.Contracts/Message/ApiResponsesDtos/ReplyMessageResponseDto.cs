@@ -6,7 +6,5 @@ public class ReplyMessageResponseDto
 {
     public string Answer { get; set; } = string.Empty;
     public bool Success { get; set; }
-
-    [JsonPropertyName("bot-name")]
     public string BotName { get; set; } = string.Empty;
 }

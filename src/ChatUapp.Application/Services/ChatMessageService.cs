@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ChatUapp.Message.ApiResponsesDtos;
 using ChatUapp.Message.Interfaces;
+using Refit;
 using Volo.Abp.Application.Services;
 
 namespace ChatUapp.Services;
@@ -16,13 +17,13 @@ public class ChatMessageService: ApplicationService
         _chatBotEnginerApi = chatBotEnginerApi;
         _chatGptApi = api;
     }
-    public async Task<ReplyMessageResponseDto> PostMessageAsync(string query, string botName, string session)
+    public async Task<ReplyMessageResponseDto> PostMessageAsync([Body] MessageRequest request)
     {
-        var reply = await _chatBotEnginerApi.QueryAsync(query, botName, session);
+        var reply = await _chatBotEnginerApi.QueryAsync(request.Query, request.BotName, request.Session);
 
         if (reply.Answer.Contains("Sorry"))
         {
-            reply.Answer = await AskAsync(query);
+            reply.Answer = await AskAsync(request.Query);
         }
 
         return reply;
@@ -59,4 +60,11 @@ public class ChatMessageService: ApplicationService
             return "Sorry I don't know please connect with our consultant";
         }    
     }
+}
+
+public class MessageRequest
+{
+    public string Query { get; set; }
+    public string BotName { get; set; }
+    public string Session { get; set; }
 }
