@@ -1,4 +1,5 @@
 ﻿using ChatUapp.Accounts.DTOs;
+using ChatUapp.Accounts.DTOs.ApiRequestsDto;
 using ChatUapp.AppIdentity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace ChatUapp.Controllers
             _userManager = userManager;
         }
 
-        [HttpPost("app_register")]
+        [HttpPost("app-register")]
         public async Task<IActionResult> Register(AppRegisterDto data)
         {
             var user = new AppIdentityUser(
@@ -53,6 +54,28 @@ namespace ChatUapp.Controllers
                 }
             }
             return Ok(new { Message = "User registered successfully"});
+        }
+
+        [HttpPost("app-email-verify")]
+        public async Task<IActionResult> EmailVerify(VerifyOtpRequestDto otp)
+        {
+            var user = await _userManager.FindByEmailAsync(otp.Email);
+
+            if (user == null)
+                return NotFound(new { Message = "User not found." });
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            if (otp.Otp != null)
+            {
+                var result = await _userManager.ConfirmEmailAsync(user, token);
+                if (!result.Succeeded)
+                    return BadRequest(result.Errors);
+            }
+
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new { Message = "Email verified successfully." });
         }
     }
 }
