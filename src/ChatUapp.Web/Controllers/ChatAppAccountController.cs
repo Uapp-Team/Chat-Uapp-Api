@@ -13,11 +13,11 @@ namespace ChatUapp.Controllers
         private readonly IIdentityUserAppService _identityUserAppService;
         private readonly IAccountAppService _accountAppService;
         private readonly IdentityUserManager _userManager;
+
         public ChatAppAccountController(
             IIdentityUserAppService identityUserAppService,
             IAccountAppService accountAppService,
             IdentityUserManager userManager
-
            ) : base(accountAppService)
         {
             _identityUserAppService = identityUserAppService;
@@ -36,7 +36,6 @@ namespace ChatUapp.Controllers
             user.Name = data.FirstName;
             user.Surname = data.LastName;
             user.TitlePrefix = data.TitlePrefix;
-
 
             var result = await _userManager.CreateAsync(user, data.Password);
 

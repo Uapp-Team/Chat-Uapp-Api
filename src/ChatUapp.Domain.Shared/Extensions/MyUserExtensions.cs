@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Volo.Abp.ObjectExtending;
+﻿using Volo.Abp.ObjectExtending;
 
-namespace ChatUapp
+namespace ChatUapp.Extensions
 {
     public static class MyUserExtensions
     {
