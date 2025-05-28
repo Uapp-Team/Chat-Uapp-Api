@@ -37,6 +37,7 @@ namespace ChatUapp.Controllers
             user.Surname = data.LastName;
             user.TitlePrefix = data.TitlePrefix;
 
+
             var result = await _userManager.CreateAsync(user, data.Password);
 
             if (!result.Succeeded)
@@ -44,6 +45,14 @@ namespace ChatUapp.Controllers
                 return BadRequest(result.Errors);
             }
 
+            if (!string.IsNullOrWhiteSpace(data.PhoneNumber))
+            {
+                var phoneResult = await _userManager.SetPhoneNumberAsync(user, data.PhoneNumber);
+                if (!phoneResult.Succeeded)
+                {
+                    return BadRequest(phoneResult.Errors);
+                }
+            }
             return Ok(new { Message = "User registered successfully"});
         }
     }
