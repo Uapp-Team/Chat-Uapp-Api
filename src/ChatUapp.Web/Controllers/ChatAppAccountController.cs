@@ -1,4 +1,5 @@
 ﻿using ChatUapp.Accounts.DTOs;
+using ChatUapp.Accounts.Interfaces;
 using ChatUapp.AppIdentity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -10,49 +11,20 @@ namespace ChatUapp.Controllers
     [Route("AppAccount")]
     public class ChatAppAccountController : AccountController
     {
-        private readonly IIdentityUserAppService _identityUserAppService;
-        private readonly IAccountAppService _accountAppService;
-        private readonly IdentityUserManager _userManager;
+        private readonly IMyAccountAppService _myAccountAppService;
 
         public ChatAppAccountController(
-            IIdentityUserAppService identityUserAppService,
             IAccountAppService accountAppService,
-            IdentityUserManager userManager
+            IMyAccountAppService appService
            ) : base(accountAppService)
         {
-            _identityUserAppService = identityUserAppService;
-            _accountAppService = accountAppService;
-            _userManager = userManager;
+            _myAccountAppService = appService;
         }
 
         [HttpPost("app_register")]
-        public async Task<IActionResult> Register(AppRegisterDto data)
+        public async Task<IdentityUserDto> Register(AppRegisterDto data)
         {
-            var user = new AppIdentityUser(
-                GuidGenerator.Create(),
-                data.UserName,
-                data.EmailAddress
-            );
-            user.Name = data.FirstName;
-            user.Surname = data.LastName;
-            user.TitlePrefix = data.TitlePrefix;
-
-            var result = await _userManager.CreateAsync(user, data.Password);
-
-            if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            if (!string.IsNullOrWhiteSpace(data.PhoneNumber))
-            {
-                var phoneResult = await _userManager.SetPhoneNumberAsync(user, data.PhoneNumber);
-                if (!phoneResult.Succeeded)
-                {
-                    return BadRequest(phoneResult.Errors);
-                }
-            }
-            return Ok(new { Message = "User registered successfully"});
+            return await _myAccountAppService.CustomRegisterAsync(data);
         }
     }
 }
