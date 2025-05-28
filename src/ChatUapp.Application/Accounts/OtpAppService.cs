@@ -1,12 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using ChatUapp.Accounts.DTOs.ApiRequestsDto;
+﻿using ChatUapp.Accounts.DTOs.ApiRequestsDto;
 using ChatUapp.Accounts.DTOs.ApiResponsesDto;
 using ChatUapp.Accounts.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
+using System;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Caching;
 using Volo.Abp.Emailing;
+using Volo.Abp.Identity;
+using static System.Net.WebRequestMethods;
 
 namespace ChatUapp.Accounts;
 
@@ -14,11 +16,17 @@ public class OtpAppService : ApplicationService, IOtpAppService
 {
     private readonly IEmailSender _emailSender;
     private readonly IDistributedCache<string> _otpCache;
+    private readonly IdentityUserManager _userManager;
 
-    public OtpAppService(IEmailSender emailSender, IDistributedCache<string> otpCache)
+    public OtpAppService(
+        IEmailSender emailSender, 
+        IDistributedCache<string> otpCache, 
+        IdentityUserManager userManager
+        )
     {
         _emailSender = emailSender;
         _otpCache = otpCache;
+        _userManager = userManager;
     }
 
     public async Task<SendOtpResponseDto> SendOtpAsync(SendOtpRequestDto input)
@@ -69,9 +77,18 @@ public class OtpAppService : ApplicationService, IOtpAppService
         {
             return false;
         }
-
         if (cachedOtp == input.Otp)
         {
+            var user = await _userManager.FindByEmailAsync(input.Email);
+            if (user == null)
+                return false;
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+                return false;
+
+            await _userManager.UpdateAsync(user);
             await _otpCache.RemoveAsync($"OTP_{input.Email}"); // One-time use
             return true;
         }
