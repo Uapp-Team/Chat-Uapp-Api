@@ -40,7 +40,6 @@ public class ChatUappApplicationModule : AbpModule
             options.AddMaps<ChatUappApplicationModule>();
         });
 
-
         context.Services.AddRefitClient<IChatGPTApi>()
            .ConfigureHttpClient(c =>
            {
