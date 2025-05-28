@@ -14,6 +14,8 @@ using System;
 using System.Net.Http.Headers;
 using Volo.Abp.MailKit;
 using Volo.Abp.Emailing;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Volo.Abp.Emailing.Smtp;
 
 namespace ChatUapp;
 
@@ -26,8 +28,7 @@ namespace ChatUapp;
     typeof(AbpAccountApplicationModule),
     typeof(AbpTenantManagementApplicationModule),
     typeof(AbpSettingManagementApplicationModule),
-    typeof(AbpEmailingModule),
-    typeof(AbpMailKitModule)
+    typeof(AbpEmailingModule)
     )]
 public class ChatUappApplicationModule : AbpModule
 {
@@ -39,6 +40,8 @@ public class ChatUappApplicationModule : AbpModule
         {
             options.AddMaps<ChatUappApplicationModule>();
         });
+
+        context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, SmtpEmailSender>());
 
         context.Services.AddRefitClient<IChatGPTApi>()
            .ConfigureHttpClient(c =>
