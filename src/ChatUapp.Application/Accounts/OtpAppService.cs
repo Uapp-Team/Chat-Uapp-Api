@@ -8,7 +8,6 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Caching;
 using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
-using static System.Net.WebRequestMethods;
 
 namespace ChatUapp.Accounts;
 
@@ -19,8 +18,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
     private readonly IdentityUserManager _userManager;
 
     public OtpAppService(
-        IEmailSender emailSender, 
-        IDistributedCache<string> otpCache, 
+        IEmailSender emailSender,
+        IDistributedCache<string> otpCache,
         IdentityUserManager userManager
         )
     {
