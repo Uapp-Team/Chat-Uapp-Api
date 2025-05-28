@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace ChatUapp.Migrations
 {
     [DbContext(typeof(ChatUappDbContext))]
-    [Migration("20250518050251_Initial")]
+    [Migration("20250526054129_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

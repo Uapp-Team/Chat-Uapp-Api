@@ -1,6 +1,6 @@
 ﻿namespace ChatUapp.Constants;
 
-public class DbTableNames
+public class DbTableNames 
 {
     public const string Messages = "Messages";
     public const string ChatBots = "ChatBots";

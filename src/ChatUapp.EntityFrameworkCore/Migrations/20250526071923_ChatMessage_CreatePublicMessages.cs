@@ -1,14 +1,10 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-#nullable disable
-
 namespace ChatUapp.Migrations
 {
-    /// <inheritdoc />
     public partial class ChatMessage_CreatePublicMessages : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
@@ -41,8 +37,6 @@ namespace ChatUapp.Migrations
                     table.PrimaryKey("PK_Messages", x => x.Id);
                 });
         }
-
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

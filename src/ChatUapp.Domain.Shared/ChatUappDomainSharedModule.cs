@@ -13,6 +13,7 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.BlobStoring.Database;
 using Volo.Abp.TenantManagement;
+using ChatUapp.Extensions;
 
 namespace ChatUapp;
 
@@ -33,6 +34,7 @@ public class ChatUappDomainSharedModule : AbpModule
     {
         ChatUappGlobalFeatureConfigurator.Configure();
         ChatUappModuleExtensionConfigurator.Configure();
+        MyUserExtensions.Configure();
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
