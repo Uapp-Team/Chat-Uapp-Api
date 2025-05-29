@@ -21,7 +21,7 @@ public class ChatMessageService: ApplicationService
     {
         try
         {
-            if(request.Query == "Hi" || request.Query == "Hello" ||request.Query == "How are you?")
+            if(request.Query.ToLower() == "hi" || request.Query.ToLower() == "hello" ||request.Query.ToLower() == "how are you?")
             {
                 return new ReplyMessageResponseDto
                 {
