@@ -58,7 +58,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
         return new SendOtpResponseDto
         {
             Success = true,
-            Message = "OTP sent successfully"
+            Message = "OTP sent successfully",
+            Otp = throttleKey
         };
     }
 
