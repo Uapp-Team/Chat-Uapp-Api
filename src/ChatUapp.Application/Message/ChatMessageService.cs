@@ -19,14 +19,30 @@ public class ChatMessageService: ApplicationService
     }
     public async Task<ReplyMessageResponseDto> PostMessageAsync([Body] MessageRequest request)
     {
-        var reply = await _chatBotEnginerApi.QueryAsync(request.Query, request.BotName, request.Session);
-
-        if (reply.Answer.Contains("Sorry"))
+        try
         {
-            reply.Answer = await AskAsync(request.Query);
-        }
+            if(request.Query == "Hi" || request.Query == "Hello" ||request.Query == "How are you?")
+            {
+                return new ReplyMessageResponseDto
+                {
+                    Answer = await AskAsync(request.Query),
+                    Success = true,
+                    BotName = request.BotName
+                }; 
+            }
+            var reply = await _chatBotEnginerApi.QueryAsync(request.Query, request.BotName, request.Session);
+            if (reply.Answer.Contains("Sorry"))
+            {
+                reply.Answer = await AskAsync(request.Query);
+            }
+            reply.Answer =  string.IsNullOrWhiteSpace(reply.Answer)? "No result found": reply.Answer;
 
-        return reply;
+            return reply;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }    
     }
 
     public async Task<string> AskAsync(string userQuery)
