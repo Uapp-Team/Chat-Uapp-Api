@@ -2,7 +2,7 @@
 
 namespace ChatUapp.Accounts.DTOs
 {
-    public class MyIdentityUserDto : IdentityUserDto
+    public class AppIdentityUserDto : IdentityUserDto
     {
         public string? TitlePrefix { get; set; }
     }

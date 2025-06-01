@@ -7,5 +7,6 @@ namespace ChatUapp.Accounts.Interfaces;
 public interface IOtpAppService
 {
     Task<SendOtpResponseDto> SendOtpAsync(SendOtpRequestDto input);
+    Task<SendOtpResponseDto> ReSentOtpAsync(SendOtpRequestDto input);
     Task<bool> VerifyOtpAsync(VerifyOtpRequestDto input);
 }
