@@ -4,10 +4,10 @@ using ChatUapp.Accounts.DTOs.ApiRequestsDto;
 using ChatUapp.Accounts.DTOs.ApiResponsesDto;
 using ChatUapp.Accounts.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Options;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Caching;
 using Volo.Abp.Emailing;
+using Volo.Abp.Identity;
 
 namespace ChatUapp.Accounts;
 
@@ -15,11 +15,12 @@ public class OtpAppService : ApplicationService, IOtpAppService
 {
     private readonly IEmailSender _emailSender;
     private readonly IDistributedCache<string> _otpCache;
-
-    public OtpAppService(IEmailSender emailSender, IDistributedCache<string> otpCache)
+    private readonly IdentityUserManager _identityUser;
+    public OtpAppService(IEmailSender emailSender, IDistributedCache<string> otpCache, IdentityUserManager identityUser)
     {
         _emailSender = emailSender;
         _otpCache = otpCache;
+        _identityUser = identityUser;
     }
 
     public async Task<SendOtpResponseDto> SendOtpAsync(SendOtpRequestDto input)
@@ -35,8 +36,20 @@ public class OtpAppService : ApplicationService, IOtpAppService
             };
         }
 
+        var user = await _identityUser.FindByEmailAsync(input.Email);
+        if(user != null)
+        {
+            return await Task.FromResult(new SendOtpResponseDto
+            {
+                Success = true,
+                Message = $"The email address '{input.Email}' is already registered.",
+            });
+        }
+
         var otp = new Random().Next(100000, 999999).ToString();
 
+        
+        
         await _otpCache.SetAsync($"OTP_{input.Email}", otp, new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
@@ -54,13 +67,12 @@ public class OtpAppService : ApplicationService, IOtpAppService
             body: $"Your OTP is: {otp}",
             isBodyHtml: false
         );
-
-        return new SendOtpResponseDto
+        return await Task.FromResult(new SendOtpResponseDto
         {
             Success = true,
             Message = "OTP sent successfully",
-            Otp = throttleKey
-        };
+            Otp = otp
+        });
     }
 
 

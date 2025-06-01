@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
-using ChatUapp.Accounts.DTOs;
+﻿using ChatUapp.Accounts.DTOs;
 using ChatUapp.Accounts.Interfaces;
+using ChatUapp.AppIdentity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Emailing;
 using Volo.Abp.DependencyInjection;
@@ -25,22 +26,26 @@ public class MyAccountAppService : AccountAppService, IMyAccountAppService, ITra
 
  
 
-    public async Task<IdentityUserDto> CustomRegisterAsync(AppRegisterDto input)
+    public async Task<MyIdentityUserDto> CustomRegisterAsync(AppRegisterDto input)
     {
         await CheckSelfRegistrationAsync();
 
         await IdentityOptions.SetAsync();
 
-        var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.EmailAddress, CurrentTenant.Id);
-
+        var user = new AppIdentityUser(GuidGenerator.Create(), input.UserName, input.EmailAddress);
+        // Add extended fields 
+        user.Name = input.FirstName;
+        user.Surname = input.LastName;
+        user.TitlePrefix = input.TitlePrefix;
+       
         input.MapExtraPropertiesTo(user);
-
         (await UserManager.CreateAsync(user, input.Password)).CheckErrors();
-
+        await UserManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         await UserManager.SetEmailAsync(user, input.EmailAddress);
+        await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
         await UserManager.AddDefaultRolesAsync(user);
 
-        return ObjectMapper.Map<IdentityUser, IdentityUserDto>(user);
+        return ObjectMapper.Map<AppIdentityUser, MyIdentityUserDto>(user);
     }
 }
 
