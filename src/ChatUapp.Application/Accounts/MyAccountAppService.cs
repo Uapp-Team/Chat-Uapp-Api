@@ -26,7 +26,7 @@ public class MyAccountAppService : AccountAppService, IMyAccountAppService, ITra
 
  
 
-    public async Task<IdentityUserDto> CustomRegisterAsync(AppRegisterDto input)
+    public async Task<MyIdentityUserDto> CustomRegisterAsync(AppRegisterDto input)
     {
         await CheckSelfRegistrationAsync();
 
@@ -45,7 +45,7 @@ public class MyAccountAppService : AccountAppService, IMyAccountAppService, ITra
         await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
         await UserManager.AddDefaultRolesAsync(user);
 
-        return ObjectMapper.Map<IdentityUser, IdentityUserDto>(user);
+        return ObjectMapper.Map<AppIdentityUser, MyIdentityUserDto>(user);
     }
 }
 

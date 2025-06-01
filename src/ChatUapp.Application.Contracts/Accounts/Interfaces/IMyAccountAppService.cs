@@ -7,5 +7,5 @@ namespace ChatUapp.Accounts.Interfaces;
 
 public interface IMyAccountAppService : IAccountAppService
 {
-    Task<IdentityUserDto> CustomRegisterAsync(AppRegisterDto input);
+    Task<MyIdentityUserDto> CustomRegisterAsync(AppRegisterDto input);
 }
