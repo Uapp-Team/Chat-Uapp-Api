@@ -16,7 +16,10 @@ public class OtpAppService : ApplicationService, IOtpAppService
     private readonly IEmailSender _emailSender;
     private readonly IDistributedCache<string> _otpCache;
     private readonly IdentityUserManager _identityUser;
-    public OtpAppService(IEmailSender emailSender, IDistributedCache<string> otpCache, IdentityUserManager identityUser)
+    public OtpAppService(
+        IEmailSender emailSender, 
+        IDistributedCache<string> otpCache, 
+        IdentityUserManager identityUser)
     {
         _emailSender = emailSender;
         _otpCache = otpCache;
@@ -25,9 +28,9 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
     public async Task<SendOtpResponseDto> SendOtpAsync(SendOtpRequestDto input)
     {
-        var throttleKey = $"OTP_THROTTLE_{input.Email}";
-        var alreadyRequested = await _otpCache.GetAsync(throttleKey);
-        if (alreadyRequested != null)
+        var throttleKey = GetThrottleKey(input.Email);
+
+        if (await _otpCache.GetAsync(throttleKey) != null)
         {
             return new SendOtpResponseDto
             {
@@ -36,60 +39,79 @@ public class OtpAppService : ApplicationService, IOtpAppService
             };
         }
 
-        var user = await _identityUser.FindByEmailAsync(input.Email);
-        if(user != null)
+        return await GenerateAndSendOtpAsync(input.Email, throttleKey);
+    }
+
+    public async Task<bool> VerifyOtpAsync(VerifyOtpRequestDto input)
+    {
+        var otpKey = GetOtpKey(input.Email);
+        var cachedOtp = await _otpCache.GetAsync(otpKey);
+
+        if (cachedOtp == null)
+            return false;
+
+        if (cachedOtp == input.Otp)
         {
-            return await Task.FromResult(new SendOtpResponseDto
-            {
-                Success = true,
-                Message = $"The email address '{input.Email}' is already registered.",
-            });
+            await _otpCache.RemoveAsync(otpKey); // One-time use
+            return true;
         }
 
-        var otp = new Random().Next(100000, 999999).ToString();
+        return false;
+    }
 
-        
-        
-        await _otpCache.SetAsync($"OTP_{input.Email}", otp, new DistributedCacheEntryOptions
+    public async Task<SendOtpResponseDto> ReSentOtpAsync(SendOtpRequestDto input)
+    {
+        var throttleKey = GetThrottleKey(input.Email);
+
+        // Clear throttle to allow immediate resend
+        await _otpCache.RemoveAsync(throttleKey);
+
+        return await GenerateAndSendOtpAsync(input.Email, throttleKey);
+    }
+
+    private static string GetThrottleKey(string email) => $"OTP_THROTTLE_{email}";
+    private static string GetOtpKey(string email) => $"OTP_{email}";
+    private static string GenerateOtp()
+    {
+        return new Random().Next(100000, 999999).ToString();
+    }
+    private async Task<SendOtpResponseDto> GenerateAndSendOtpAsync(string email, string throttleKey)
+    {
+        var user = await _identityUser.FindByEmailAsync(email);
+        if (user != null)
+        {
+            return new SendOtpResponseDto
+            {
+                Success = true,
+                Message = $"The email address '{email}' is already registered."
+            };
+        }
+
+        var otp = GenerateOtp();
+        var otpKey = GetOtpKey(email);
+
+        await _otpCache.SetAsync(otpKey, otp, new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
         });
 
-        // Throttle new requests for 2 minutes
         await _otpCache.SetAsync(throttleKey, "true", new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
         });
 
         await _emailSender.SendAsync(
-            to: input.Email,
+            to: email,
             subject: "Your OTP Code",
             body: $"Your OTP is: {otp}",
             isBodyHtml: false
         );
+
         return await Task.FromResult(new SendOtpResponseDto
         {
             Success = true,
             Message = "OTP sent successfully",
             Otp = otp
         });
-    }
-
-
-    public async Task<bool> VerifyOtpAsync(VerifyOtpRequestDto input)
-    {
-        var cachedOtp = await _otpCache.GetAsync($"OTP_{input.Email}");
-        if (cachedOtp == null)
-        {
-            return false;
-        }
-
-        if (cachedOtp == input.Otp)
-        {
-            await _otpCache.RemoveAsync($"OTP_{input.Email}"); // One-time use
-            return true;
-        }
-
-        return false;
     }
 }
