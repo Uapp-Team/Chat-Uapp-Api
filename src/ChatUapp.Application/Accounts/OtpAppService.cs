@@ -4,7 +4,6 @@ using ChatUapp.Accounts.DTOs.ApiRequestsDto;
 using ChatUapp.Accounts.DTOs.ApiResponsesDto;
 using ChatUapp.Accounts.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Options;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Caching;
 using Volo.Abp.Emailing;
@@ -37,6 +36,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         var otp = new Random().Next(100000, 999999).ToString();
 
+        
         await _otpCache.SetAsync($"OTP_{input.Email}", otp, new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
@@ -54,13 +54,12 @@ public class OtpAppService : ApplicationService, IOtpAppService
             body: $"Your OTP is: {otp}",
             isBodyHtml: false
         );
-
-        return new SendOtpResponseDto
+        return await Task.FromResult(new SendOtpResponseDto
         {
             Success = true,
             Message = "OTP sent successfully",
-            Otp = throttleKey
-        };
+            Otp = otp
+        });
     }
 
 
