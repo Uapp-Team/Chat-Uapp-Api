@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
 using ChatUapp.EntityFrameworkCore;
 using ChatUapp.Localization;
 using ChatUapp.MultiTenancy;
@@ -11,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,7 +16,11 @@ using Microsoft.OpenApi.Models;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
 using Swashbuckle.AspNetCore.Filters;
+using System;
+using System.IO;
+using System.Linq;
 using Volo.Abp;
+using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.Localization;
@@ -67,7 +69,10 @@ public class ChatUappWebModule : AbpModule
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
-
+        context.Services.Configure<AbpAspNetCoreMvcOptions>(options =>
+        {
+            options.ControllersToRemove.Add(typeof(AccountController));
+        });
         context.Services.PreConfigure<AbpMultiTenancyOptions>(options =>
         {
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
