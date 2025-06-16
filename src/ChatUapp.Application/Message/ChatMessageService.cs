@@ -19,6 +19,7 @@ public class ChatMessageService: ApplicationService
     }
     public async Task<ReplyMessageResponseDto> PostMessageAsync([Body] MessageRequest request)
     {
+
         try
         {
             if(request.Query.ToLower() == "hi" || request.Query.ToLower() == "hello" ||request.Query.ToLower() == "how are you?")
