@@ -1,9 +1,9 @@
 ﻿using ChatUapp.Accounts.DTOs;
-using ChatUapp.Accounts.Interfaces;
 using ChatUapp.AppIdentity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Emailing;
 using Volo.Abp.DependencyInjection;
@@ -12,9 +12,9 @@ using Volo.Abp.ObjectExtending;
 
 namespace ChatUapp.Accounts;
 
-public class MyAccountAppService : AccountAppService, IMyAccountAppService, ITransientDependency
+public class AccountAppService : Volo.Abp.Account.AccountAppService, Interfaces.IAccountAppService, ITransientDependency
 {
-    public MyAccountAppService(
+    public AccountAppService(
         IdentityUserManager userManager,
         IIdentityRoleRepository roleRepository,
         IAccountEmailer accountEmailer,
@@ -23,8 +23,12 @@ public class MyAccountAppService : AccountAppService, IMyAccountAppService, ITra
         : base(userManager, roleRepository, accountEmailer, identitySecurityLogManager, identityOptions)
     {
     }
-
-    public async Task<AppIdentityUserDto> CustomRegisterAsync(AppRegisterDto input)
+    [RemoteService(false)]
+    public override Task<IdentityUserDto> RegisterAsync(RegisterDto input)
+    {
+        return base.RegisterAsync(input);
+    }
+    public async Task<AppIdentityUserDto> RegisterAsync(AppRegisterDto input)
     {
         await CheckSelfRegistrationAsync();
 
@@ -35,7 +39,7 @@ public class MyAccountAppService : AccountAppService, IMyAccountAppService, ITra
         user.Name = input.FirstName;
         user.Surname = input.LastName;
         user.TitlePrefix = input.TitlePrefix;
-       
+
         input.MapExtraPropertiesTo(user);
         (await UserManager.CreateAsync(user, input.Password)).CheckErrors();
         await UserManager.SetPhoneNumberAsync(user, input.PhoneNumber);
