@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
 using ChatUapp.EntityFrameworkCore;
 using ChatUapp.Localization;
 using ChatUapp.MultiTenancy;
@@ -17,10 +14,17 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
+using Pages.Abp.MultiTenancy;
 using Swashbuckle.AspNetCore.Filters;
+using System;
+using System.IO;
+using System.Linq;
 using Volo.Abp;
+using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.ApiExploring;
+using Volo.Abp.AspNetCore.Mvc.ApplicationConfigurations;
 using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
@@ -31,15 +35,17 @@ using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.FeatureManagement;
+using Volo.Abp.Identity;
 using Volo.Abp.Identity.Web;
-using Volo.Abp.MailKit;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.Security.Claims;
+using Volo.Abp.SettingManagement;
 using Volo.Abp.Studio.Client.AspNetCore;
 using Volo.Abp.Swashbuckle;
+using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.Web;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
@@ -67,7 +73,22 @@ public class ChatUappWebModule : AbpModule
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
-
+        context.Services.Configure<AbpAspNetCoreMvcOptions>(options =>
+        {
+            options.ControllersToRemove.Add(typeof(AccountController));
+            options.ControllersToRemove.Add(typeof(AbpTenantController));
+            options.ControllersToRemove.Add(typeof(AbpApiDefinitionController));
+            options.ControllersToRemove.Add(typeof(AbpApplicationConfigurationController));
+            options.ControllersToRemove.Add(typeof(AbpApplicationLocalizationController));
+            options.ControllersToRemove.Add(typeof(DynamicClaimsController));
+            options.ControllersToRemove.Add(typeof(EmailSettingsController));
+            options.ControllersToRemove.Add(typeof(FeaturesController));
+            options.ControllersToRemove.Add(typeof(PermissionsController));
+            options.ControllersToRemove.Add(typeof(TenantController));
+            options.ControllersToRemove.Add(typeof(TimeZoneSettingsController));
+            options.ControllersToRemove.Add(typeof(IdentityUserLookupController));
+            // Add more if needed
+        });
         context.Services.PreConfigure<AbpMultiTenancyOptions>(options =>
         {
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
