@@ -13,11 +13,11 @@ namespace ChatUapp.Accounts;
 
 public class OtpAppService : ApplicationService, IOtpAppService
 {
-    private readonly IEmailSender _emailSender;
+    private readonly IAppEmailSender _emailSender;
     private readonly IDistributedCache<string> _otpCache;
     private readonly IdentityUserManager _identityUser;
     public OtpAppService(
-        IEmailSender emailSender, 
+        IAppEmailSender emailSender, 
         IDistributedCache<string> otpCache, 
         IdentityUserManager identityUser)
     {
