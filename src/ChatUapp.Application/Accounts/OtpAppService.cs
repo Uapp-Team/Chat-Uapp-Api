@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using ChatUapp.Accounts.DTOs.ApiRequestsDto;
+﻿using ChatUapp.Accounts.DTOs.ApiRequestsDto;
 using ChatUapp.Accounts.DTOs.ApiResponsesDto;
 using ChatUapp.Accounts.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
+using System;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Caching;
-using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 
 namespace ChatUapp.Accounts;
@@ -17,8 +16,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
     private readonly IDistributedCache<string> _otpCache;
     private readonly IdentityUserManager _identityUser;
     public OtpAppService(
-        IAppEmailSender emailSender, 
-        IDistributedCache<string> otpCache, 
+        IAppEmailSender emailSender,
+        IDistributedCache<string> otpCache,
         IdentityUserManager identityUser)
     {
         _emailSender = emailSender;
