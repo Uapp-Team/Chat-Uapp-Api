@@ -1,21 +1,23 @@
-﻿using Volo.Abp.PermissionManagement;
-using Volo.Abp.SettingManagement;
-using Volo.Abp.Account;
-using Volo.Abp.Identity;
-using Volo.Abp.AutoMapper;
-using Volo.Abp.FeatureManagement;
-using Volo.Abp.Modularity;
-using Volo.Abp.TenantManagement;
+﻿using ChatUapp.Accounts;
+using ChatUapp.Accounts.Interfaces;
+using ChatUapp.HttpClients;
 using ChatUapp.Message.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using ChatUapp.HttpClients;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Refit;
 using System;
 using System.Net.Http.Headers;
-using Volo.Abp.MailKit;
+using Volo.Abp.Account;
+using Volo.Abp.AutoMapper;
 using Volo.Abp.Emailing;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Volo.Abp.Emailing.Smtp;
+using Volo.Abp.FeatureManagement;
+using Volo.Abp.Identity;
+using Volo.Abp.MailKit;
+using Volo.Abp.Modularity;
+using Volo.Abp.PermissionManagement;
+using Volo.Abp.SettingManagement;
+using Volo.Abp.TenantManagement;
 
 namespace ChatUapp;
 
@@ -41,7 +43,7 @@ public class ChatUappApplicationModule : AbpModule
             options.AddMaps<ChatUappApplicationModule>();
         });
 
-        context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, SmtpEmailSender>());
+        context.Services.Replace(ServiceDescriptor.Singleton<IAppEmailSender, AppEmailSender>());
 
         context.Services.AddRefitClient<IChatGPTApi>()
            .ConfigureHttpClient(c =>
