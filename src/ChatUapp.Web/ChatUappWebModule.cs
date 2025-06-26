@@ -1,3 +1,5 @@
+using ChatUapp.Accounts;
+using ChatUapp.Accounts.Interfaces;
 using ChatUapp.EntityFrameworkCore;
 using ChatUapp.Localization;
 using ChatUapp.MultiTenancy;
