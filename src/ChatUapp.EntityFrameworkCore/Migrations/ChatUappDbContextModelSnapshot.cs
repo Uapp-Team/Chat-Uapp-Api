@@ -967,14 +967,6 @@ namespace ChatUapp.Migrations
                         .HasColumnType("text")
                         .HasColumnName("ExtraProperties");
 
-                    b.Property<string>("FacebookUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("InstagramUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("IsActive");
@@ -1002,10 +994,6 @@ namespace ChatUapp.Migrations
                     b.Property<DateTimeOffset?>("LastPasswordChangeTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("LinkedInUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
                     b.Property<bool>("LockoutEnabled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1019,10 +1007,6 @@ namespace ChatUapp.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("Name");
-
-                    b.Property<string>("NamePrefex")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("NormalizedEmail")
                         .IsRequired()
@@ -1069,10 +1053,6 @@ namespace ChatUapp.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
-
-                    b.Property<string>("TwitterUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .ValueGeneratedOnAdd()
