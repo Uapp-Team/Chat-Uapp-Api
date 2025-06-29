@@ -4,6 +4,6 @@ namespace ChatUapp.Accounts.DTOs
 {
     public class AppIdentityUserDto : IdentityUserDto
     {
-        public string? NamePrefex { get; set; }
+        public string? TitlePrefix { get; set; }
     }
 }

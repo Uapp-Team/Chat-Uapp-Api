@@ -17,7 +17,7 @@ public static class ChatUappEfCoreEntityExtensionMappings
         {
             ObjectExtensionManager.Instance
             .MapEfCoreProperty<IdentityUser, string>(
-                "NamePrefex",
+                "TitlePrefix",
                 (entityBuilder, propertyBuilder) =>
                 {
                     propertyBuilder.HasMaxLength(10);

@@ -7,6 +7,6 @@ namespace ChatUapp.Accounts.DTOs
         public string PhoneNumber { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public string? NamePrefex { get; set; }
+        public string? TitlePrefix { get; set; }
     }
 }

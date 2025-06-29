@@ -60,7 +60,7 @@ namespace ChatUapp.Accounts
             }
             user.Name = input.Name?.Trim();
             user.Surname = input.Surname?.Trim();
-            user.SetProperty("NamePrefex", input.NamePrefex);
+            user.SetProperty("TitlePrefix", input.TitlePrefix);
             user.SetProperty("FacebookUrl", input.FacebookUrl);
             user.SetProperty("InstagramUrl", input.InstagramUrl);
             user.SetProperty("LinkedInUrl", input.LinkedInUrl);

@@ -42,7 +42,7 @@ public static class ChatUappModuleExtensionConfigurator
                   identity.ConfigureUser(user =>
                   {
                       // NamePrefix (existing)
-                      user.AddOrUpdateProperty<string>("NamePrefex", property =>
+                      user.AddOrUpdateProperty<string>("TitlePrefix", property =>
                       {
                           property.Attributes.Add(new StringLengthAttribute(10) { MinimumLength = 2 });
                       });

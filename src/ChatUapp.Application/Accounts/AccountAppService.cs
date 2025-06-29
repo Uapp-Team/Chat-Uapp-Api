@@ -38,7 +38,7 @@ public class AccountAppService : Volo.Abp.Account.AccountAppService, Interfaces.
         // Add extended fields 
         user.Name = input.FirstName;
         user.Surname = input.LastName;
-        user.SetProperty("NamePrefex", input.NamePrefex);
+        user.SetProperty("TitlePrefix", input.TitlePrefix);
         input.MapExtraPropertiesTo(user);
         (await UserManager.CreateAsync(user, input.Password)).CheckErrors();
         await UserManager.SetPhoneNumberAsync(user, input.PhoneNumber);
