@@ -17,6 +17,7 @@ public static class ChatUappModuleExtensionConfigurator
 
     private static void ConfigureExistingProperties()
     {
+
         /* You can change max lengths for properties of the
          * entities defined in the modules used by your application.
          *
