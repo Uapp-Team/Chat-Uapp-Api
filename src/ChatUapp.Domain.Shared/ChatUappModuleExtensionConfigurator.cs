@@ -1,4 +1,5 @@
-﻿using Volo.Abp.Threading;
+﻿using Volo.Abp.ObjectExtending;
+using Volo.Abp.Threading;
 
 namespace ChatUapp;
 
@@ -34,8 +35,22 @@ public static class ChatUappModuleExtensionConfigurator
 
     private static void ConfigureExtraProperties()
     {
+        OneTimeRunner.Run(() =>
+        {
+            ObjectExtensionManager.Instance.Modules()
+                .ConfigureIdentity(identity =>
+                {
+                    identity.ConfigureUser(user =>
+                    {
+                        user.AddOrUpdateProperty<string>("TitlePrefix");
+                        user.AddOrUpdateProperty<string>("InstagramUrl");
+                        user.AddOrUpdateProperty<string>("LinkedInUrl");
+                        user.AddOrUpdateProperty<string>("TwitterUrl");
+                        user.AddOrUpdateProperty<string>("FacebookUrl");
+                    });
+                });
+        });
 
-        
         /* You can configure extra properties for the
          * entities defined in the modules used by your application.
          *

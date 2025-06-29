@@ -1,4 +1,3 @@
-using Volo.Abp.Account;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.Threading;
@@ -13,7 +12,57 @@ public static class ChatUappDtoExtensions
     {
         OneTimeRunner.Run(() =>
         {
-           
+            // Extend module DTOs (no need to create new DTOs!)
+            ObjectExtensionManager.Instance.AddOrUpdateProperty<string>(
+                new[]
+                {
+                    typeof(IdentityUserDto),
+                    typeof(IdentityUserUpdateDto),
+                    typeof(IdentityUserCreateDto)
+                },
+                "TitlePrefix"
+            );
+
+            ObjectExtensionManager.Instance.AddOrUpdateProperty<string>(
+                new[]
+                {
+                    typeof(IdentityUserDto),
+                    typeof(IdentityUserUpdateDto),
+                    typeof(IdentityUserCreateDto)
+                },
+                "InstagramUrl"
+            );
+
+            ObjectExtensionManager.Instance.AddOrUpdateProperty<string>(
+                new[]
+                {
+                    typeof(IdentityUserDto),
+                    typeof(IdentityUserUpdateDto),
+                    typeof(IdentityUserCreateDto)
+                },
+                "LinkedInUrl"
+            );
+
+            ObjectExtensionManager.Instance.AddOrUpdateProperty<string>(
+                new[]
+                {
+                    typeof(IdentityUserDto),
+                    typeof(IdentityUserUpdateDto),
+                    typeof(IdentityUserCreateDto)
+                },
+                "TwitterUrl"
+            );
+
+            ObjectExtensionManager.Instance.AddOrUpdateProperty<string>(
+                new[]
+                {
+                    typeof(IdentityUserDto),
+                    typeof(IdentityUserUpdateDto),
+                    typeof(IdentityUserCreateDto)
+                },
+                "FacebookUrl"
+            );
+       
             /* You can add extension properties to DTOs
              * defined in the depended modules.
              *

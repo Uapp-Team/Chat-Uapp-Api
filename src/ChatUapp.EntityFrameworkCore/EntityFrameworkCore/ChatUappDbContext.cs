@@ -1,3 +1,4 @@
+using ChatUapp.AppIdentity;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -5,17 +6,14 @@ using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EntityFrameworkCore;
-using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
+using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
-using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using ChatUapp.DbEntities.Messages;
-using ChatUapp.AppIdentity;
 
 namespace ChatUapp.EntityFrameworkCore;
 
@@ -68,6 +66,10 @@ public class ChatUappDbContext :
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        //builder.Entity<IdentityUser>(b =>
+        //{
+        //    b.Property(u => u.ExtraProperties).HasColumnType("jsonb");
+        //});
         /* Include modules to your migration db context */
         builder.Ignore<Volo.Abp.Data.ExtraPropertyDictionary>();
         builder.ConfigurePermissionManagement();
@@ -86,6 +88,22 @@ public class ChatUappDbContext :
             b.Property(x => x.TitlePrefix)
              .HasMaxLength(10)
              .HasColumnName("TitlePrefix");
+
+            b.Property(x => x.LinkedInUrl)
+            .HasMaxLength(10)
+            .HasColumnName("LinkedInUrl");
+
+            b.Property(x => x.InstagramUrl)
+            .HasMaxLength(10)
+            .HasColumnName("InstagramUrl");
+
+            b.Property(x => x.TenantId)
+            .HasMaxLength(10)
+            .HasColumnName("TenantId");
+
+            b.Property(x => x.FacebookUrl)
+            .HasMaxLength(10)
+            .HasColumnName("FacebookUrl");
         });
         /* Configure your own tables/entities inside here */
 

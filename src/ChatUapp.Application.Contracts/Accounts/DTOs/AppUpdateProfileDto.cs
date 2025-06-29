@@ -1,8 +1,13 @@
-﻿using Volo.Abp.Identity;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Volo.Abp.Account;
 
 namespace ChatUapp.Accounts.DTOs
 {
-    public class AppIdentityUserDto : IdentityUserDto
+    public class AppUpdateProfileDto : UpdateProfileDto
     {
         public string? TitlePrefix { get; set; }
         public string? InstagramUrl { get; set; }

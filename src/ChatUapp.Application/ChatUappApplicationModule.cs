@@ -1,7 +1,9 @@
 ﻿using ChatUapp.Accounts;
 using ChatUapp.Accounts.Interfaces;
+using ChatUapp.AppIdentity;
 using ChatUapp.HttpClients;
 using ChatUapp.Message.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Refit;
@@ -44,7 +46,11 @@ public class ChatUappApplicationModule : AbpModule
         });
 
         context.Services.Replace(ServiceDescriptor.Singleton<IAppEmailSender, AppEmailSender>());
-
+        // Register custom user store (if needed)
+        //context.Services.Replace(ServiceDescriptor.Scoped<UserManager<AppIdentityUser>, AppIdentityUserManager>());
+        context.Services.AddScoped<UserManager<AppIdentityUser>, AppIdentityUserManager>();
+        context.Services.AddScoped<AppIdentityUserManager>();
+        context.Services.Replace(ServiceDescriptor.Transient<IdentityUser, AppIdentityUser>());
         context.Services.AddRefitClient<IChatGPTApi>()
            .ConfigureHttpClient(c =>
            {

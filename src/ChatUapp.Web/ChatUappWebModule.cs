@@ -1,3 +1,5 @@
+using ChatUapp.Accounts;
+using ChatUapp.AppIdentity;
 using ChatUapp.EntityFrameworkCore;
 using ChatUapp.Localization;
 using ChatUapp.MultiTenancy;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -87,8 +90,10 @@ public class ChatUappWebModule : AbpModule
             options.ControllersToRemove.Add(typeof(TenantController));
             options.ControllersToRemove.Add(typeof(TimeZoneSettingsController));
             options.ControllersToRemove.Add(typeof(IdentityUserLookupController));
+            options.ControllersToRemove.Add(typeof(ProfileController));
             // Add more if needed
         });
+   
         context.Services.PreConfigure<AbpMultiTenancyOptions>(options =>
         {
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
