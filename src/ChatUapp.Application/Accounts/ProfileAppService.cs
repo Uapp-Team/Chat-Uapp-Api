@@ -1,11 +1,7 @@
 ﻿using ChatUapp.Accounts.DTOs;
-using ChatUapp.Accounts.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Account;
@@ -72,7 +68,7 @@ namespace ChatUapp.Accounts
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return ObjectMapper.Map<IdentityUser, ProfileDto>(user);
-            
+
         }
     }
 }
