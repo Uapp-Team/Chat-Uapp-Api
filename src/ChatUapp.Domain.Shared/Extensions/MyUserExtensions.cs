@@ -11,7 +11,7 @@ namespace ChatUapp.Extensions
                 {
                     identity.ConfigureUser(user =>
                     {
-                        user.AddOrUpdateProperty<string>("TitlePrefix");
+                        user.AddOrUpdateProperty<string>("NamePrefex");
                     });
                 });
         }

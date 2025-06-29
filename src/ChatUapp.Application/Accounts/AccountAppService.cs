@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Emailing;
+using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
+using Volo.Abp.ObjectMapping;
 
 namespace ChatUapp.Accounts;
 
@@ -28,18 +30,17 @@ public class AccountAppService : Volo.Abp.Account.AccountAppService, Interfaces.
     {
         return base.RegisterAsync(input);
     }
-    public async Task<AppIdentityUserDto> RegisterAsync(AppRegisterDto input)
+    public async Task<IdentityUserDto> RegisterAsync(AppRegisterDto input)
     {
         await CheckSelfRegistrationAsync();
 
         await IdentityOptions.SetAsync();
 
-        var user = new AppIdentityUser(GuidGenerator.Create(), input.UserName, input.EmailAddress);
+        var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.EmailAddress, CurrentTenant.Id);
         // Add extended fields 
         user.Name = input.FirstName;
         user.Surname = input.LastName;
-        user.TitlePrefix = input.TitlePrefix;
-
+        user.SetProperty("NamePrefex", input.NamePrefex);
         input.MapExtraPropertiesTo(user);
         (await UserManager.CreateAsync(user, input.Password)).CheckErrors();
         await UserManager.SetPhoneNumberAsync(user, input.PhoneNumber);
@@ -47,7 +48,8 @@ public class AccountAppService : Volo.Abp.Account.AccountAppService, Interfaces.
         await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
         await UserManager.AddDefaultRolesAsync(user);
 
-        return ObjectMapper.Map<AppIdentityUser, AppIdentityUserDto>(user);
+        return ObjectMapper.Map<IdentityUser, IdentityUserDto>(user);
+
     }
 }
 

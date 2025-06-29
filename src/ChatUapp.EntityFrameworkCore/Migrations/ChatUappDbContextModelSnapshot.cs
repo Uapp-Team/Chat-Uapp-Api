@@ -947,11 +947,6 @@ namespace ChatUapp.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("character varying(21)");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -971,6 +966,14 @@ namespace ChatUapp.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("ExtraProperties");
+
+                    b.Property<string>("FacebookUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("InstagramUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
@@ -999,6 +1002,10 @@ namespace ChatUapp.Migrations
                     b.Property<DateTimeOffset?>("LastPasswordChangeTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("LinkedInUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<bool>("LockoutEnabled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1012,6 +1019,10 @@ namespace ChatUapp.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("Name");
+
+                    b.Property<string>("NamePrefex")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("NormalizedEmail")
                         .IsRequired()
@@ -1059,6 +1070,10 @@ namespace ChatUapp.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
 
+                    b.Property<string>("TwitterUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1082,10 +1097,6 @@ namespace ChatUapp.Migrations
                     b.HasIndex("UserName");
 
                     b.ToTable("AbpUsers", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Volo.Abp.Identity.IdentityUserClaim", b =>
@@ -1927,18 +1938,6 @@ namespace ChatUapp.Migrations
                     b.HasKey("TenantId", "Name");
 
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
-                });
-
-            modelBuilder.Entity("ChatUapp.AppIdentity.AppIdentityUser", b =>
-                {
-                    b.HasBaseType("Volo.Abp.Identity.IdentityUser");
-
-                    b.Property<string>("TitlePrefix")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("TitlePrefix");
-
-                    b.HasDiscriminator().HasValue("AppIdentityUser");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
