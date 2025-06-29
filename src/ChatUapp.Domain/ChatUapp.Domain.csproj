@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\**" />
+    <EmbeddedResource Remove="Extensions\**" />
+    <None Remove="Extensions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ChatUapp.Domain.Shared\ChatUapp.Domain.Shared.csproj" />
   </ItemGroup>
 
@@ -28,10 +34,6 @@
     <PackageReference Include="Volo.Abp.OpenIddict.Domain" Version="9.1.1" />
     <PackageReference Include="Volo.Abp.Identity.Domain" Version="9.1.1" />
     <PackageReference Include="Volo.Abp.TenantManagement.Domain" Version="9.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Extensions\" />
   </ItemGroup>
 
 </Project>

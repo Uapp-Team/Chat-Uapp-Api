@@ -1,4 +1,3 @@
-using ChatUapp.Extensions;
 using ChatUapp.Localization;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
@@ -34,7 +33,7 @@ public class ChatUappDomainSharedModule : AbpModule
     {
         ChatUappGlobalFeatureConfigurator.Configure();
         ChatUappModuleExtensionConfigurator.Configure();
-        MyUserExtensions.Configure();
+
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)

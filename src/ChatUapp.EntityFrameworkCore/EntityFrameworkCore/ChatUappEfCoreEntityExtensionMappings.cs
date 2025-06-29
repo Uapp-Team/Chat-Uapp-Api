@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Volo.Abp.Identity;
+﻿using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.Threading;
 
@@ -16,14 +15,14 @@ public static class ChatUappEfCoreEntityExtensionMappings
 
         OneTimeRunner.Run(() =>
         {
-             ObjectExtensionManager.Instance
-             .MapEfCoreProperty<IdentityUser, string>(
-                 "NamePrefex",
-                 (entityBuilder, propertyBuilder) =>
-                 {
-                     propertyBuilder.HasMaxLength(10);
-                 }
-             );
+            ObjectExtensionManager.Instance
+            .MapEfCoreProperty<IdentityUser, string>(
+                "NamePrefex",
+                (entityBuilder, propertyBuilder) =>
+                {
+                    propertyBuilder.HasMaxLength(10);
+                }
+            );
 
             ObjectExtensionManager.Instance
                 .MapEfCoreProperty<IdentityUser, string>(
