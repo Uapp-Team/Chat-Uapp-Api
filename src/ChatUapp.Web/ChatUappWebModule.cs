@@ -87,6 +87,7 @@ public class ChatUappWebModule : AbpModule
             options.ControllersToRemove.Add(typeof(TenantController));
             options.ControllersToRemove.Add(typeof(TimeZoneSettingsController));
             options.ControllersToRemove.Add(typeof(IdentityUserLookupController));
+            options.ControllersToRemove.Add(typeof(ProfileController));
             // Add more if needed
         });
         context.Services.PreConfigure<AbpMultiTenancyOptions>(options =>

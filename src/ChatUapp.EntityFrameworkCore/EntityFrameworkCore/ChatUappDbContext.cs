@@ -81,12 +81,7 @@ public class ChatUappDbContext :
         builder.ConfigureBlobStoring();
 
         builder.ApplyConfigurationsFromAssembly(typeof(ChatUappDbContext).Assembly);
-        builder.Entity<AppIdentityUser>(b =>
-        {
-            b.Property(x => x.TitlePrefix)
-             .HasMaxLength(10)
-             .HasColumnName("TitlePrefix");
-        });
+        
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>

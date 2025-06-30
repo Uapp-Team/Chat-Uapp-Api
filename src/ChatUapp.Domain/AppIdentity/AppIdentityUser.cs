@@ -9,7 +9,7 @@ namespace ChatUapp.AppIdentity
             : base(id, userName, email)
         {
         }
-        public string ? TitlePrefix { get; set; }
+        public string ? NamePrefex { get; set; }
 
     }
 }
