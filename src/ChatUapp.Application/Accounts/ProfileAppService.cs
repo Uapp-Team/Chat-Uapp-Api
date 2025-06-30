@@ -80,7 +80,7 @@ namespace ChatUapp.Accounts
             user.Name = input.Name?.Trim();
             user.Surname = input.Surname?.Trim();
 
-
+           
 
             input.MapExtraPropertiesTo(user);
 
@@ -133,13 +133,13 @@ namespace ChatUapp.Accounts
 
                 user.Name = input.Name?.Trim();
                 user.Surname = input.Surname?.Trim();
-
-                // Set extra fields
-                user.SetProperty("TitlePrefix", input.TitlePrefix);
-                user.SetProperty("InstagramUrl", input.InstagramUrl);
-                user.SetProperty("LinkedInUrl", input.LinkedInUrl);
-                user.SetProperty("TwitterUrl", input.TwitterUrl);
-                user.SetProperty("FacebookUrl", input.FacebookUrl);
+                
+                //// Set extra fields
+                //user.SetProperty("TitlePrefix", input.TitlePrefix);
+                //user.SetProperty("InstagramUrl", input.InstagramUrl);
+                //user.SetProperty("LinkedInUrl", input.LinkedInUrl);
+                //user.SetProperty("TwitterUrl", input.TwitterUrl);
+                //user.SetProperty("FacebookUrl", input.FacebookUrl);
 
                 // Optional if extraProperties sent
                 input.MapExtraPropertiesTo(user);

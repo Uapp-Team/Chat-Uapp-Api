@@ -83,28 +83,7 @@ public class ChatUappDbContext :
         builder.ConfigureBlobStoring();
 
         builder.ApplyConfigurationsFromAssembly(typeof(ChatUappDbContext).Assembly);
-        builder.Entity<AppIdentityUser>(b =>
-        {
-            b.Property(x => x.TitlePrefix)
-             .HasMaxLength(10)
-             .HasColumnName("TitlePrefix");
-
-            b.Property(x => x.LinkedInUrl)
-            .HasMaxLength(10)
-            .HasColumnName("LinkedInUrl");
-
-            b.Property(x => x.InstagramUrl)
-            .HasMaxLength(10)
-            .HasColumnName("InstagramUrl");
-
-            b.Property(x => x.TenantId)
-            .HasMaxLength(10)
-            .HasColumnName("TenantId");
-
-            b.Property(x => x.FacebookUrl)
-            .HasMaxLength(10)
-            .HasColumnName("FacebookUrl");
-        });
+        
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>

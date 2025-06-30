@@ -1,3 +1,4 @@
+using Volo.Abp.Account;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.Threading;
@@ -18,7 +19,8 @@ public static class ChatUappDtoExtensions
                 {
                     typeof(IdentityUserDto),
                     typeof(IdentityUserUpdateDto),
-                    typeof(IdentityUserCreateDto)
+                    typeof(IdentityUserCreateDto),
+                    typeof(ProfileDto),
                 },
                 "TitlePrefix"
             );
@@ -28,7 +30,8 @@ public static class ChatUappDtoExtensions
                 {
                     typeof(IdentityUserDto),
                     typeof(IdentityUserUpdateDto),
-                    typeof(IdentityUserCreateDto)
+                    typeof(IdentityUserCreateDto),
+                    typeof(ProfileDto),
                 },
                 "InstagramUrl"
             );
@@ -38,7 +41,8 @@ public static class ChatUappDtoExtensions
                 {
                     typeof(IdentityUserDto),
                     typeof(IdentityUserUpdateDto),
-                    typeof(IdentityUserCreateDto)
+                    typeof(IdentityUserCreateDto),
+                    typeof(ProfileDto),
                 },
                 "LinkedInUrl"
             );
@@ -48,7 +52,8 @@ public static class ChatUappDtoExtensions
                 {
                     typeof(IdentityUserDto),
                     typeof(IdentityUserUpdateDto),
-                    typeof(IdentityUserCreateDto)
+                    typeof(IdentityUserCreateDto),
+                    typeof(ProfileDto),
                 },
                 "TwitterUrl"
             );
@@ -58,7 +63,8 @@ public static class ChatUappDtoExtensions
                 {
                     typeof(IdentityUserDto),
                     typeof(IdentityUserUpdateDto),
-                    typeof(IdentityUserCreateDto)
+                    typeof(IdentityUserCreateDto),
+                    typeof(ProfileDto),
                 },
                 "FacebookUrl"
             );
