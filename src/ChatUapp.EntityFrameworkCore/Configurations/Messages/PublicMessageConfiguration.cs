@@ -9,7 +9,7 @@ public class PublicMessageConfiguration : IEntityTypeConfiguration<PublicMessage
 {
     public void Configure(EntityTypeBuilder<PublicMessage> builder)
     {
-        builder.ToTable(DbTableNames.Messages, DbSchemaNames.Messaging);
+        builder.ToTable(DbTableNameConsts.Messages, DbSchemaNameConsts.Messaging);
 
         builder.HasKey(x => x.Id);
 
