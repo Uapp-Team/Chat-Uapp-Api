@@ -1,4 +1,4 @@
-﻿namespace ChatUapp.Constants;
+﻿namespace ChatUapp.Core.Constants;
 
 public class AppUserConsts
 {

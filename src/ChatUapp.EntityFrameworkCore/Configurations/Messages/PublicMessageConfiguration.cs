@@ -1,4 +1,4 @@
-﻿using ChatUapp.Constants;
+﻿using ChatUapp.Core.Constants;
 using ChatUapp.DbEntities.Messages.VO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
