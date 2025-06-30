@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.Domain.Values;
 
-namespace ChatUapp.DbEntities.Messages.VO;
+namespace ChatUapp.Core.Messages.Messages.VO;
 
 public class MessageText : ValueObject
 {

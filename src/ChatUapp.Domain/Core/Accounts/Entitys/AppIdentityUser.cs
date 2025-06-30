@@ -1,7 +1,7 @@
 ﻿using System;
 using Volo.Abp.Identity;
 
-namespace ChatUapp.AppIdentity
+namespace ChatUapp.Core.Accounts.Entitys
 {
     public class AppIdentityUser : IdentityUser
     {
