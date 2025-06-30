@@ -6,7 +6,7 @@ using ChatUapp.Message.Interfaces;
 using Refit;
 using Volo.Abp.Application.Services;
 
-namespace ChatUapp.Services;
+namespace ChatUapp.Core.Message;
 
 public class ChatMessageService: ApplicationService
 {

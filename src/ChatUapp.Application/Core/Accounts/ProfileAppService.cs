@@ -7,9 +7,9 @@ using Volo.Abp.Data;
 using Volo.Abp.Identity;
 using Volo.Abp.Users;
 
-namespace ChatUapp.Accounts
+namespace ChatUapp.Core.Accounts
 {
-    public class ProfileAppService : Volo.Abp.Account.ProfileAppService, Interfaces.IProfileAppService
+    public class ProfileAppService : Volo.Abp.Account.ProfileAppService, ChatUapp.Accounts.Interfaces.IProfileAppService
     {
         public ProfileAppService(IdentityUserManager userManager, 
             IOptions<IdentityOptions> identityOptions

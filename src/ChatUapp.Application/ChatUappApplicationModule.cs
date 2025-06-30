@@ -1,5 +1,5 @@
-﻿using ChatUapp.Accounts;
-using ChatUapp.Accounts.Interfaces;
+﻿using ChatUapp.Core.Emailing;
+using ChatUapp.Emailing.Interfaces;
 using ChatUapp.HttpClients;
 using ChatUapp.Message.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
