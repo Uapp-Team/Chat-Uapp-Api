@@ -1,15 +1,10 @@
 ﻿using ChatUapp.Accounts.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using System;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Account;
 using Volo.Abp.Data;
 using Volo.Abp.Identity;
-using Volo.Abp.Identity.Settings;
-using Volo.Abp.ObjectExtending;
-using Volo.Abp.Settings;
 using Volo.Abp.Users;
 
 namespace ChatUapp.Accounts
@@ -26,49 +21,17 @@ namespace ChatUapp.Accounts
         }
         public async Task<Volo.Abp.Account.ProfileDto> UpdateAsync(AppUpdateProfileDto input)
         {
-            await IdentityOptions.SetAsync();
             var user = await UserManager.GetByIdAsync(CurrentUser.GetId());
-            user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
-            if (!string.Equals(user.UserName, input.UserName, StringComparison.InvariantCultureIgnoreCase))
+
+            if (user != null)
             {
-                if (await SettingProvider.IsTrueAsync(IdentitySettingNames.User.IsUserNameUpdateEnabled))
-                {
-                    (await UserManager.SetUserNameAsync(user, input.UserName)).CheckErrors();
-                }
+                user.SetProperty("TitlePrefix", input.TitlePrefix);
+                user.SetProperty("FacebookUrl", input.FacebookUrl);
+                user.SetProperty("InstagramUrl", input.InstagramUrl);
+                user.SetProperty("LinkedInUrl", input.LinkedInUrl);
+                user.SetProperty("TwitterUrl", input.TwitterUrl);
             }
-
-            if (!string.Equals(user.Email, input.Email, StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (await SettingProvider.IsTrueAsync(IdentitySettingNames.User.IsEmailUpdateEnabled))
-                {
-                    (await UserManager.SetEmailAsync(user, input.Email)).CheckErrors();
-                }
-            }
-
-            if (user.PhoneNumber.IsNullOrWhiteSpace() && input.PhoneNumber.IsNullOrWhiteSpace())
-            {
-                input.PhoneNumber = user.PhoneNumber;
-            }
-
-            if (!string.Equals(user.PhoneNumber, input.PhoneNumber, StringComparison.InvariantCultureIgnoreCase))
-            {
-                (await UserManager.SetPhoneNumberAsync(user, input.PhoneNumber)).CheckErrors();
-            }
-            user.Name = input.Name?.Trim();
-            user.Surname = input.Surname?.Trim();
-            user.SetProperty("TitlePrefix", input.TitlePrefix);
-            user.SetProperty("FacebookUrl", input.FacebookUrl);
-            user.SetProperty("InstagramUrl", input.InstagramUrl);
-            user.SetProperty("LinkedInUrl", input.LinkedInUrl);
-            user.SetProperty("TwitterUrl", input.TwitterUrl);
-            input.MapExtraPropertiesTo(user);
-
-            (await UserManager.UpdateAsync(user)).CheckErrors();
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return ObjectMapper.Map<IdentityUser, ProfileDto>(user);
-
+            return await base.UpdateAsync(input);
         }
     }
 }
