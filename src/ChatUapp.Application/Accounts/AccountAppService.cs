@@ -19,7 +19,11 @@ public class AccountAppService : Volo.Abp.Account.AccountAppService, Interfaces.
         IAccountEmailer accountEmailer,
         IdentitySecurityLogManager identitySecurityLogManager,
         IOptions<IdentityOptions> identityOptions)
-        : base(userManager, roleRepository, accountEmailer, identitySecurityLogManager, identityOptions)
+        : base(userManager, 
+            roleRepository, 
+            accountEmailer, 
+            identitySecurityLogManager, 
+            identityOptions)
     {
     }
     [RemoteService(false)]
@@ -30,6 +34,7 @@ public class AccountAppService : Volo.Abp.Account.AccountAppService, Interfaces.
     public async Task<IdentityUserDto> RegisterAsync(AppRegisterDto input)
     {
         var user = await base.RegisterAsync(input);
+
         var identityUser = await UserManager.FindByIdAsync(user.Id.ToString());
 
         if (identityUser != null)

@@ -11,9 +11,12 @@ namespace ChatUapp.Accounts
 {
     public class ProfileAppService : Volo.Abp.Account.ProfileAppService, Interfaces.IProfileAppService
     {
-        public ProfileAppService(IdentityUserManager userManager, IOptions<IdentityOptions> identityOptions) : base(userManager, identityOptions)
+        public ProfileAppService(IdentityUserManager userManager, 
+            IOptions<IdentityOptions> identityOptions
+            ) : base(userManager, identityOptions)
         {
         }
+
         [RemoteService(false)]
         public override Task<Volo.Abp.Account.ProfileDto> UpdateAsync(Volo.Abp.Account.UpdateProfileDto input)
         {
