@@ -1,7 +1,7 @@
-﻿using ChatUapp.Accounts.DTOs;
+﻿using System.Threading.Tasks;
+using ChatUapp.Accounts.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Emailing;
@@ -11,6 +11,10 @@ using Volo.Abp.Identity;
 
 namespace ChatUapp.Accounts;
 
+[RemoteService(IsEnabled = false)]
+[Dependency(ReplaceServices = true)]
+[ExposeServices(typeof(Volo.Abp.Account.IAccountAppService), typeof(Interfaces.IAccountAppService), typeof(IdentityUserAppService),
+    typeof(AccountAppService))]
 public class AccountAppService : Volo.Abp.Account.AccountAppService, Interfaces.IAccountAppService, ITransientDependency
 {
     public AccountAppService(
@@ -19,18 +23,14 @@ public class AccountAppService : Volo.Abp.Account.AccountAppService, Interfaces.
         IAccountEmailer accountEmailer,
         IdentitySecurityLogManager identitySecurityLogManager,
         IOptions<IdentityOptions> identityOptions)
-        : base(userManager, 
-            roleRepository, 
-            accountEmailer, 
-            identitySecurityLogManager, 
+        : base(userManager,
+            roleRepository,
+            accountEmailer,
+            identitySecurityLogManager,
             identityOptions)
     {
     }
-    [RemoteService(false)]
-    public override Task<IdentityUserDto> RegisterAsync(RegisterDto input)
-    {
-        return base.RegisterAsync(input);
-    }
+
     public async Task<IdentityUserDto> RegisterAsync(AppRegisterDto input)
     {
         var user = await base.RegisterAsync(input);
