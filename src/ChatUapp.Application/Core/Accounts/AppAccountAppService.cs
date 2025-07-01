@@ -9,23 +9,23 @@ using Volo.Abp.Account.Emailing;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Identity;
-using AppInterfaces = ChatUapp.Accounts.Interfaces;
+using ChatUapp.Accounts.Interfaces;
 
 namespace ChatUapp.Core.Accounts;
 
-[RemoteService(IsEnabled = false)]
+[RemoteService(IsEnabled = true)]
 [Dependency(ReplaceServices = true)]
 [ExposeServices(
     typeof(IAccountAppService),
-    typeof(AppInterfaces.IAccountAppService),
-    typeof(Volo.Abp.Account.AccountAppService),
-    typeof(AccountAppService)
+    typeof(IAppAccountAppService),
+    typeof(AccountAppService),
+    typeof(AppAccountAppService)
 )]
-public class AccountAppService : Volo.Abp.Account.AccountAppService,
-    AppInterfaces.IAccountAppService,
+public class AppAccountAppService : AccountAppService,
+    IAppAccountAppService,
     ITransientDependency
 {
-    public AccountAppService(
+    public AppAccountAppService(
         IdentityUserManager userManager,
         IIdentityRoleRepository roleRepository,
         IAccountEmailer accountEmailer,
@@ -38,6 +38,12 @@ public class AccountAppService : Volo.Abp.Account.AccountAppService,
             identitySecurityLogManager,
             identityOptions)
     {
+    }
+
+    [RemoteService(IsEnabled =false)]
+    public override Task<IdentityUserDto> RegisterAsync(RegisterDto input)
+    {
+        return base.RegisterAsync(input);
     }
 
     public virtual async Task<IdentityUserDto> RegisterAsync(AppRegisterDto input)

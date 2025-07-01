@@ -1,37 +1,43 @@
-﻿using ChatUapp.Accounts.DTOs;
+﻿using System.Threading.Tasks;
+using ChatUapp.Accounts.DTOs;
+using ChatUapp.Accounts.Interfaces;
 using ChatUapp.Core.Guards;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Identity;
 using Volo.Abp.Users;
-using AppInterfaces = ChatUapp.Accounts.Interfaces;
 
 namespace ChatUapp.Core.Accounts;
 
-[RemoteService(IsEnabled = false)]
+[RemoteService(IsEnabled = true)]
 [Dependency(ReplaceServices = true)]
 [ExposeServices(
 typeof(IProfileAppService),
-typeof(AppInterfaces.IProfileAppService),
-typeof(Volo.Abp.Account.ProfileAppService),
-typeof(ProfileAppService)
+typeof(IAppProfileAppService),
+typeof(ProfileAppService),
+typeof(AppProfileAppService)
 )]
-public class ProfileAppService : Volo.Abp.Account.ProfileAppService, 
-    AppInterfaces.IProfileAppService,
+public class AppProfileAppService : ProfileAppService,
+    IAppProfileAppService,
     ITransientDependency
 {
-    public ProfileAppService(IdentityUserManager userManager,
+    public AppProfileAppService(IdentityUserManager userManager,
         IOptions<IdentityOptions> identityOptions
         ) : base(userManager, identityOptions)
     {
     }
 
-    public virtual async Task<Volo.Abp.Account.ProfileDto> UpdateAsync(AppUpdateProfileDto input)
+    [RemoteService(IsEnabled = false)]
+    public override Task<ProfileDto> UpdateAsync(UpdateProfileDto input)
+    {
+        return base.UpdateAsync(input);
+    }
+
+    public virtual async Task<ProfileDto> UpdateAsync(AppUpdateProfileDto input)
     {
         var user = await UserManager.GetByIdAsync(CurrentUser.GetId());
 
