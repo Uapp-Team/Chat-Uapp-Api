@@ -9,6 +9,7 @@ using Volo.Abp.Account.Emailing;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Identity;
+using AppInterfaces = ChatUapp.Accounts.Interfaces;
 
 namespace ChatUapp.Core.Accounts;
 
@@ -16,12 +17,12 @@ namespace ChatUapp.Core.Accounts;
 [Dependency(ReplaceServices = true)]
 [ExposeServices(
     typeof(IAccountAppService),
-    typeof(ChatUapp.Application...IAccountAppService),
+    typeof(AppInterfaces.IAccountAppService),
     typeof(IdentityUserAppService),
     typeof(AccountAppService)
 )]
 public class AccountAppService : Volo.Abp.Account.AccountAppService,
-    Interfaces.IAccountAppService,
+    AppInterfaces.IAccountAppService,
     ITransientDependency
 {
     public AccountAppService(
