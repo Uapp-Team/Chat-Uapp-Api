@@ -1,40 +1,48 @@
 ﻿using ChatUapp.Accounts.DTOs;
+using ChatUapp.Core.Guards;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Account;
 using Volo.Abp.Data;
+using Volo.Abp.DependencyInjection;
 using Volo.Abp.Identity;
 using Volo.Abp.Users;
+using AppInterfaces = ChatUapp.Accounts.Interfaces;
 
-namespace ChatUapp.Core.Accounts
+namespace ChatUapp.Core.Accounts;
+
+[RemoteService(IsEnabled = false)]
+[Dependency(ReplaceServices = true)]
+[ExposeServices(
+typeof(IProfileAppService),
+typeof(AppInterfaces.IProfileAppService),
+typeof(Volo.Abp.Account.ProfileAppService),
+typeof(ProfileAppService)
+)]
+public class ProfileAppService : Volo.Abp.Account.ProfileAppService, 
+    AppInterfaces.IProfileAppService,
+    ITransientDependency
 {
-    public class ProfileAppService : Volo.Abp.Account.ProfileAppService, ChatUapp.Accounts.Interfaces.IProfileAppService
+    public ProfileAppService(IdentityUserManager userManager,
+        IOptions<IdentityOptions> identityOptions
+        ) : base(userManager, identityOptions)
     {
-        public ProfileAppService(IdentityUserManager userManager, 
-            IOptions<IdentityOptions> identityOptions
-            ) : base(userManager, identityOptions)
-        {
-        }
+    }
 
-        [RemoteService(false)]
-        public override Task<Volo.Abp.Account.ProfileDto> UpdateAsync(Volo.Abp.Account.UpdateProfileDto input)
-        {
-            return base.UpdateAsync(input);
-        }
-        public async Task<Volo.Abp.Account.ProfileDto> UpdateAsync(AppUpdateProfileDto input)
-        {
-            var user = await UserManager.GetByIdAsync(CurrentUser.GetId());
+    public virtual async Task<Volo.Abp.Account.ProfileDto> UpdateAsync(AppUpdateProfileDto input)
+    {
+        var user = await UserManager.GetByIdAsync(CurrentUser.GetId());
 
-            if (user != null)
-            {
-                user.SetProperty("TitlePrefix", input.TitlePrefix);
-                user.SetProperty("FacebookUrl", input.FacebookUrl);
-                user.SetProperty("InstagramUrl", input.InstagramUrl);
-                user.SetProperty("LinkedInUrl", input.LinkedInUrl);
-                user.SetProperty("TwitterUrl", input.TwitterUrl);
-            }
-            return await base.UpdateAsync(input);
-        }
+        Ensure.NotNull(user, nameof(user));
+
+        user.SetProperty("TitlePrefix", input.TitlePrefix);
+        user.SetProperty("FacebookUrl", input.FacebookUrl);
+        user.SetProperty("InstagramUrl", input.InstagramUrl);
+        user.SetProperty("LinkedInUrl", input.LinkedInUrl);
+        user.SetProperty("TwitterUrl", input.TwitterUrl);
+
+        return await base.UpdateAsync(input);
     }
 }

@@ -18,7 +18,7 @@ namespace ChatUapp.Core.Accounts;
 [ExposeServices(
     typeof(IAccountAppService),
     typeof(AppInterfaces.IAccountAppService),
-    typeof(IdentityUserAppService),
+    typeof(Volo.Abp.Account.AccountAppService),
     typeof(AccountAppService)
 )]
 public class AccountAppService : Volo.Abp.Account.AccountAppService,
