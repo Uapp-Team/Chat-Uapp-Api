@@ -9,6 +9,7 @@ namespace ChatUapp.Core.Accounts.Entitys
             : base(id, userName, email)
         {
         }
+
         public string ? NamePrefex { get; set; }
 
     }
