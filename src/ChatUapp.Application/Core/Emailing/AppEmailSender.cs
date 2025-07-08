@@ -13,7 +13,6 @@ namespace ChatUapp.Core.Emailing
             : base(currentTenant, smtpConfiguration, backgroundJobManager)
         {
 
-
         }
     }
 }
