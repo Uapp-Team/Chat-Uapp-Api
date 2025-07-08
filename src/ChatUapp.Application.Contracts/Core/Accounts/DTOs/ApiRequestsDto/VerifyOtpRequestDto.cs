@@ -1,4 +1,4 @@
-﻿namespace ChatUapp.Accounts.DTOs.ApiRequestsDto;
+﻿namespace ChatUapp.Core.Accounts.DTOs.ApiRequestsDto;
 
 public class VerifyOtpRequestDto
 {

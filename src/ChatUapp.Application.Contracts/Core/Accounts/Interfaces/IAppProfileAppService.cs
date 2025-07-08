@@ -1,9 +1,8 @@
-﻿
-using ChatUapp.Accounts.DTOs;
+﻿using ChatUapp.Core.Accounts.DTOs;
 using System.Threading.Tasks;
 using Volo.Abp.Account;
 
-namespace ChatUapp.Accounts.Interfaces
+namespace ChatUapp.Core.Accounts.Interfaces
 {
     public interface IAppProfileAppService : IProfileAppService
     {

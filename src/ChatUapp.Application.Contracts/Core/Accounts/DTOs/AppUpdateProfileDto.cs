@@ -1,6 +1,6 @@
 ﻿using Volo.Abp.Account;
 
-namespace ChatUapp.Accounts.DTOs
+namespace ChatUapp.Core.Accounts.DTOs
 {
     public class AppUpdateProfileDto : UpdateProfileDto
     {

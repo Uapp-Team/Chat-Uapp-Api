@@ -1,6 +1,6 @@
 ﻿using Volo.Abp.Identity;
 
-namespace ChatUapp.Accounts.DTOs
+namespace ChatUapp.Core.Accounts.DTOs
 {
     public class AppIdentityUserDto : IdentityUserDto
     {

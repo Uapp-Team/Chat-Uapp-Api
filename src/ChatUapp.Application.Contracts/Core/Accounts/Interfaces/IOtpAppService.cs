@@ -1,8 +1,8 @@
-﻿using ChatUapp.Accounts.DTOs.ApiRequestsDto;
-using ChatUapp.Accounts.DTOs.ApiResponsesDto;
+﻿using ChatUapp.Core.Accounts.DTOs.ApiRequestsDto;
+using ChatUapp.Core.Accounts.DTOs.ApiResponsesDto;
 using System.Threading.Tasks;
 
-namespace ChatUapp.Accounts.Interfaces;
+namespace ChatUapp.Core.Accounts.Interfaces;
 
 public interface IOtpAppService
 {

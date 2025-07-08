@@ -1,7 +1,7 @@
 ﻿using ChatUapp.Core.Emailing;
-using ChatUapp.Emailing.Interfaces;
+using ChatUapp.Core.Emailing.Interfaces;
+using ChatUapp.Core.Message.Interfaces;
 using ChatUapp.HttpClients;
-using ChatUapp.Message.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Refit;

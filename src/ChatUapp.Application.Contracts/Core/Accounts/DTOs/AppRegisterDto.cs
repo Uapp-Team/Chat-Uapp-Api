@@ -4,7 +4,7 @@ using Volo.Abp.Account;
 using Volo.Abp.Identity;
 using Volo.Abp.Validation;
 
-namespace ChatUapp.Accounts.DTOs
+namespace ChatUapp.Core.Accounts.DTOs
 {
     public class AppRegisterDto : RegisterDto
     {

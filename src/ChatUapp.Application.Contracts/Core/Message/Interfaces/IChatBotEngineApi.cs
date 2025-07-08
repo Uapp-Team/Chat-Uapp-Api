@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using ChatUapp.Message.ApiResponsesDtos;
+using ChatUapp.Core.Message.ApiResponsesDtos;
 using Refit;
 
-namespace ChatUapp.Message.Interfaces;
+namespace ChatUapp.Core.Message.Interfaces;
 
 public interface IChatBotEngineApi
 {

@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using ChatUapp.Accounts.DTOs;
 using ChatUapp.Core.Guards;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -9,7 +8,8 @@ using Volo.Abp.Account.Emailing;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Identity;
-using ChatUapp.Accounts.Interfaces;
+using ChatUapp.Core.Accounts.DTOs;
+using ChatUapp.Core.Accounts.Interfaces;
 
 namespace ChatUapp.Core.Accounts;
 

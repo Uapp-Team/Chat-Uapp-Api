@@ -1,4 +1,4 @@
-﻿namespace ChatUapp.Accounts.DTOs.ApiResponsesDto;
+﻿namespace ChatUapp.Core.Accounts.DTOs.ApiResponsesDto;
 
 public class SendOtpResponseDto
 {

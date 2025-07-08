@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ChatUapp.Message.ApiResponsesDtos;
+namespace ChatUapp.Core.Message.ApiResponsesDtos;
 
 public class ReplyMessageResponseDto
 {

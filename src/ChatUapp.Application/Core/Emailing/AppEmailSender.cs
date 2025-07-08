@@ -1,4 +1,4 @@
-﻿using ChatUapp.Emailing.Interfaces;
+﻿using ChatUapp.Core.Emailing.Interfaces;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Emailing.Smtp;
 using Volo.Abp.MultiTenancy;
