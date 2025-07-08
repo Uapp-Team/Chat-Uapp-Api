@@ -15,6 +15,7 @@ public class PublicMessageConfiguration : IEntityTypeConfiguration<PublicMessage
 
         builder.HasKey(x => x.Id);
 
+
         builder.Property(x => x.TenantId).IsRequired(false);
 
         builder.Property(x => x.Text)
