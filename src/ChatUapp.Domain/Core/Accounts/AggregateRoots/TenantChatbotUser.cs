@@ -1,7 +1,7 @@
 ﻿using System;
 using Volo.Abp.Domain.Entities.Auditing;
 
-namespace ChatUapp.Core.Accounts.Entitys
+namespace ChatUapp.Core.Accounts.AggregateRoots
 {
     public class TenantChatbotUser : FullAuditedAggregateRoot<Guid>
     {

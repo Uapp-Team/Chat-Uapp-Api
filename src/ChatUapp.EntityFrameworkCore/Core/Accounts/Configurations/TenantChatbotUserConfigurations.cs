@@ -1,4 +1,4 @@
-﻿using ChatUapp.Core.Accounts.Entitys;
+﻿using ChatUapp.Core.Accounts.AggregateRoots;
 using ChatUapp.Core.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
