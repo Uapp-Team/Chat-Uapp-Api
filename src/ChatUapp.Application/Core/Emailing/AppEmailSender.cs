@@ -12,6 +12,7 @@ namespace ChatUapp.Core.Emailing
             IBackgroundJobManager backgroundJobManager)
             : base(currentTenant, smtpConfiguration, backgroundJobManager)
         {
+
         }
     }
 }
