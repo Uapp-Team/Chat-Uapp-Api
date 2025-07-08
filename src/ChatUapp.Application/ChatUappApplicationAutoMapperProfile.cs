@@ -1,6 +1,6 @@
 using AutoMapper;
 using ChatUapp.Accounts.DTOs;
-using ChatUapp.AppIdentity;
+using ChatUapp.Core.Accounts.Entitys;
 using Volo.Abp.Identity;
 
 namespace ChatUapp;

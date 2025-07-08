@@ -1,6 +1,6 @@
 ﻿using System;
+using ChatUapp.Core.Messages.Messages.VO;
 using ChatUapp.Core.Enums;
-using ChatUapp.DbEntities.Messages.VO;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
