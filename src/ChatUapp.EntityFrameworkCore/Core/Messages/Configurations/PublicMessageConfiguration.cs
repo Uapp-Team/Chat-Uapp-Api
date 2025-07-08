@@ -1,4 +1,4 @@
-﻿using ChatUapp.Constants;
+using ChatUapp.Constants;
 using ChatUapp.Core.Messages.Messages.VO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,6 +12,7 @@ public class PublicMessageConfiguration : IEntityTypeConfiguration<PublicMessage
     {
         builder.ToTable(DbTableNames.Messages, DbSchemaNames.Messaging);
         builder.ConfigureByConvention();
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.TenantId).IsRequired(false);

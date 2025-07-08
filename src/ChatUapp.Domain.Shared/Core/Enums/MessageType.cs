@@ -1,4 +1,4 @@
-﻿namespace ChatUapp.Enums;
+﻿namespace ChatUapp.Core.Enums;
 
 public enum MessageType : byte
 {

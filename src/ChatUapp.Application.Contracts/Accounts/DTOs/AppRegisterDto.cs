@@ -1,12 +1,27 @@
-﻿using Volo.Abp.Account;
+﻿using System.ComponentModel.DataAnnotations;
+using ChatUapp.Core.Constants;
+using Volo.Abp.Account;
+using Volo.Abp.Identity;
+using Volo.Abp.Validation;
 
 namespace ChatUapp.Accounts.DTOs
 {
     public class AppRegisterDto : RegisterDto
     {
-        public string PhoneNumber { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? TitlePrefix { get; set; }
+        [Required]
+        [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxPhoneNumberLength))]
+        public required string PhoneNumber { get; set; }
+
+        [Required]
+        [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxNameLength))]
+        public required string FirstName { get; set; }
+
+        [Required]
+        [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxSurnameLength))]
+        public required string LastName { get; set; }
+
+        [Required]
+        [DynamicStringLength(typeof(AppUserConsts), nameof(AppUserConsts.MaxTitlePrefixLength))]
+        public required string TitlePrefix { get; set; }
     }
 }

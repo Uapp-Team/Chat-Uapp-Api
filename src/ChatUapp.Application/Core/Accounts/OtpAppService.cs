@@ -1,6 +1,7 @@
 ﻿using ChatUapp.Accounts.DTOs.ApiRequestsDto;
 using ChatUapp.Accounts.DTOs.ApiResponsesDto;
 using ChatUapp.Accounts.Interfaces;
+using ChatUapp.Emailing.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Caching;
 using Volo.Abp.Identity;
 
-namespace ChatUapp.Accounts;
+namespace ChatUapp.Core.Accounts;
 
 public class OtpAppService : ApplicationService, IOtpAppService
 {
