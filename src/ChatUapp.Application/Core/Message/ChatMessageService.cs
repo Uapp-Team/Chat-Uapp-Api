@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ChatUapp.Core.Exceptions;
+using ChatUapp.Core.Guards;
 using ChatUapp.Message.ApiResponsesDtos;
 using ChatUapp.Message.Interfaces;
+using Microsoft.Extensions.Logging;
 using Refit;
 using Volo.Abp.Application.Services;
 
-namespace ChatUapp.Services;
+namespace ChatUapp.Core.Message;
 
 public class ChatMessageService: ApplicationService
 {
@@ -17,33 +21,52 @@ public class ChatMessageService: ApplicationService
         _chatBotEnginerApi = chatBotEnginerApi;
         _chatGptApi = api;
     }
+
     public async Task<ReplyMessageResponseDto> PostMessageAsync([Body] MessageRequest request)
     {
-
         try
         {
-            if(request.Query.ToLower() == "hi" || request.Query.ToLower() == "hello" ||request.Query.ToLower() == "how are you?")
+            Ensure.NotNullOrEmpty(request.Query, nameof(request.Query));
+            Ensure.NotNullOrEmpty(request.BotName, nameof(request.BotName));
+
+            var lowerQuery = request.Query.Trim().ToLower();
+
+            if (lowerQuery is "hi" or "hello" or "how are you?")
             {
                 return new ReplyMessageResponseDto
                 {
                     Answer = await AskAsync(request.Query),
                     Success = true,
                     BotName = request.BotName
-                }; 
+                };
             }
+
             var reply = await _chatBotEnginerApi.QueryAsync(request.Query, request.BotName, request.Session);
-            if (reply.Answer.Contains("Sorry"))
+
+            if (reply.Answer?.Contains("Sorry", StringComparison.OrdinalIgnoreCase) == true)
             {
                 reply.Answer = await AskAsync(request.Query);
             }
-            reply.Answer =  string.IsNullOrWhiteSpace(reply.Answer)? "No result found": reply.Answer;
+
+            reply.Answer = string.IsNullOrWhiteSpace(reply.Answer)
+                ? "No result found"
+                : reply.Answer;
 
             return reply;
         }
-        catch (System.Exception)
+        catch (AppValidationException ex)
+        {
+            throw new AppSafeException($"Validation failed: {ex.Message}");
+        }
+        catch (AppBusinessException ex)
         {
             throw;
-        }    
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected error during chatbot message handling.");
+            throw new AppSafeException("Something went wrong while processing your message.");
+        }
     }
 
     public async Task<string> AskAsync(string userQuery)

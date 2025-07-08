@@ -1,6 +1,6 @@
 ﻿using Volo.Abp.Emailing;
 
-namespace ChatUapp.Accounts.Interfaces
+namespace ChatUapp.Emailing.Interfaces
 {
     public interface IAppEmailSender : IEmailSender
     {

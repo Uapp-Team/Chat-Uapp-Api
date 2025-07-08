@@ -1,9 +1,9 @@
-﻿using ChatUapp.Accounts.Interfaces;
+﻿using ChatUapp.Emailing.Interfaces;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Emailing.Smtp;
 using Volo.Abp.MultiTenancy;
 
-namespace ChatUapp.Accounts
+namespace ChatUapp.Core.Emailing
 {
     public class AppEmailSender : SmtpEmailSender, IAppEmailSender
     {
@@ -12,6 +12,8 @@ namespace ChatUapp.Accounts
             IBackgroundJobManager backgroundJobManager)
             : base(currentTenant, smtpConfiguration, backgroundJobManager)
         {
+
+
         }
     }
 }
