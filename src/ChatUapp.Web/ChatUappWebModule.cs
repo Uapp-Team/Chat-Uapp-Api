@@ -262,6 +262,7 @@ public class ChatUappWebModule : AbpModule
                 options.FileSets.ReplaceEmbeddedByPhysical<ChatUappApplicationContractsModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}ChatUapp.Application.Contracts", Path.DirectorySeparatorChar)));
                 options.FileSets.ReplaceEmbeddedByPhysical<ChatUappApplicationModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}ChatUapp.Application", Path.DirectorySeparatorChar)));
                 options.FileSets.ReplaceEmbeddedByPhysical<ChatUappHttpApiModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}src{0}ChatUapp.HttpApi", Path.DirectorySeparatorChar)));
+                options.FileSets.ReplaceEmbeddedByPhysical<ChatUappInfrastructureModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}src{0}ChatUapp.Infrastructure", Path.DirectorySeparatorChar)));
                 options.FileSets.ReplaceEmbeddedByPhysical<ChatUappWebModule>(hostingEnvironment.ContentRootPath);
             }
         });
