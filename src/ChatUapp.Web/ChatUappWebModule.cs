@@ -1,4 +1,5 @@
 using ChatUapp.EntityFrameworkCore;
+using ChatUapp.Infrastructure;
 using ChatUapp.Localization;
 using ChatUapp.MultiTenancy;
 using ChatUapp.Web.HealthChecks;
@@ -55,6 +56,7 @@ namespace ChatUapp.Web;
 
 [DependsOn(
     typeof(ChatUappHttpApiModule),
+    typeof(ChatUappInfrastructureModule),
     typeof(ChatUappApplicationModule),
     typeof(ChatUappEntityFrameworkCoreModule),
     typeof(AbpAutofacModule),
