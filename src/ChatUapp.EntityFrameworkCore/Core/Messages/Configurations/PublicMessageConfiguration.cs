@@ -1,5 +1,6 @@
 using ChatUapp.Core.Constants;
-using ChatUapp.Core.Messages.Messages.VO;
+using ChatUapp.Core.Messages.AggregateRoots;
+using ChatUapp.Core.Messages.VOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
