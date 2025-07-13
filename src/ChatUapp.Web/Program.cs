@@ -1,10 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using ChatUapp.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using System;
+using System.Threading.Tasks;
 
 namespace ChatUapp.Web;
 
@@ -39,6 +40,7 @@ public class Program
                         .WriteTo.Async(c => c.Console())
                         .WriteTo.Async(c => c.AbpStudio(services));
                 });
+            await builder.AddApplicationAsync<ChatUappInfrastructureModule>();
             await builder.AddApplicationAsync<ChatUappWebModule>();
             var app = builder.Build();
             await app.InitializeApplicationAsync();
