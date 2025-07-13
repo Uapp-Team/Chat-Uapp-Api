@@ -1,14 +1,11 @@
-﻿using ChatUapp.Core.Interfaces.Emailing;
-using ChatUapp.Core.Message.Interfaces;
+﻿using ChatUapp.Core.Message.Interfaces;
 using ChatUapp.HttpClients;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Refit;
 using System;
 using System.Net.Http.Headers;
 using Volo.Abp.Account;
 using Volo.Abp.AutoMapper;
-using Volo.Abp.Emailing;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.Modularity;
@@ -26,8 +23,7 @@ namespace ChatUapp;
     typeof(AbpIdentityApplicationModule),
     typeof(AbpAccountApplicationModule),
     typeof(AbpTenantManagementApplicationModule),
-    typeof(AbpSettingManagementApplicationModule),
-    typeof(AbpEmailingModule)
+    typeof(AbpSettingManagementApplicationModule)
     )]
 public class ChatUappApplicationModule : AbpModule
 {
@@ -39,7 +35,7 @@ public class ChatUappApplicationModule : AbpModule
         {
             options.AddMaps<ChatUappApplicationModule>();
         });
-       
+
         context.Services.AddRefitClient<IChatGPTApi>()
            .ConfigureHttpClient(c =>
            {
@@ -52,7 +48,6 @@ public class ChatUappApplicationModule : AbpModule
         context.Services.AddRefitClient<IChatBotEngineApi>()
             .ConfigureHttpClient(c => c.BaseAddress = new Uri(configuration["ChatBotEngine:BaseUrl"]))
             .AddPolicyHandler(PollyPolicies.GetRetryPolicy());
-
 
     }
 }
