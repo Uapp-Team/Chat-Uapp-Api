@@ -1,8 +1,10 @@
 ﻿using System;
-using ChatUapp.Core.Messages.Messages.VO;
 using ChatUapp.Core.Enums;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
+using ChatUapp.Core.Messages.VOs;
+
+namespace ChatUapp.Core.Messages.AggregateRoots;
 
 public class PublicMessage : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
