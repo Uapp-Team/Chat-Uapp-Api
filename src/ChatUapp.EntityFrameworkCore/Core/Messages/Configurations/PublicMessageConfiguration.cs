@@ -1,4 +1,4 @@
-using ChatUapp.Constants;
+using ChatUapp.Core.Constants;
 using ChatUapp.Core.Messages.Messages.VO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -10,7 +10,7 @@ public class PublicMessageConfiguration : IEntityTypeConfiguration<PublicMessage
 {
     public void Configure(EntityTypeBuilder<PublicMessage> builder)
     {
-        builder.ToTable(DbTableNames.Messages, DbSchemaNames.Messaging);
+        builder.ToTable(DbTableNameConsts.Messages, DbSchemaNameConsts.Messaging);
         builder.ConfigureByConvention();
 
         builder.HasKey(x => x.Id);

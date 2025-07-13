@@ -1,5 +1,5 @@
-﻿using ChatUapp.Constants;
-using ChatUapp.Core.Accounts.Entitys;
+﻿using ChatUapp.Core.Accounts.AggregateRoots;
+using ChatUapp.Core.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
@@ -10,8 +10,8 @@ namespace ChatUapp.Core.Accounts.Configurations
     {
         public void Configure(EntityTypeBuilder<TenantChatbotUser> builder)
         {
-            builder.ToTable(DbTableNames.TenantChatbotUsers, DbSchemaNames.Tenant);
-            
+            builder.ToTable(DbTableNameConsts.TenantChatbotUsers, DbSchemaNameConsts.Tenant);
+
             builder.ConfigureByConvention();
 
             builder.HasKey(x => x.Id);

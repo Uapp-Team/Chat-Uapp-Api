@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using ChatUapp.Accounts.DTOs;
-using ChatUapp.Accounts.Interfaces;
+using ChatUapp.Core.Accounts.DTOs;
+using ChatUapp.Core.Accounts.Interfaces;
 using ChatUapp.Core.Guards;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

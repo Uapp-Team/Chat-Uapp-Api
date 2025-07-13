@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ChatUapp.Domain.Shared\ChatUapp.Domain.Shared.csproj" />
   </ItemGroup>
   
@@ -22,10 +28,6 @@
     <PackageReference Include="Volo.Abp.Identity.Application.Contracts" Version="9.1.1" />
     <PackageReference Include="Volo.Abp.Account.Application.Contracts" Version="9.1.1" />
     <PackageReference Include="Volo.Abp.TenantManagement.Application.Contracts" Version="9.1.1" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>
