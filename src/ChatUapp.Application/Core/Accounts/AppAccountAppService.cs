@@ -60,6 +60,7 @@ public class AppAccountAppService : AccountAppService,
         // Update user properties
         identityUser!.Name = input.FirstName;
         identityUser.Surname = input.LastName;
+        identityUser.SetPhoneNumber(input.PhoneNumber,true);
         identityUser.SetProperty("TitlePrefix", input.TitlePrefix);
 
         // Save updates

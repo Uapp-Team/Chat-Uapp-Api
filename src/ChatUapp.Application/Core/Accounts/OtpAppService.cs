@@ -1,7 +1,7 @@
 ﻿using ChatUapp.Core.Accounts.DTOs.ApiRequestsDto;
 using ChatUapp.Core.Accounts.DTOs.ApiResponsesDto;
 using ChatUapp.Core.Accounts.Interfaces;
-using ChatUapp.Core.Emailing.Interfaces;
+using ChatUapp.Core.Interfaces.Emailing;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Threading.Tasks;
