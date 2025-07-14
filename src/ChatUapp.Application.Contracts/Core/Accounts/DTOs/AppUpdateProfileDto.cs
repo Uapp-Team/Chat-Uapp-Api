@@ -1,4 +1,6 @@
-﻿using Volo.Abp.Account;
+﻿using System.IO;
+using Volo.Abp.Account;
+
 
 namespace ChatUapp.Core.Accounts.DTOs
 {
@@ -9,5 +11,7 @@ namespace ChatUapp.Core.Accounts.DTOs
         public string? InstagramUrl { get; set; }
         public string? LinkedInUrl { get; set; }
         public string? TwitterUrl { get; set; }
+        public string? ProfileImg { get; set; } 
+        public string? FileName { get; set; } 
     }
 }
