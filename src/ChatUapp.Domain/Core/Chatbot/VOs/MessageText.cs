@@ -21,7 +21,7 @@ public class MessageText: ValueObject
     }
 
     public static implicit operator string(MessageText text) => text.Value;
-     public static implicit operator MessageText(string text) => new(text);
+    public static implicit operator MessageText(string text) => new(text);
 
     protected override IEnumerable<object> GetAtomicValues()
     {
