@@ -49,6 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ChatUapp.Infrastructure\ChatUapp.Infrastructure.csproj" />
     <ProjectReference Include="..\ChatUapp.Application\ChatUapp.Application.csproj" />
     <ProjectReference Include="..\ChatUapp.HttpApi\ChatUapp.HttpApi.csproj" />
     <ProjectReference Include="..\ChatUapp.EntityFrameworkCore\ChatUapp.EntityFrameworkCore.csproj" />
