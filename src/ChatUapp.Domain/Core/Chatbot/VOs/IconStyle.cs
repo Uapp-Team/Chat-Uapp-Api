@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Values;
 
-namespace ChatUapp.Core.Chatbot.VOs;
+namespace ChatUapp.Core.ChatbotManagement.VOs;
 
 public class IconStyle : ValueObject
 {

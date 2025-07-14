@@ -1,11 +1,10 @@
-﻿using ChatUapp.Core.Chatbot.VOs;
+﻿using ChatUapp.Core.ChatbotManagement.VOs;
 using ChatUapp.Core.Guards;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
-using Volo.Abp.Guids;
 using Volo.Abp.MultiTenancy;
 
-namespace ChatUapp.Core.Chatbot.AggregateRoots;
+namespace ChatUapp.Core.ChatbotManagement.AggregateRoots;
 
 public class Chatbot : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
@@ -19,18 +18,18 @@ public class Chatbot : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     private Chatbot() { } // Required for EF Core
 
-    public Chatbot(Guid id, string name, string header, string subHeader, IconStyle iconStyle, Guid? tenantId)
+    internal Chatbot(Guid id, string name, string header, string subHeader, string uniqueKey, IconStyle iconStyle, Guid? tenantId)
         : base(id)
     {
         SetTenantId(tenantId);
         SetName(name);
+        SetUniqueKey(uniqueKey);
         Header = header;
         SubHeader = subHeader;
-        UniqueKey = ;
         IconStyle = iconStyle;
     }
 
-    public void SetName(string name)
+    private void SetName(string name)
     {
         Ensure.NotNullOrEmpty(name, nameof(name));
         Name = name;
@@ -42,8 +41,9 @@ public class Chatbot : FullAuditedAggregateRoot<Guid>, IMultiTenant
         TenantId = tenantId;
     }
 
-    private Guid GenerateUniqueKey()
+    private void SetUniqueKey(string key)
     {
-        return .Create();
+        Ensure.NotNullOrEmpty(key, nameof(key));
+        UniqueKey = key;
     }
 }
