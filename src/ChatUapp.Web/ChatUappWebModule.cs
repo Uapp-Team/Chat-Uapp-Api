@@ -107,7 +107,8 @@ public class ChatUappWebModule : AbpModule
                 typeof(ChatUappDomainSharedModule).Assembly,
                 typeof(ChatUappApplicationModule).Assembly,
                 typeof(ChatUappApplicationContractsModule).Assembly,
-                typeof(ChatUappWebModule).Assembly
+                typeof(ChatUappWebModule).Assembly,
+                typeof(ChatUappInfrastructureModule).Assembly
             );
         });
 
