@@ -110,11 +110,7 @@ namespace ChatUapp.Infrastructure.FileStorage
             var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
             var blobClient = containerClient.GetBlobClient(blobPath);
 
-            // Check if the blob exists
-            if (!await blobClient.ExistsAsync())
-            {
-                throw new AppValidationException("File not found in blob storage.");
-            }
+           
 
             // ✅ Correct SAS builder
             var sasBuilder = new BlobSasBuilder
@@ -123,7 +119,7 @@ namespace ChatUapp.Infrastructure.FileStorage
                 BlobName = blobClient.Name,
                 Resource = "b",
                 StartsOn = DateTimeOffset.UtcNow.AddMinutes(-1), // ✅ start buffer
-                ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(expireInMinutes)
+                ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(1000)
             };
 
             sasBuilder.SetPermissions(BlobSasPermissions.Read); // ✅ set permissions
