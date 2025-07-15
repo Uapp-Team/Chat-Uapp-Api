@@ -21,7 +21,7 @@ namespace ChatUapp.Infrastructure
             var configuration = context.Services.GetConfiguration();
             // Also register your custom interface
             context.Services.Replace(ServiceDescriptor.Singleton<IAppEmailSender, AppEmailSender>());
-            context.Services.AddTransient<IUserProfileImageUploader, UserProfileImageUploader>();
+            context.Services.AddTransient<IBlobStorageService, BlobStorageService>();
 
             Configure<AbpBlobStoringOptions>(options =>
             {

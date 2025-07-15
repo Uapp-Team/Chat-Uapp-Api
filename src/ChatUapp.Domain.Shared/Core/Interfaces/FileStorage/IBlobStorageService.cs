@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace ChatUapp.Core.Interfaces.FileStorage
 {
-    public interface IUserProfileImageUploader
+    public interface IBlobStorageService
     {
         Task<string> SaveAsync(Stream fileStream, string fileName);
         Task<string> GetTemporaryUrlAsync(string fileName, int expireInMinutes = 3);
