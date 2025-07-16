@@ -1,16 +1,17 @@
 ﻿using ChatUapp.Core.Accounts.AggregateRoots;
+using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 using ChatUapp.Core.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 
-namespace ChatUapp.Core.Accounts.Configurations
+namespace ChatUapp.Core.ChatbotManagement.Configuration
 {
     public class TenantChatbotUserConfigurations : IEntityTypeConfiguration<TenantChatbotUser>
     {
         public void Configure(EntityTypeBuilder<TenantChatbotUser> builder)
         {
-            builder.ToTable(DbTableNameConsts.TenantChatbotUsers, DbSchemaNameConsts.Tenant);
+            builder.ToTable(DbTableNameConsts.TenantChatbotUsers, DbSchemaNameConsts.Chatbot);
 
             builder.ConfigureByConvention();
 
