@@ -5,6 +5,7 @@ using ChatUapp.Core.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
+using Volo.Abp.TenantManagement;
 
 namespace ChatUapp.Core.ChatbotManagement.Configuration;
 
@@ -32,9 +33,19 @@ public class ChatSessionConfiguration : IEntityTypeConfiguration<ChatSession>
         builder.Property(s => s.BrowserSessionKey)
             .HasMaxLength(ChatSessionConsts.BrowserSessionKeyMaxLength);
 
-        builder.HasMany(typeof(ChatMessage))
+        builder.HasOne<Chatbot>()
+            .WithMany()
+            .HasForeignKey(s => s.ChatbotId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(s => s.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(x => x.Messages)
             .WithOne()
-            .HasForeignKey(nameof(ChatMessage.SessionId))
+            .HasForeignKey(x => x.SessionId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 

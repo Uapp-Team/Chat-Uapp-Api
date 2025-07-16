@@ -20,9 +20,13 @@ public class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMessage>
         builder.Property(m => m.SessionId)
             .IsRequired();
 
-        builder.Property(m => m.Role)
-            .IsRequired()
-            .HasConversion<int>();
+        builder.OwnsOne(m => m.Role, rb =>
+        {
+            rb.Property(r => r.Value)
+              .IsRequired()
+              .HasMaxLength(ChatSessionConsts.MessageRoleMaxLength)
+              .HasColumnName(ChatSessionConsts.MessageRoleColumnName);
+        });
 
         builder.Property(m => m.Type)
             .IsRequired()

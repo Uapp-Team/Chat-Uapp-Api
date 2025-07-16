@@ -1,9 +1,9 @@
-﻿using ChatUapp.Core.Accounts.AggregateRoots;
-using ChatUapp.Core.ChatbotManagement.AggregateRoots;
+﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 using ChatUapp.Core.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
+using Volo.Abp.TenantManagement;
 
 namespace ChatUapp.Core.ChatbotManagement.Configuration
 {
@@ -24,6 +24,16 @@ namespace ChatUapp.Core.ChatbotManagement.Configuration
             builder.Property(x => x.ChatbotId).IsRequired(true);
 
             builder.Property(x => x.Status).IsRequired(true);
+
+            builder.HasOne<Chatbot>()
+                .WithMany()
+                .HasForeignKey(s => s.ChatbotId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne<Tenant>()
+               .WithMany()
+               .HasForeignKey(s => s.TenantId)
+               .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

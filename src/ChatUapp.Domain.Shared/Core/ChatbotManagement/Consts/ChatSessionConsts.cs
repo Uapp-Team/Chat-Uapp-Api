@@ -11,4 +11,8 @@ public class ChatSessionConsts
     //ChatMessage consts
     public const string MessageColumnType = AppConsts.TextColumnType;
     public const string MessageColumnName = "MessageText";
+
+    //MessageRole consts
+    public const int MessageRoleMaxLength = 50;
+    public const string MessageRoleColumnName = "Role";
 }

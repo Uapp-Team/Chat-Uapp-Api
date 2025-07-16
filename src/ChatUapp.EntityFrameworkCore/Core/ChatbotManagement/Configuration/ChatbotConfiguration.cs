@@ -5,6 +5,7 @@ using ChatUapp.Core.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
+using Volo.Abp.TenantManagement;
 
 namespace ChatUapp.Core.ChatbotManagement.Configuration;
 
@@ -52,12 +53,17 @@ public class ChatbotConfiguration : IEntityTypeConfiguration<Chatbot>
 
         // BrandImageUrl (nullable)
         builder.Property(c => c.BrandImageName)
-            .HasMaxLength(500);
+            .HasMaxLength(ChatbotConsts.BrandImageNameMaxLength);
 
         // Enums: Store as integers
         builder.Property(c => c.Status)
             .IsRequired()
             .HasConversion<int>();
+
+        builder.HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(s => s.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // 📌 Value Object: IconStyle (Owned Type)
         builder.OwnsOne(c => c.IconStyle, icon =>
