@@ -59,6 +59,14 @@ public static class ChatUappEfCoreEntityExtensionMappings
                         propertyBuilder.HasMaxLength(255);
                     }
                 );
+            ObjectExtensionManager.Instance
+                .MapEfCoreProperty<IdentityUser, string>(
+                    "ProfileImg",
+                    (entityBuilder, propertyBuilder) =>
+                    {
+                        propertyBuilder.HasMaxLength(700);
+                    }
+                );
             /* You can configure extra properties for the
              * entities defined in the modules used by your application.
              *

@@ -70,6 +70,12 @@ public static class ChatUappModuleExtensionConfigurator
                       {
                           property.Attributes.Add(new StringLengthAttribute(255));
                       });
+
+                      // TwitterUrl
+                      user.AddOrUpdateProperty<string>("ProfileImg", property =>
+                      {
+                          property.Attributes.Add(new StringLengthAttribute(700));
+                      });
                   });
               });
 

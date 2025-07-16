@@ -35,6 +35,8 @@ using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.Toolbars;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
+using Volo.Abp.BlobStoring;
+using Volo.Abp.BlobStoring.Azure;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.Web;
@@ -92,6 +94,7 @@ public class ChatUappWebModule : AbpModule
             options.ControllersToRemove.Add(typeof(ProfileController));
             // Add more if needed
         });
+
         context.Services.PreConfigure<AbpMultiTenancyOptions>(options =>
         {
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
