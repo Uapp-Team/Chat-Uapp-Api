@@ -11,7 +11,7 @@ public class PublicMessageConfiguration : IEntityTypeConfiguration<PublicMessage
 {
     public void Configure(EntityTypeBuilder<PublicMessage> builder)
     {
-        builder.ToTable(DbTableNameConsts.Messages, DbSchemaNameConsts.Messaging);
+        builder.ToTable(DbTableNameConsts.Messages, DbSchemaNameConsts.Chatbot);
         builder.ConfigureByConvention();
 
         builder.HasKey(x => x.Id);

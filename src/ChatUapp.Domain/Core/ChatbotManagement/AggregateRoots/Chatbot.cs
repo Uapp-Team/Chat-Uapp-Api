@@ -18,7 +18,7 @@ public class Chatbot : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string SubHeader { get; private set; } = default!;
     public string UniqueKey { get; private set; } = default!;
     public ChatbotStatus Status { get; set; } = ChatbotStatus.Draft;
-    public string? BrandImageUrl { get; set; } = default!;
+    public string? BrandImageName { get; set; } = default!;
     public IconStyle IconStyle { get; private set; } = default!;
 
     private Chatbot() { } // Required for EF Core
