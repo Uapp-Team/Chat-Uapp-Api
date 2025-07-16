@@ -1,8 +1,8 @@
-﻿using System;
-using ChatUapp.Core.Enums;
+﻿using ChatUapp.Core.ChatbotManagement.Enums;
+using ChatUapp.Core.Messages.VOs;
+using System;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
-using ChatUapp.Core.Messages.VOs;
 
 namespace ChatUapp.Core.Messages.AggregateRoots;
 

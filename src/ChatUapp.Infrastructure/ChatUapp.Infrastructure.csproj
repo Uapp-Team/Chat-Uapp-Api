@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\ChatUapp.Domain\ChatUapp.Domain.csproj" />
+    <ProjectReference Include="..\ChatUapp.Domain\ChatUapp.Domain.csproj" />
   </ItemGroup>
 
 </Project>

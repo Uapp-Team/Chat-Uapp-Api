@@ -1,27 +1,27 @@
-﻿using AutoMapper.Internal.Mappers;
+﻿using ChatUapp.Core.Exceptions;
+using ChatUapp.Core.Guards;
 using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Values;
 
 namespace ChatUapp.Core.Messages.VOs;
 
-public class MessageText: ValueObject 
+public class MessageText : ValueObject
 {
     public string Value { get; }
 
     public MessageText(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Message text cannot be empty.", nameof(value));
+        Ensure.NotNullOrEmpty(value, nameof(value));
 
         if (value.Length > 5000)
-            throw new ArgumentException("Message text exceeds maximum allowed length (5000 characters).", nameof(value));
+            throw new AppValidationException("Message text exceeds maximum allowed length (5000 characters).");
 
         Value = value;
     }
 
     public static implicit operator string(MessageText text) => text.Value;
-     public static implicit operator MessageText(string text) => new(text);
+    public static implicit operator MessageText(string text) => new(text);
 
     protected override IEnumerable<object> GetAtomicValues()
     {
