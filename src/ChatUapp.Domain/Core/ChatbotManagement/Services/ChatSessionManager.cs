@@ -1,11 +1,11 @@
 ﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
+using ChatUapp.Core.ChatbotManagement.Enums;
+using ChatUapp.Core.ChatbotManagement.VOs;
+using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Chatbot;
 using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
-using Volo.Abp.Users;
 
 namespace ChatUapp.Core.ChatbotManagement.Services;
 
@@ -31,7 +31,7 @@ public class ChatSessionManager : DomainService
         return session;
     }
 
-    public async Task<ChatSession> RenameSession(ChatSession session, string newSessionName)
+    public ChatSession RenameSession(ChatSession session, string newSessionName)
     {
         session.Title = newSessionName;
         return session;
@@ -40,8 +40,8 @@ public class ChatSessionManager : DomainService
     public void AddMessageToSession(
         ChatSession session, string content, MessageRole role, MessageType type = MessageType.Text)
     {
-        if (session == null)
-            throw new ArgumentNullException(nameof(session));
+        Ensure.NotNull(session, nameof(session));
+
         var messageId = _guidGenerator.Create();
         var sentAtUtc = DateTime.UtcNow;
         session.AddMessage(messageId, sentAtUtc, content, role, type);
