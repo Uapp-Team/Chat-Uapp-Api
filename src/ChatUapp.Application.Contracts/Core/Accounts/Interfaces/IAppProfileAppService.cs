@@ -7,5 +7,6 @@ namespace ChatUapp.Core.Accounts.Interfaces
     public interface IAppProfileAppService : IProfileAppService
     {
         Task<ProfileDto> UpdateAsync(AppUpdateProfileDto input);
+        Task<AppProfileDto> GetCurrentUserAsync();
     }
 }

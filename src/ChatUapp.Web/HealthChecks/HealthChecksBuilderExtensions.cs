@@ -51,7 +51,7 @@ public static class HealthChecksBuilderExtensions
                     new PathString(path.EnsureStartsWith('/')),
                     new HealthCheckOptions
                     {
-                        Predicate = _ => true,
+                        Predicate = _ =>true,
                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                         AllowCachingResponses = false,
                     });
