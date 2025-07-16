@@ -5,14 +5,9 @@ using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Chatbot;
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
-using Volo.Abp.EventBus.Distributed;
 
 namespace ChatUapp.Core.ChatbotManagement.Services;
 
@@ -30,7 +25,7 @@ public class ChatbotManager : DomainService
     public async Task<Chatbot> CreateAsync(
         string name, string header, string subHeader, string uniqueKey, string iconName, string iconColor)
     {
-        if(CurrentTenant.Id == null)
+        if (CurrentTenant.Id == null)
             throw new AppBusinessException("Tenant ID is not set. Ensure you are in a valid tenant context.");
 
         await HandleDuplicateChatbotAsync(name);
@@ -88,14 +83,14 @@ public class ChatbotManager : DomainService
             ChatbotStatus.Draft,
             CurrentTenant.Id);
 
-        return clonedChatbot; 
-    } 
+        return clonedChatbot;
+    }
 
     public void Delete(Chatbot chatbot)
     {
         chatbot.IsDeleted = true;
     }
-     
+
     private async Task HandleDuplicateChatbotAsync(string name)
     {
         if (CurrentTenant.Id == null)
@@ -104,7 +99,7 @@ public class ChatbotManager : DomainService
         var isExistName = await _chatbotRepository.AnyAsync(x => x.Name == name && x.TenantId == CurrentTenant.Id);
 
         if (isExistName)
-            throw new AppBusinessException("Chatbot with the same name already exists");
-    }   
+            throw new AppValidationException("Chatbot with the same name already exists");
+    }
 }
 

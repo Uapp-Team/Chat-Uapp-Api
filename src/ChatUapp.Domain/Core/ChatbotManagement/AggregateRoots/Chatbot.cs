@@ -84,3 +84,4 @@ public class Chatbot : FullAuditedAggregateRoot<Guid>, IMultiTenant
         UniqueKey = key;
     }
 }
+
