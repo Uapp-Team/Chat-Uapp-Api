@@ -8,7 +8,7 @@ public class ChatbotConsts
     public static int DescriptionMaxLength { get; set; } = AppConsts.DesriptionMaxLength;
     public static int HeaderMaxLength { get; set; } = 300;
     public static int SubHeaderMaxLength { get; set; } = 300;
-    public static int UniqueKeyMaxLength { get; set; } = AppConsts.UniqueKeyMaxLength;
+    public static int UniqueKeyMaxLength { get; set; } = AppConsts.KeyMaxLength;
     public static int BrandImageNameMaxLength { get; set; } = AppConsts.ImageNameMaxLength;
 
     //Icon styles

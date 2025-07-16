@@ -33,7 +33,7 @@ public class ChatSessionManager : DomainService
 
     public ChatSession RenameSession(ChatSession session, string newSessionName)
     {
-        session.Title = newSessionName;
+        session.Rename(newSessionName);
         return session;
     }
 

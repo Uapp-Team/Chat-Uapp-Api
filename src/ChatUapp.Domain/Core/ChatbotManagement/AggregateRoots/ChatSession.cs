@@ -3,6 +3,7 @@ using ChatUapp.Core.ChatbotManagement.Enums;
 using ChatUapp.Core.ChatbotManagement.Events;
 using ChatUapp.Core.ChatbotManagement.VOs;
 using ChatUapp.Core.Exceptions;
+using ChatUapp.Core.Messages.VOs;
 using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -13,22 +14,18 @@ namespace ChatUapp.Core.ChatbotManagement.AggregateRoots;
 public class ChatSession : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
     public Guid? TenantId { get; private set; }
-    public Guid SessionCreator { get; private set; } = default!;
-    public Guid ChatbotId { get; private set; } = default!;
-    public string? Title { get; set; }
-    public string? Ip { get; set; }
-    public string? BrowserSessionKey { get; set; }
+    public Guid SessionCreator { get; private set; }
+    public Guid ChatbotId { get; private set; }
+    public string? Title { get; private set; }
+    public string? Ip { get; private set; }
+    public string? BrowserSessionKey { get; private set; }
 
-    private List<ChatMessage> _messages = new();
-    public IReadOnlyCollection<ChatMessage> Messages => _messages;
+    private readonly List<ChatMessage> _messages = new();
+    public IReadOnlyCollection<ChatMessage> Messages => _messages.AsReadOnly();
 
-    private ChatSession() { } // EF
+    private ChatSession() { } // EF Core
 
-    public ChatSession(
-        Guid id, Guid userId,
-        Guid chatbotId, string title,
-        Guid? tenantId, string? ip = null,
-        string? browserSessionKey = null)
+    public ChatSession(Guid id, Guid userId, Guid chatbotId, string? title, Guid? tenantId, string? ip = null, string? browserSessionKey = null)
         : base(id)
     {
         TenantId = tenantId;
@@ -39,20 +36,20 @@ public class ChatSession : FullAuditedAggregateRoot<Guid>, IMultiTenant
         BrowserSessionKey = browserSessionKey;
     }
 
-    internal void RenameSession(string newTitle)
+    public void Rename(string newTitle)
     {
         if (string.IsNullOrWhiteSpace(newTitle))
         {
-            throw new AppBusinessException("Session title cannot be null or empty.");
+            throw new AppBusinessException("Session title cannot be empty.");
         }
         Title = newTitle;
     }
 
-    internal void AddMessage(Guid messageId, DateTime sentAtUtc, string content, MessageRole role, MessageType type = MessageType.Text)
+    public void AddMessage(Guid messageId, DateTime sentAtUtc, MessageText content, MessageRole role, MessageType type = MessageType.Text)
     {
-        var message = new ChatMessage(messageId, this.Id, role, content, type, sentAtUtc);
+        var message = new ChatMessage(messageId, Id, role, content, type, sentAtUtc);
         _messages.Add(message);
 
-        AddDistributedEvent(new ChatMessageSentEvent(Id, messageId, content, role));
+        AddDistributedEvent(new ChatMessageSentEvent(Id, messageId, content.Value, role));
     }
 }
