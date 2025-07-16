@@ -30,6 +30,11 @@ public class TrainingSourceConfiguration : IEntityTypeConfiguration<TrainingSour
         builder.Property(ts => ts.Description)
             .HasMaxLength(TrainingSourceConsts.DescriptionMaxLength);
 
+        builder.HasOne<Chatbot>()
+            .WithMany()
+            .HasForeignKey(s => s.ChatbotId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // 🧠 Value Object: TrainingSourceOrigin
         builder.OwnsOne(ts => ts.Origin, origin =>
         {
