@@ -92,8 +92,11 @@ public class AppProfileAppService : ProfileAppService,
         // Upload profile image to Blob Storage
         if (!string.IsNullOrEmpty(input.ProfileImg) && !string.IsNullOrWhiteSpace(input.FileName))
         {
-            using var imageStream = await _storage.ConvertBase64ToStream(input.ProfileImg);
-            input.ProfileImg = await _storage.SaveAsync(imageStream, input.FileName);
+            if (!string.IsNullOrWhiteSpace(input.FileName))
+            {
+                using var imageStream = await _storage.ConvertBase64ToStream(input.ProfileImg);
+                input.ProfileImg = await _storage.SaveAsync(imageStream, input.FileName);
+            }
         }
 
         // Store custom fields as extra properties

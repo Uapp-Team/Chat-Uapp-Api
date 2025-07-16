@@ -59,12 +59,13 @@ namespace ChatUapp.Infrastructure.FileStorage
             {
                 uploadOptions.HttpHeaders = new BlobHttpHeaders
                 {
-                    ContentType = contentType
+                    ContentType = contentType,
+                    
                 };
             }
 
             // Upload and overwrite existing blob
-            var uploadResponse = await blobClient.UploadAsync(fileStream, uploadOptions, cancellationToken: default);
+            var uploadResponse = await blobClient.UploadAsync(fileStream, options: uploadOptions, cancellationToken: default);
 
             // Optionally log or inspect uploadResponse if needed
             if (uploadResponse == null || uploadResponse.GetRawResponse().Status != 201)
