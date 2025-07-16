@@ -4,6 +4,6 @@ namespace ChatUapp.Core.Accounts.DTOs
 {
     public class AppProfileDto : ProfileDto
     {
-        public string? ProfileImg { get; set; }
+        public string? ProfileImgUrl { get; set; }
     }
 }

@@ -6,9 +6,8 @@ namespace ChatUapp.Core.Interfaces.FileStorage
     public interface IBlobStorageService
     {
         Task<string> SaveAsync(Stream fileStream, string fileName);
-        Task<string> GetTemporaryUrlAsync(string fileName, int expireInMinutes = 3);
+        Task<string> GetUrlAsync(string fileName, int expireInMinutes = 3);
         Task DeleteAsync(string fileName);
-        Task<bool> ExistsAsync(string fileName);
         Task<Stream> ConvertBase64ToStream(string base64String);
     }
 }

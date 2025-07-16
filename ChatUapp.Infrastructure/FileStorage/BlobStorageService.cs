@@ -19,12 +19,7 @@ namespace ChatUapp.Infrastructure.FileStorage
         private readonly ICurrentUser _currentUser;
         private readonly ICurrentTenant _currentTenant;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BlobStorageService"/> class.
-        /// </summary>
-        /// <param name="configuration">The application configuration.</param>
-        /// <param name="currentUser">The currently authenticated user.</param>
-        /// <exception cref="AppValidationException">Thrown if the Azure Blob Storage connection string is missing.</exception>
+        
         public BlobStorageService(IConfiguration configuration, ICurrentUser currentUser, ICurrentTenant currentTenant)
         {
             _configuration = configuration;
@@ -43,20 +38,17 @@ namespace ChatUapp.Infrastructure.FileStorage
 
 
 
-        /// <summary>
-        /// Uploads a file to the user's blob container.
-        /// </summary>
-        /// <param name="fileStream">The file stream to upload.</param>
-        /// <param name="fileName">The name of the file.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <exception cref="AppValidationException">Thrown if a file with the same name already exists.</exception>
+
         public async Task<string> SaveAsync(Stream fileStream, string fileName)
         {
             var context = await GetUserContainerAsync(fileName);
-            var blobClient = context?.ContainerClient?.GetBlobClient(context.BlobPath);
+            if (context == null || context.ContainerClient == null)
+            {
+                throw new InvalidOperationException("Blob container context could not be resolved.");
+            }
 
-            if (await blobClient.ExistsAsync())
-                throw new AppValidationException("A file with the same name already exists.");
+            var blobClient = context.ContainerClient.GetBlobClient(context.BlobPath);
+
             // Detect MIME type
             var fileCategory = FileTypeClassifier.GetFileCategory(fileName);
             var contentType = GetMimeType(fileName);
@@ -70,32 +62,24 @@ namespace ChatUapp.Infrastructure.FileStorage
                     ContentType = contentType
                 };
             }
-            await blobClient.UploadAsync(fileStream, uploadOptions);
 
-            return context.BlobPath; // secure temporary URL
-        }
-        private string GetMimeType(string fileName)
-        {
-            var ext = Path.GetExtension(fileName)?.ToLowerInvariant();
+            // Upload and overwrite existing blob
+            var uploadResponse = await blobClient.UploadAsync(fileStream, uploadOptions, cancellationToken: default);
 
-            return ext switch
+            // Optionally log or inspect uploadResponse if needed
+            if (uploadResponse == null || uploadResponse.GetRawResponse().Status != 201)
             {
-                ".jpg" or ".jpeg" => "image/jpeg",
-                ".png" => "image/png",
-                ".webp" => "image/webp",
-                ".gif" => "image/gif",
-                _ => "application/octet-stream"
-            };
+                throw new Exception("Blob upload failed.");
+            }
+
+            return context.BlobPath;
         }
 
-        /// <summary>
-        /// Generates a temporary public URL (SAS URI) for accessing a file in the user's container.
-        /// </summary>
-        /// <param name="fileName">The name of the file.</param>
-        /// <param name="expireInMinutes">The expiration time in minutes. Default is 3 minutes.</param>
-        /// <returns>The temporary access URL as a string.</returns>
-        /// <exception cref="AppValidationException">Thrown if the file does not exist.</exception>
-        public async Task<string> GetTemporaryUrlAsync(string ? blobPath , int expireInMinutes = 30)
+
+
+
+
+        public Task<string> GetUrlAsync(string ? blobPath , int expireInMinutes = 30)
         {
             if (string.IsNullOrWhiteSpace(blobPath))
             {
@@ -112,46 +96,41 @@ namespace ChatUapp.Infrastructure.FileStorage
 
            
 
-            // ✅ Correct SAS builder
+            //  Correct SAS builder
             var sasBuilder = new BlobSasBuilder
             {
                 BlobContainerName = blobClient.BlobContainerName,
                 BlobName = blobClient.Name,
                 Resource = "b",
-                StartsOn = DateTimeOffset.UtcNow.AddMinutes(-1), // ✅ start buffer
-                ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(1000)
+                StartsOn = DateTimeOffset.UtcNow.AddMinutes(-1), 
+                ExpiresOn = DateTimeOffset.UtcNow.AddDays(1000)
             };
 
-            sasBuilder.SetPermissions(BlobSasPermissions.Read); // ✅ set permissions
+            sasBuilder.SetPermissions(BlobSasPermissions.Read); 
 
-            // ✅ Generate URI
-            var sasUri = blobClient.GenerateSasUri(sasBuilder);
+            var sasUri =  blobClient.GenerateSasUri(sasBuilder).ToString();
 
-            return sasUri.ToString();
+            return  Task.FromResult(sasUri);
         }
 
-        /// <summary>
-        /// Deletes a file from the user's blob container if it exists.
-        /// </summary>
-        /// <param name="fileName">The name of the file to delete.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+
         public async Task DeleteAsync(string fileName)
         {
             var context = await GetUserContainerAsync(fileName);
-            var blobClient = context?.ContainerClient?.GetBlobClient(context.BlobPath);
-            await blobClient.DeleteIfExistsAsync();
-        }
 
-        /// <summary>
-        /// Checks if a file exists in the user's blob container.
-        /// </summary>
-        /// <param name="fileName">The name of the file to check.</param>
-        /// <returns>True if the file exists; otherwise, false.</returns>
-        public async Task<bool> ExistsAsync(string fileName)
-        {
-            var context = await GetUserContainerAsync(fileName);
-            var blobClient = context?.ContainerClient?.GetBlobClient(context.BlobPath);
-            return await blobClient.ExistsAsync();
+            if (context == null || context.ContainerClient == null || string.IsNullOrWhiteSpace(context.BlobPath))
+            {
+                throw new AppValidationException("Invalid blob context. Cannot delete blob.");
+            }
+
+            var blobClient = context.ContainerClient.GetBlobClient(context.BlobPath);
+
+            if (blobClient == null)
+            {
+                throw new AppValidationException("Failed to resolve blob client.");
+            }
+
+            await blobClient.DeleteIfExistsAsync();
         }
 
         public async Task<Stream> ConvertBase64ToStream(string base64String)
@@ -166,12 +145,7 @@ namespace ChatUapp.Infrastructure.FileStorage
             return new MemoryStream(bytes);
         }
 
-        /// <summary>
-        /// Retrieves the ID of the currently authenticated user.
-        /// </summary>
-        /// <returns>The user's ID as a string.</returns>
-        /// <exception cref="AppValidationException">Thrown if the user is not authenticated.</exception>
-        private string GetCurrentUserId(string fallbackUserId = null)
+        private string GetCurrentUserId(string fallbackUserId = "")
         {
             var userId = _currentUser?.Id?.ToString();
 
@@ -182,7 +156,7 @@ namespace ChatUapp.Infrastructure.FileStorage
                     : "anonymous";
         }
 
-        private string GetCurrentTenantId(string fallbackTenantId = null)
+        private string GetCurrentTenantId(string fallbackTenantId = "")
         {
             var tenantId = _currentTenant?.Id?.ToString();
 
@@ -193,11 +167,20 @@ namespace ChatUapp.Infrastructure.FileStorage
                     : "Default_Tenant";
         }
 
+        private string GetMimeType(string fileName)
+        {
+            var ext = Path.GetExtension(fileName)?.ToLowerInvariant();
 
-        /// <summary>
-        /// Gets or creates a blob container specific to the current user.
-        /// </summary>
-        /// <returns>The <see cref="BlobContainerClient"/> for the user's container.</returns>
+            return ext switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".webp" => "image/webp",
+                ".gif" => "image/gif",
+                _ => "application/octet-stream"
+            };
+        }
+
         private async Task<BlobUploadContext> GetUserContainerAsync(string fileName)
         {
             string tenantId = GetCurrentTenantId();
@@ -212,13 +195,13 @@ namespace ChatUapp.Infrastructure.FileStorage
             // Build relative blob path
             string blobPath = BlobPathBuilder.BuildPath(tenantId, userId, fileCategory, fileName);
 
-            return new BlobUploadContext
+            var context = new BlobUploadContext(containerClient, blobPath);
+
+            if (!context.IsValid)
             {
-                ContainerClient = containerClient,
-                BlobPath = blobPath
-            };
+                throw new InvalidOperationException("Invalid blob upload context.");
+            }
+            return context;
         }
-
-
     }
 }
