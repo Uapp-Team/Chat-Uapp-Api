@@ -52,7 +52,7 @@ public class ChatbotConfiguration : IEntityTypeConfiguration<Chatbot>
 
         // BrandImageUrl (nullable)
         builder.Property(c => c.BrandImageName)
-            .HasMaxLength(500);
+            .HasMaxLength(ChatbotConsts.BrandImageNameMaxLength);
 
         // Enums: Store as integers
         builder.Property(c => c.Status)

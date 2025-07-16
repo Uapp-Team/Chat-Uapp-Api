@@ -32,9 +32,9 @@ public class ChatSessionConfiguration : IEntityTypeConfiguration<ChatSession>
         builder.Property(s => s.BrowserSessionKey)
             .HasMaxLength(ChatSessionConsts.BrowserSessionKeyMaxLength);
 
-        builder.HasMany(typeof(ChatMessage))
+        builder.HasMany(x => x.Messages)
             .WithOne()
-            .HasForeignKey(nameof(ChatMessage.SessionId))
+            .HasForeignKey(x => x.SessionId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
