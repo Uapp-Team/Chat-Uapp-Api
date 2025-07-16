@@ -1,5 +1,6 @@
 ﻿using ChatUapp.Core.ChatbotManagement.Enums;
-using JetBrains.Annotations;
+using ChatUapp.Core.ChatbotManagement.VOs;
+using ChatUapp.Core.Exceptions;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
@@ -10,42 +11,43 @@ public class TrainingSource : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
     public Guid? TenantId { get; private set; }
     public Guid ChatbotId { get; private set; }
-    public string? Name { get; set; }
+
+    public string Name { get; private set; } = default!;
     public string? Description { get; set; }
-    public string? SourceUrl { get; private set; }  // if source type is web then 
-    public SourceType SourceType { get; set; } = SourceType.Text;
-    public string? sourceFileName { get; set; } // if source type is file then this will be the name of the file stored in bucket
-    public string? SouuceFileType { get; set; } // if source type is file then this will be the type of the file stored in bucket
+
+    public TrainingSourceOrigin Origin { get; private set; } = default!;
+
     public DateTime LastUpdated { get; private set; }
-    private TrainingSource() { } // Required for EF Core
-    internal TrainingSource(Guid id, Guid chatbotId, string name, string sourceUrl, Guid? tenantId)
+
+    private TrainingSource() { } // Required by EF Core
+
+    internal TrainingSource(Guid id, Guid chatbotId, string name, TrainingSourceOrigin origin, Guid? tenantId)
         : base(id)
     {
-        TenantId = tenantId;
+        TenantId = tenantId ?? throw new AppBusinessException("TenantId cannot be null.");
         ChatbotId = chatbotId;
         SetName(name);
-        SetSourceUrl(sourceUrl);
+        Origin = origin ?? throw new AppBusinessException("Origin must be provided.");
         LastUpdated = DateTime.UtcNow;
     }
+
     internal void SetName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            throw new ArgumentException("Name cannot be null or empty.", nameof(name));
+            throw new AppBusinessException("Name cannot be null or empty.");
         }
         Name = name;
     }
-    internal void SetSourceUrl(string sourceUrl)
+
+    internal void UpdateOrigin(TrainingSourceOrigin newOrigin)
     {
-        if (string.IsNullOrWhiteSpace(sourceUrl))
-        {
-            throw new ArgumentException("Source URL cannot be null or empty.", nameof(sourceUrl));
-        }
-        SourceUrl = sourceUrl;
+        Origin = newOrigin ?? throw new AppBusinessException("Origin must be provided.");
+        LastUpdated = DateTime.UtcNow;
     }
+
     internal void UpdateLastUpdated()
     {
         LastUpdated = DateTime.UtcNow;
     }
 }
-
