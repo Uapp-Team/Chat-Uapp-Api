@@ -1,7 +1,10 @@
-﻿using ChatUapp.Core.Interfaces.Emailing;
+﻿using ChatUapp.Core.ChatbotManagement.Services;
+using ChatUapp.Core.Interfaces.Chatbot;
+using ChatUapp.Core.Interfaces.Emailing;
 using ChatUapp.Core.Interfaces.FileStorage;
 using ChatUapp.Infrastructure.Emailing;
 using ChatUapp.Infrastructure.FileStorage;
+using ChatUapp.Infrastructure.Utility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Volo.Abp.BlobStoring;
@@ -22,6 +25,7 @@ namespace ChatUapp.Infrastructure
             // Also register your custom interface
             context.Services.Replace(ServiceDescriptor.Singleton<IAppEmailSender, AppEmailSender>());
             context.Services.AddTransient<IBlobStorageService, BlobStorageService>();
+            context.Services.AddScoped<IDomainGuidGenerator, DomainGuidGenerator>();
 
             Configure<AbpBlobStoringOptions>(options =>
             {
