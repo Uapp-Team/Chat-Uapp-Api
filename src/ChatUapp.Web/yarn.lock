@@ -219,22 +219,22 @@ bootstrap-daterangepicker@^3.1.0:
     moment "^2.9.0"
 
 bootstrap@^5.3.3:
-  version "5.3.6"
-  resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.6.tgz"
-  integrity sha512-jX0GAcRzvdwISuvArXn3m7KZscWWFAf1MKBcnzaN02qWMb3jpMoUX4/qgeiGzqyIb4ojulRzs89UCUmGcFSzTA==
+  version "5.3.7"
+  resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.7.tgz"
+  integrity sha512-7KgiD8UHjfcPBHEpDNg+zGz8L3LqR3GVwqZiBRFX04a1BCArZOz1r2kjly2HQ0WokqTO0v1nF+QAt8dsW4lKlw==
 
 datatables.net-bs5@^2.1.8:
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/datatables.net-bs5/-/datatables.net-bs5-2.3.1.tgz"
-  integrity sha512-bUwsW7cIR8EDyiedQv6OKGF5ouxkFjaODmtEd7NRtpoZixAZDScmIrxe9cddjS0EybpC2gYslKs+o03E8tkCEA==
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/datatables.net-bs5/-/datatables.net-bs5-2.3.2.tgz"
+  integrity sha512-1rh0ZTLoiziIQ4oAtgr+IOYVgJfAIceDnbDe535u8kv191pBAdTrKF6ovQO98Xy9mDXLdLNB7QCrLiV/sgPoQw==
   dependencies:
-    datatables.net "2.3.1"
+    datatables.net "2.3.2"
     jquery ">=1.7"
 
-datatables.net@2.3.1, datatables.net@^2.1.8:
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/datatables.net/-/datatables.net-2.3.1.tgz"
-  integrity sha512-pRXZuk3oR7P5kTl/CRvopcTihlvmZiY+xSBjbNI6e8MjYtgZQodWEqLUUOrIZeLH8CfxapPR/Bmb0NKAvILP5g==
+datatables.net@2.3.2, datatables.net@^2.1.8:
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/datatables.net/-/datatables.net-2.3.2.tgz"
+  integrity sha512-31TzwIQM0+pr2ZOEOEH6dsHd/WSAl5GDDGPezOHPI3mM2NK4lcDyOoG8xXeWmSbVfbi852LNK5C84fpp4Q+qxg==
   dependencies:
     jquery ">=1.7"
 
@@ -284,9 +284,9 @@ lodash@^4.17.21:
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 luxon@^3.5.0:
-  version "3.6.1"
-  resolved "https://registry.npmjs.org/luxon/-/luxon-3.6.1.tgz"
-  integrity sha512-tJLxrKJhO2ukZ5z0gyjY1zPh3Rh88Ej9P7jNrZiHMUXHae1yvI2imgOZtL1TO8TW6biMMKfTtAOoEJANgtWBMQ==
+  version "3.7.1"
+  resolved "https://registry.npmjs.org/luxon/-/luxon-3.7.1.tgz"
+  integrity sha512-RkRWjA926cTvz5rAb1BqyWkKbbjzCGchDUIKMCUvNi17j6f6j8uHGDV82Aqcqtzd+icoYpELmG3ksgGiFNNcNg==
 
 malihu-custom-scrollbar-plugin@^3.1.5:
   version "3.1.5"
@@ -306,9 +306,9 @@ select2@^4.0.13:
   integrity sha512-1JeB87s6oN/TDxQQYCvS5EFoQyvV6eYMZZ0AeA4tdFDYWN3BAGZ8npr17UBFddU0lgAt3H0yjX3X6/ekOj1yjw==
 
 sweetalert2@^11.14.1:
-  version "11.22.0"
-  resolved "https://registry.npmjs.org/sweetalert2/-/sweetalert2-11.22.0.tgz"
-  integrity sha512-pSMuRGDULhh+wrFkO22O0YsIXxs8yFE0O+WVYXcqc/sTa1oRnf0JlR+vfQIRY1QM1UeFfnCjyw6DYnG75/oxiQ==
+  version "11.22.2"
+  resolved "https://registry.npmjs.org/sweetalert2/-/sweetalert2-11.22.2.tgz"
+  integrity sha512-GFQGzw8ZXF23PO79WMAYXLl4zYmLiaKqYJwcp5eBF07wiI5BYPbZtKi2pcvVmfUQK+FqL1risJAMxugcPbGIyg==
 
 timeago@^1.6.7:
   version "1.6.7"
