@@ -1,5 +1,4 @@
-﻿using ChatUapp.Core.ChatbotManagement.Services;
-using ChatUapp.Core.Interfaces.Chatbot;
+﻿using ChatUapp.Core.Interfaces.Chatbot;
 using ChatUapp.Core.Interfaces.Emailing;
 using ChatUapp.Core.Interfaces.FileStorage;
 using ChatUapp.Infrastructure.Emailing;
