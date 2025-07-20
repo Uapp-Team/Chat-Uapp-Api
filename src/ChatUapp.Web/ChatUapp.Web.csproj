@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <Import Project="..\..\common.props" />
 
@@ -49,7 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ChatUapp.Infrastructure\ChatUapp.Infrastructure.csproj" />
     <ProjectReference Include="..\ChatUapp.Application\ChatUapp.Application.csproj" />
     <ProjectReference Include="..\ChatUapp.HttpApi\ChatUapp.HttpApi.csproj" />
     <ProjectReference Include="..\ChatUapp.EntityFrameworkCore\ChatUapp.EntityFrameworkCore.csproj" />

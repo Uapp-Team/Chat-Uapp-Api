@@ -14,6 +14,7 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using ChatUapp.Core.Messages.AggregateRoots;
+using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 
 namespace ChatUapp.EntityFrameworkCore;
 
@@ -27,6 +28,7 @@ public class ChatUappDbContext :
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
     public DbSet<PublicMessage> PublicMessages { get; set; }
+    public DbSet<Chatbot> Chatbots { get; set; }
 
     #region Entities from the modules
 
