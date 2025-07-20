@@ -5,10 +5,11 @@ using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.FileStorage;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Users;
 
 namespace ChatUapp.Core.ChatbotManagement
 {
@@ -31,16 +32,6 @@ namespace ChatUapp.Core.ChatbotManagement
         public async Task<ChatbotDto> CreateAsync(CreateChatbotDto input)
         {
             Ensure.NotNull(input, nameof(input));
-
-            var chatbot = await _chatbotManager.CreateAsync(
-                input.Name,
-                input.Header,
-                input.SubHeader,
-                input.UniqueKey,
-                input.iconName,
-                input.iconColor
-            );
-
             // Set default image if none provided (for testing/demo purposes)
             if (string.IsNullOrEmpty(input.BrandImageStream) && string.IsNullOrWhiteSpace(input.BrandImageName))
             {
@@ -53,19 +44,48 @@ namespace ChatUapp.Core.ChatbotManagement
             {
                 if (!string.IsNullOrWhiteSpace(input.BrandImageName))
                 {
-                    using var imageStream = await _storage.ConvertBase64ToStream(input.BrandImageStream);
-                    input.BrandImageName = await _storage.SaveAsync(imageStream, input.BrandImageName);
+
+                    input.BrandImageName = await _storage.SaveAsync(input.BrandImageStream, input.BrandImageName);
                 }
             }
+            input.iconName = await _storage.SaveAsync(input.iconStream, input.iconName);
+            
+            var chatbot = await _chatbotManager.CreateAsync(
+                input.Name,
+                input.Header,
+                input.SubHeader,
+                input.iconName,
+                input.iconColor
+            );
             // Assign additional input properties to the chatbot entity for persistence.
             chatbot.BrandImageName = input.BrandImageName;
             chatbot.Description = input.Description;
-            
+
             await _botRepo.InsertAsync(chatbot);
 
             await CurrentUnitOfWork!.SaveChangesAsync();
 
             return ObjectMapper.Map<Chatbot, ChatbotDto>(chatbot);
+        }
+
+        public async Task<List<ChatBotListDto>> GetAllAsync()
+        {
+            var chatbotList = await _botRepo.GetListAsync();
+
+            var dtoList = ObjectMapper.Map<List<Chatbot>, List<ChatBotListDto>>(chatbotList);
+
+            var tasks = dtoList.Select(async dto =>
+            {
+                if (!string.IsNullOrEmpty(dto.BrandImageName) && !string.IsNullOrEmpty(dto.iconName))
+                {
+                    dto.BrandImageName = await _storage.GetUrlAsync(dto.BrandImageName);
+                    dto.iconName = await _storage.GetUrlAsync(dto.iconName);
+                }
+
+                return dto;
+            });
+
+            return (await Task.WhenAll(tasks)).ToList();
         }
 
         public async Task<ChatbotDto> GetAsync(Guid id)
@@ -78,6 +98,7 @@ namespace ChatUapp.Core.ChatbotManagement
             if (!string.IsNullOrEmpty(chatbot.BrandImageName))
             {
                 dto.BrandImageName = await _storage.GetUrlAsync(chatbot.BrandImageName);
+                dto.iconName = await _storage.GetUrlAsync(chatbot.BrandImageName);
             }
 
             return dto;
@@ -86,15 +107,8 @@ namespace ChatUapp.Core.ChatbotManagement
         public async Task<ChatbotDto> UpdateAsync(Guid id, UpdateChatbotDto input)
         {
             var chatbot = await _botRepo.GetAsync(id);
-            var result =  _chatbotManager.UpdateChatbotAsync(
-                chatbot,
-                input.Name,
-                input.Header,
-                input.SubHeader,
-                input.UniqueKey,
-                input.iconName,
-                input.iconName);
             
+
             // Set default image if none provided (for testing/demo purposes)
             if (string.IsNullOrEmpty(input.BrandImageStream) && string.IsNullOrWhiteSpace(input.BrandImageName))
             {
@@ -107,10 +121,26 @@ namespace ChatUapp.Core.ChatbotManagement
             {
                 if (!string.IsNullOrWhiteSpace(input.BrandImageName))
                 {
-                    using var imageStream = await _storage.ConvertBase64ToStream(input.BrandImageStream);
-                    input.BrandImageName = await _storage.SaveAsync(imageStream, input.BrandImageName);
+                    input.BrandImageName = await _storage.SaveAsync(input.BrandImageStream, input.BrandImageName);
+                    input.iconName = await _storage.SaveAsync(input.iconStream, input.iconName);
                 }
             }
+
+            if (!string.IsNullOrEmpty(input.iconStream) && !string.IsNullOrWhiteSpace(input.iconName))
+            {
+                if (!string.IsNullOrWhiteSpace(input.iconName))
+                {
+                    input.iconName = await _storage.SaveAsync(input.iconStream, input.iconName);
+                }
+            }
+
+                var result = _chatbotManager.UpdateChatbotAsync(
+                chatbot,
+                input.Name,
+                input.Header,
+                input.SubHeader,
+                input.iconName,
+                input.iconName);
 
             chatbot.BrandImageName = input.BrandImageName;
             chatbot.Description = input.Description;

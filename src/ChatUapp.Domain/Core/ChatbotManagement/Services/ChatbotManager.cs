@@ -23,7 +23,7 @@ public class ChatbotManager : DomainService
     }
 
     public async Task<Chatbot> CreateAsync(
-        string name, string header, string subHeader, string uniqueKey, string iconName, string iconColor)
+        string name, string header, string subHeader , string iconName, string iconColor)
     {
         if (CurrentTenant.Id == null)
             throw new AppBusinessException("Tenant ID is not set. Ensure you are in a valid tenant context.");
@@ -35,7 +35,7 @@ public class ChatbotManager : DomainService
             name,
             header,
             subHeader,
-            uniqueKey,
+            _guidGenerator.Create().ToString(),
             new IconStyle(iconName, iconColor),
             ChatbotStatus.Active,
             CurrentTenant.Id);
@@ -44,7 +44,7 @@ public class ChatbotManager : DomainService
     }
 
     public async Task UpdateChatbotAsync(
-        Chatbot chatbot, string name, string header, string subHeader, string uniqueKey, string iconName, string iconColor)
+        Chatbot chatbot, string name, string header, string subHeader , string iconName, string iconColor)
     {
         Ensure.NotNull<Chatbot>(chatbot, nameof(chatbot));
 

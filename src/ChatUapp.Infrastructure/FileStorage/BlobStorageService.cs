@@ -39,7 +39,7 @@ namespace ChatUapp.Infrastructure.FileStorage
 
 
 
-        public async Task<string> SaveAsync(Stream fileStream, string fileName)
+        public async Task<string> SaveAsync(string fileStream, string fileName)
         {
             var context = await GetUserContainerAsync(fileName);
             if (context == null || context.ContainerClient == null)
@@ -63,9 +63,9 @@ namespace ChatUapp.Infrastructure.FileStorage
                     
                 };
             }
-
+            var Stream = await ConvertBase64ToStream(fileStream);
             // Upload and overwrite existing blob
-            var uploadResponse = await blobClient.UploadAsync(fileStream, options: uploadOptions, cancellationToken: default);
+            var uploadResponse = await blobClient.UploadAsync(Stream, options: uploadOptions, cancellationToken: default);
 
             // Optionally log or inspect uploadResponse if needed
             if (uploadResponse == null || uploadResponse.GetRawResponse().Status != 201)
@@ -134,7 +134,7 @@ namespace ChatUapp.Infrastructure.FileStorage
             await blobClient.DeleteIfExistsAsync();
         }
 
-        public async Task<Stream> ConvertBase64ToStream(string base64String)
+        private async Task<Stream> ConvertBase64ToStream(string base64String)
         {
             // Remove data URI prefix if present
             if (base64String.Contains(","))
