@@ -43,15 +43,17 @@ public class ChatbotManager : DomainService
         return bot;
     }
 
-    public async Task UpdateChatbotAsync(
+    public async Task<Chatbot> UpdateChatbotAsync(
         Chatbot chatbot, string name, string header, string subHeader , string iconName, string iconColor)
     {
         Ensure.NotNull<Chatbot>(chatbot, nameof(chatbot));
 
-        await HandleDuplicateChatbotAsync(name);
+        //await HandleDuplicateChatbotAsync(name);
 
         chatbot.SetName(name);
         chatbot.UpdateChatbotStyle(header, subHeader, new IconStyle(iconName, iconColor));
+
+        return chatbot;
     }
 
     public void Activate(Chatbot chatbot)

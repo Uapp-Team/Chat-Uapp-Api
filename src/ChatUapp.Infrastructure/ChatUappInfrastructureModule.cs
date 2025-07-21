@@ -1,4 +1,5 @@
-﻿using ChatUapp.Core.Interfaces.Chatbot;
+﻿using ChatUapp.Core.Interfaces;
+using ChatUapp.Core.Interfaces.Chatbot;
 using ChatUapp.Core.Interfaces.Emailing;
 using ChatUapp.Core.Interfaces.FileStorage;
 using ChatUapp.Infrastructure.Emailing;
@@ -25,6 +26,7 @@ namespace ChatUapp.Infrastructure
             context.Services.Replace(ServiceDescriptor.Singleton<IAppEmailSender, AppEmailSender>());
             context.Services.AddTransient<IBlobStorageService, BlobStorageService>();
             context.Services.AddScoped<IDomainGuidGenerator, DomainGuidGenerator>();
+            context.Services.AddScoped<IAskMessageService, AskMessageService>();
 
             Configure<AbpBlobStoringOptions>(options =>
             {
