@@ -29,6 +29,7 @@ public class ChatUappDbContext :
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
     public DbSet<PublicMessage> PublicMessages { get; set; }
     public DbSet<Chatbot> Chatbots { get; set; }
+    public DbSet<TrainingSource> TrainingSources { get; set; }
 
     #region Entities from the modules
 
