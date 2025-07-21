@@ -114,7 +114,12 @@ namespace ChatUapp.Core.ChatbotManagement
             if (!string.IsNullOrEmpty(chatbot.BrandImageName))
             {
                 dto.BrandImageName = await _storage.GetUrlAsync(chatbot.BrandImageName);
-                dto.iconName = await _storage.GetUrlAsync(chatbot.BrandImageName);
+                
+            }
+            if (!string.IsNullOrEmpty(dto.iconName))
+            {
+                dto.iconName = await _storage.GetUrlAsync(dto.iconName);
+
             }
 
             return dto;
