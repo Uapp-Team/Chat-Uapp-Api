@@ -18,6 +18,9 @@ public class ChatUappApplicationAutoMapperProfile : Profile
         CreateMap<Chatbot, ChatbotDto>()
         .ForMember(dest => dest.iconName, opt => opt.MapFrom(src => src.IconStyle.IconName))
         .ForMember(dest => dest.iconColor, opt => opt.MapFrom(src => src.IconStyle.IconColor));
+        CreateMap<Chatbot, ChatBotListDto>()
+        .ForMember(dest => dest.iconName, opt => opt.MapFrom(src => src.IconStyle.IconName))
+        .ForMember(dest => dest.iconColor, opt => opt.MapFrom(src => src.IconStyle.IconColor));
 
         /* You can configure your AutoMapper mapping configuration here.
          * Alternatively, you can split your mapping configurations

@@ -1,6 +1,3 @@
-using Volo.Abp.Account;
-using Volo.Abp.Identity;
-using Volo.Abp.ObjectExtending;
 using Volo.Abp.Threading;
 
 namespace ChatUapp;
@@ -13,7 +10,7 @@ public static class ChatUappDtoExtensions
     {
         OneTimeRunner.Run(() =>
         {
-           
+
             /* You can add extension properties to DTOs
              * defined in the depended modules.
              *

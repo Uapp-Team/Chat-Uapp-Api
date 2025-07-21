@@ -11,7 +11,7 @@
             var date = DateTime.UtcNow;
             var uniqueFileName = $"{date:yyyyMMdd}_{Guid.NewGuid():N}_{originalFileName}";
 
-            return $"tenant-{tenantId}/user-{userId}/{fileType}/{date:yyyy}/{date:MM}/{uniqueFileName}";
+            return $"{fileType}/{date:yyyy}/{date:MM}/{uniqueFileName}";
         }
     }
 }
