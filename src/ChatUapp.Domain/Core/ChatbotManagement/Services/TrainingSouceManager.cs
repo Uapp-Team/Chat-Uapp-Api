@@ -51,14 +51,14 @@ public class TrainingSourceManager : DomainService
         source.UpdateOrigin(TrainingSourceOrigin.CreateWebSource(url, content));
     }
 
-    public TrainingSource CreateTextSource(Guid chatbotId, string name, string url, string content)
+    public TrainingSource CreateTextSource(Guid chatbotId, string name, string content)
     {
         if (CurrentTenant.Id == null)
         {
             throw new AppBusinessException("Tenant ID is not set. Ensure you're in a valid tenant context.");
         }
 
-        var origin = TrainingSourceOrigin.CreateWebSource(url, content);
+        var origin = TrainingSourceOrigin.CreateTextSource(content);
 
         var source = new TrainingSource(
             _guidGenerator.Create(),
@@ -70,7 +70,7 @@ public class TrainingSourceManager : DomainService
         return source;
     }
 
-    public void UpdateTextSource(TrainingSource source, string name, string url, string content)
+    public void UpdateTextSource(TrainingSource source, string name, string content)
     {
         if (source == null)
         {
@@ -78,6 +78,6 @@ public class TrainingSourceManager : DomainService
         }
 
         source.SetName(name);
-        source.UpdateOrigin(TrainingSourceOrigin.CreateWebSource(url, content));
+        source.UpdateOrigin(TrainingSourceOrigin.CreateTextSource(content));
     }
 }
