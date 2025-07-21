@@ -1,10 +1,12 @@
 ﻿using ChatUapp.Core.ChatbotManagement.Enums;
+using System;
 using Volo.Abp.ObjectExtending;
 
 namespace ChatUapp.Core.ChatbotManagement.DTOs
 {
     public class ChatbotDto : ExtensibleObject
     {
+        public Guid Id { get; set; } = default!;
         public string Name { get; set; } = default!;
         public string? Description { get; set; } = default!;
         public string Header { get; set; } = default!;
