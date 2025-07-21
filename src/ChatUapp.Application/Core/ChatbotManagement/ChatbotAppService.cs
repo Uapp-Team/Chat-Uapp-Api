@@ -29,11 +29,11 @@ namespace ChatUapp.Core.ChatbotManagement
             _storage = storage;
         }
 
-        public async Task<bool> ChangeStatusAsync(bool isActive, Guid id)
+        public async Task<bool> ChangeStatusAsync(ChangeBotStatusDto input)
         {
-            var chatbot = await _botRepo.GetAsync(id);
+            var chatbot = await _botRepo.GetAsync(input.Id);
 
-            if (isActive) _chatbotManager.Activate(chatbot);
+            if (input.IsActive) _chatbotManager.Activate(chatbot);
             else _chatbotManager.Deactivate(chatbot);
 
             await _botRepo.UpdateAsync(chatbot);
@@ -124,6 +124,7 @@ namespace ChatUapp.Core.ChatbotManagement
         {
             var chatbot = await _botRepo.GetAsync(id);
 
+            var bot = ObjectMapper.Map<Chatbot, ChatbotDto>(chatbot);
 
             // Set default image if none provided (for testing/demo purposes)
             if (string.IsNullOrEmpty(input.BrandImageStream) && string.IsNullOrWhiteSpace(input.BrandImageName))
@@ -138,8 +139,11 @@ namespace ChatUapp.Core.ChatbotManagement
                 if (!string.IsNullOrWhiteSpace(input.BrandImageName))
                 {
                     input.BrandImageName = await _storage.SaveAsync(input.BrandImageStream, input.BrandImageName);
-                    input.iconName = await _storage.SaveAsync(input.iconStream, input.iconName);
                 }
+            }
+            else
+            {
+                input.BrandImageName = chatbot.BrandImageName;
             }
 
             if (!string.IsNullOrEmpty(input.iconStream) && !string.IsNullOrWhiteSpace(input.iconName))
@@ -149,14 +153,18 @@ namespace ChatUapp.Core.ChatbotManagement
                     input.iconName = await _storage.SaveAsync(input.iconStream, input.iconName);
                 }
             }
-
+            else
+            {
+                input.iconName = bot.iconName;
+            }
+            
             var result = _chatbotManager.UpdateChatbotAsync(
             chatbot,
             input.Name,
             input.Header,
             input.SubHeader,
-            input.iconName,
-            input.iconName);
+            input.iconName ,
+            input.iconColor);
 
             chatbot.BrandImageName = input.BrandImageName;
             chatbot.Description = input.Description;

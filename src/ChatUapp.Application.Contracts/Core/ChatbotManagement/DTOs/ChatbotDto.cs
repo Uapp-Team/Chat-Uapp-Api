@@ -11,7 +11,7 @@ namespace ChatUapp.Core.ChatbotManagement.DTOs
         public string SubHeader { get; set; } = default!;
         public ChatbotStatus Status { get; set; }
         public string? BrandImageName { get; set; } = default!;
-        public string? iconName { get; set; } = default!;
-        public string? iconColor { get; set; } = default!;
+        public string iconName { get; set; } = default!;
+        public string iconColor { get; set; } = default!;
     }
 }

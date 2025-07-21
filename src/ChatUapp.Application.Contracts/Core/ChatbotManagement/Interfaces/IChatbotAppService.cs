@@ -12,6 +12,6 @@ namespace ChatUapp.Core.ChatbotManagement.Interfaces
         Task<ChatbotDto> UpdateAsync(Guid id,UpdateChatbotDto input);
         Task<ChatbotDto> GetAsync(Guid id);
         Task<List<ChatBotListDto>> GetAllAsync();
-        Task<bool> ChangeStatusAsync(bool isActive ,Guid id);
+        Task<bool> ChangeStatusAsync(ChangeBotStatusDto input);
     }
 }
