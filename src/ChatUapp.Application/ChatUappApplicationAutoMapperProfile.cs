@@ -17,6 +17,7 @@ public class ChatUappApplicationAutoMapperProfile : Profile
         CreateMap<IdentityUser, AppProfileDto>();
         CreateMap<Chatbot, CreateChatbotDto>();
         CreateMap<Chatbot, UpdateChatbotDto>();
+        CreateMap<ChatSession, ChatSessionTitleDto>();
         CreateMap<Chatbot, ChatbotDto>()
         .ForMember(dest => dest.iconName, opt => opt.MapFrom(src => src.IconStyle.IconName))
         .ForMember(dest => dest.iconColor, opt => opt.MapFrom(src => src.IconStyle.IconColor));

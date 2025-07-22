@@ -1,4 +1,5 @@
 ﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
+using ChatUapp.Core.ChatbotManagement.Sessions;
 using ChatUapp.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
