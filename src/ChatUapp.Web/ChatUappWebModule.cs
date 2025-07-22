@@ -329,8 +329,9 @@ public class ChatUappWebModule : AbpModule
 
         if (!env.IsDevelopment())
         {
-            app.UseErrorPage();
+            //app.UseErrorPage(); need to uncomment when real production
             app.UseHsts();
+            app.UseDeveloperExceptionPage();
         }
 
         app.UseCorrelationId();
