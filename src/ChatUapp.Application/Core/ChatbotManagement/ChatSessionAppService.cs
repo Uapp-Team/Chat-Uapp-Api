@@ -37,11 +37,12 @@ namespace ChatUapp.Core.ChatbotManagement
 
             _sessionManager.AddMessageToSession(session, result, MessageRole.User);
             _sessionManager.AddMessageToSession(session, result, MessageRole.Chatbot);
+
             await _sessionRepo.InsertAsync(session);
+
             await CurrentUnitOfWork!.SaveChangesAsync();
 
-            var dto = ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
-            return dto;
+            return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
         }
 
         public async Task<ChatSessionDto> UpdateAsync(UpdateSessionDto input)
@@ -50,8 +51,6 @@ namespace ChatUapp.Core.ChatbotManagement
             var session = (await _sessionRepo.WithDetailsAsync(x => x.Messages)).FirstOrDefault();
             Ensure.NotNull(session, nameof(session));
 
-
-
             // await _sessionRepo.UpdateAsync(sessions);
             var result = await _message.AskAnything(input.sessionTitle);
 
@@ -59,9 +58,10 @@ namespace ChatUapp.Core.ChatbotManagement
             _sessionManager.AddMessageToSession(session, result, MessageRole.Chatbot);
 
             await _sessionRepo.UpdateAsync(session);
+
             await CurrentUnitOfWork!.SaveChangesAsync();
-            var dto = ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
-            return dto;
+
+            return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
         }
     }
 }
