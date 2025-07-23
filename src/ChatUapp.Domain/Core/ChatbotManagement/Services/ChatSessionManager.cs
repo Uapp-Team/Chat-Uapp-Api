@@ -20,13 +20,16 @@ public class ChatSessionManager : DomainService
         _chatSessionRepository = chatSessionRepository;
     }
 
-    public ChatSession CreateNewSession(Guid userId, Guid chatbotId, string sessionTitle)
+    public ChatSession CreateNewSession(Guid userId, Guid chatbotId, string sessionTitle,string? ip = null , string? BrowserSessionKey = null)
     {
         var session = new ChatSession(
             _guidGenerator.Create(),
             userId, chatbotId,
             sessionTitle,
-            CurrentTenant.Id);
+            CurrentTenant.Id,
+            ip,
+            BrowserSessionKey
+            );
 
         return session;
     }

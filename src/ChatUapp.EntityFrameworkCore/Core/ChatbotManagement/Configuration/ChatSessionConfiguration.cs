@@ -1,6 +1,5 @@
 ﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 using ChatUapp.Core.ChatbotManagement.Consts;
-using ChatUapp.Core.ChatbotManagement.Entities;
 using ChatUapp.Core.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
