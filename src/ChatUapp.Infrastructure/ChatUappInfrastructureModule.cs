@@ -1,9 +1,10 @@
-﻿using ChatUapp.Core.Interfaces;
-using ChatUapp.Core.Interfaces.Chatbot;
+﻿using ChatUapp.Core.Interfaces.Chatbot;
 using ChatUapp.Core.Interfaces.Emailing;
 using ChatUapp.Core.Interfaces.FileStorage;
+using ChatUapp.Core.Interfaces.MessageServices;
 using ChatUapp.Infrastructure.Emailing;
 using ChatUapp.Infrastructure.FileStorage;
+using ChatUapp.Infrastructure.MessageServices;
 using ChatUapp.Infrastructure.Utility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

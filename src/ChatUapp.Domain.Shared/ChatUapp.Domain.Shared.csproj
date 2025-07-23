@@ -35,8 +35,4 @@
     <Content Remove="Localization\ChatUapp\*.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Core\Interfaces\NewFolder\" />
-  </ItemGroup>
-
 </Project>
