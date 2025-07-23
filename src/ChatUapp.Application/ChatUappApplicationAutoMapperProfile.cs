@@ -26,7 +26,8 @@ public class ChatUappApplicationAutoMapperProfile : Profile
         .ForMember(dest => dest.iconColor, opt => opt.MapFrom(src => src.IconStyle.IconColor));
         CreateMap<ChatSession, ChatSessionDto>();
         CreateMap<ChatMessage, ChatMessageDto>()
-        .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content.Value));
+        .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content.Value))
+        .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Value));
 
 
         /* You can configure your AutoMapper mapping configuration here.

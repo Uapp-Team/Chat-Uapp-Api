@@ -6,6 +6,7 @@ using ChatUapp.Core.ChatbotManagement.VOs;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.MessageServices;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -54,34 +55,6 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         // Return the session as a DTO
         return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
     }
-
-    public async Task<PagedResultDto<ChatSessionTitleDto>> GetTitlesAsync(GetSessionTitlesListDto input)
-    {
-        // Retrieve the queryable for chat sessions
-        var queryable = await _sessionRepo.GetQueryableAsync();
-
-        // Apply filtering by ChatbotId if specified
-        var filteredQuery = queryable.WhereIf(input.ChatbotId != Guid.Empty, x => x.ChatbotId == input.ChatbotId);
-
-        // Apply sorting and paging
-        var items = await AsyncExecuter.ToListAsync(
-            filteredQuery
-                .OrderByDescending(x => x.LastModificationTime)
-                .Skip(input.SkipCount)
-                .Take(input.MaxResultCount)
-        );
-
-        // Get total count after filtering
-        var totalCount = filteredQuery.Count();
-
-        // Map and return paged result
-        return new PagedResultDto<ChatSessionTitleDto>(
-            totalCount,
-            items.Select(ObjectMapper.Map<ChatSession, ChatSessionTitleDto>).ToList()
-        );
-    }
-
-
     public async Task<ChatSessionDto> UpdateAsync(UpdateSessionDto input)
     {
         Ensure.NotNull(input, nameof(input));
@@ -106,5 +79,45 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
 
         // Return the updated session as a DTO
         return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
+    }
+    public async Task<ChatSessionDto> GetAsync(Guid Id)
+    {
+        // Load the session along with its related messages
+        var queryable = await _sessionRepo.WithDetailsAsync(x => x.Messages);
+
+        // Find the specific session by ID
+        var session = queryable.First(s => s.Id == Id);
+
+        // Return the updated session as a DTO
+        return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
+    }
+    public async Task<PagedResultDto<ChatSessionTitleDto>> GetTitlesAsync(GetSessionTitlesListDto input)
+    {
+        // Retrieve the queryable for chat sessions
+        var queryable = await _sessionRepo.GetQueryableAsync();
+
+        // Apply filtering by ChatbotId if specified
+        var filteredQuery = queryable
+            .Where(x => x.ChatbotId == input.ChatbotId)
+            .WhereIf(!string.IsNullOrWhiteSpace(input.Title),
+                x => x.Title != null && input.Title != null &&
+                     x.Title.ToLower().Trim().Contains(input.Title.ToLower().Trim()));
+
+        // Apply sorting and paging
+        var items = await AsyncExecuter.ToListAsync(
+            filteredQuery
+                .OrderByDescending(x => x.LastModificationTime)
+                .Skip(input.SkipCount)
+                .Take(input.MaxResultCount)
+        );
+
+        // Get total count after filtering
+        var totalCount = filteredQuery.Count();
+
+        // Map and return paged result
+        return new PagedResultDto<ChatSessionTitleDto>(
+            totalCount,
+            items.Select(ObjectMapper.Map<ChatSession, ChatSessionTitleDto>).ToList()
+        );
     }
 }

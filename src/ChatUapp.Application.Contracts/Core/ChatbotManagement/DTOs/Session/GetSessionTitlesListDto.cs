@@ -6,5 +6,6 @@ namespace ChatUapp.Core.ChatbotManagement.DTOs.Session
     public class GetSessionTitlesListDto : PagedAndSortedResultRequestDto
     {
         public Guid ChatbotId { get; set; }
+        public string? Title { get; set; } = default!;
     }
 }
