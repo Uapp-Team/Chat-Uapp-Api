@@ -170,7 +170,6 @@ namespace ChatUapp.Core.ChatbotManagement
             chatbot.Description = input.Description;
 
             await _botRepo.UpdateAsync(chatbot);
-
             await CurrentUnitOfWork!.SaveChangesAsync();
             return ObjectMapper.Map<Chatbot, ChatbotDto>(chatbot);
         }
