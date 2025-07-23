@@ -32,6 +32,7 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         _message = message;
     }
 
+
     public async Task<ChatSessionDto> CreateAsync(CreateSessionDto input)
     {
         Ensure.NotNull(input, nameof(input));
