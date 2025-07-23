@@ -45,6 +45,11 @@ public class TrainingSourceAppService : ApplicationService, ITrainingSourceAppSe
     {
         var queryable = await _repository.GetQueryableAsync();
 
+        if(!string.IsNullOrWhiteSpace(input.TrainingSourceTitle))
+        {
+            queryable = queryable.Where(x => x.Name.Contains(input.TrainingSourceTitle));
+        }
+
         var filtered = queryable
             .WhereIf(input.ChatbotId != Guid.Empty, x => x.ChatbotId == input.ChatbotId)
             .OrderByDescending(x => x.LastUpdated)

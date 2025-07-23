@@ -73,7 +73,7 @@ namespace ChatUapp.Core.ChatbotManagement
                 input.iconName,
                 input.iconColor
             );
-            // Assign additional input properties to the chatbot entity for persistence.
+            
             chatbot.BrandImageName = input.BrandImageName;
             chatbot.Description = input.Description;
 

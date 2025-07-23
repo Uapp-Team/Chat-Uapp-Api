@@ -18,6 +18,7 @@ using OpenIddict.Validation.AspNetCore;
 using Pages.Abp.MultiTenancy;
 using Swashbuckle.AspNetCore.Filters;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Volo.Abp;
@@ -173,7 +174,7 @@ public class ChatUappWebModule : AbpModule
         ConfigureVirtualFileSystem(hostingEnvironment);
         ConfigureNavigationServices();
         ConfigureAutoApiControllers();
-        ConfigureSwaggerServices(context.Services);
+        ConfigureSwaggerServices(context, configuration);
 
         Configure<PermissionManagementOptions>(options =>
         {
@@ -293,38 +294,20 @@ public class ChatUappWebModule : AbpModule
         });
     }
 
-    private void ConfigureSwaggerServices(IServiceCollection services)
+    private void ConfigureSwaggerServices(ServiceConfigurationContext context, IConfiguration configuration)
     {
-        services.AddAbpSwaggerGen(
-            options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatUapp API", Version = "v1" });
-                options.DocInclusionPredicate((docName, description) => true);
-                options.CustomSchemaIds(type => type.FullName);
-
-                var securityScheme = new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = JwtBearerDefaults.AuthenticationScheme,
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme.",
-                    Reference = new OpenApiReference
-                    {
-                        Id = JwtBearerDefaults.AuthenticationScheme,
-                        Type = ReferenceType.SecurityScheme
-                    }
-                };
-                options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {securityScheme, Array.Empty<string>()}
-                });
-                options.OperationFilter<SecurityRequirementsOperationFilter>();
-
-            }
-        );
+            context.Services.AddAbpSwaggerGenWithOAuth(
+             configuration["AuthServer:Authority"]!,
+             new Dictionary<string, string>
+             {
+                 {"ChatUapp", "ChatUapp API"}
+             },
+             options =>
+             {
+                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatUapp API", Version = "v1" });
+                 options.DocInclusionPredicate((docName, description) => true);
+                 options.CustomSchemaIds(type => type.FullName);
+             });
     }
 
 
@@ -332,6 +315,7 @@ public class ChatUappWebModule : AbpModule
     {
         var app = context.GetApplicationBuilder();
         var env = context.GetEnvironment();
+        var configuration = context.GetConfiguration();
 
         app.UseCors(); // <-- This enables CORS middleware globally
         app.UseForwardedHeaders();
@@ -345,8 +329,9 @@ public class ChatUappWebModule : AbpModule
 
         if (!env.IsDevelopment())
         {
-            app.UseErrorPage();
+            //app.UseErrorPage(); need to uncomment when real production
             app.UseHsts();
+            app.UseDeveloperExceptionPage();
         }
 
         app.UseCorrelationId();
@@ -369,7 +354,8 @@ public class ChatUappWebModule : AbpModule
         app.UseAbpSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "ChatUapp API");
-            options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+            options.OAuthClientId(configuration["AuthServer:SwaggerClientId"]);
+            options.OAuthScopes("ChatUapp");
         });
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();

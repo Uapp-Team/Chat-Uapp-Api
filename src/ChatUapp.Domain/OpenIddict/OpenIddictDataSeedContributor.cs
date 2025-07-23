@@ -108,11 +108,6 @@ public class OpenIddictDataSeedContributor : IDataSeedContributor, ITransientDep
             );
         }
 
-        
-        
-
-
-
 
         // Swagger Client
         var swaggerClientId = configurationSection["ChatUapp_Swagger:ClientId"];
