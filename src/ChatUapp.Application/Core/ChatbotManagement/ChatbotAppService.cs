@@ -2,6 +2,7 @@
 using ChatUapp.Core.ChatbotManagement.DTOs;
 using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
+using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.FileStorage;
 using System;
@@ -10,23 +11,33 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Users;
 
 namespace ChatUapp.Core.ChatbotManagement
 {
     public class ChatbotAppService : ApplicationService, IChatbotAppService
     {
         private readonly ChatbotManager _chatbotManager;
+        private readonly ChatBotUserManager _chatbotUserManager;
         private readonly IRepository<Chatbot, Guid> _botRepo;
+        private readonly IRepository<TenantChatbotUser, Guid> _tenentBotUserRepo;
         private readonly IBlobStorageService _storage;
+        private readonly ICurrentUser _currentUser;
 
         public ChatbotAppService(
             ChatbotManager chatbot,
             IRepository<Chatbot, Guid> botRepo,
-            IBlobStorageService storage)
+            IBlobStorageService storage,
+            ChatBotUserManager chatbotUserManager,
+            ICurrentUser currentUser,
+            IRepository<TenantChatbotUser, Guid> tenentBotUserRepo)
         {
             _chatbotManager = chatbot;
             _botRepo = botRepo;
             _storage = storage;
+            _chatbotUserManager = chatbotUserManager;
+            _currentUser = currentUser;
+            _tenentBotUserRepo = tenentBotUserRepo;
         }
 
         public async Task<bool> ChangeStatusAsync(ChangeBotStatusDto input)
@@ -41,7 +52,6 @@ namespace ChatUapp.Core.ChatbotManagement
 
             return true;
         }
-
 
         public async Task<ChatbotDto> CreateAsync(CreateChatbotDto input)
         {
@@ -73,15 +83,61 @@ namespace ChatUapp.Core.ChatbotManagement
                 input.iconName,
                 input.iconColor
             );
-            
+
             chatbot.BrandImageName = input.BrandImageName;
             chatbot.Description = input.Description;
 
+            if (_currentUser.Id == null)
+                throw new AppBusinessException("User is not authenticated.");
+
+            var botUserMaping = await _chatbotUserManager.CreateAsync(chatbot.Id, _currentUser.Id.Value);
+
             await _botRepo.InsertAsync(chatbot);
+
+            await _tenentBotUserRepo.InsertAsync(botUserMaping);
 
             await CurrentUnitOfWork!.SaveChangesAsync();
 
             return ObjectMapper.Map<Chatbot, ChatbotDto>(chatbot);
+        }
+
+        public async Task<ChatbotDto> CreateCopyAsync(Guid id)
+        {
+            // Retrieve the original chatbot
+            var chatbot = await _botRepo.GetAsync(id);
+
+            // Generate a unique name for the copy
+            var uniqueSuffix = Guid.NewGuid().ToString().Substring(0, 8); // Or use Random if preferred
+            var newName = $"{chatbot.Name}_{uniqueSuffix}";
+
+            // Create a copy using the manager
+            var copyChatbot = await _chatbotManager.CreateAsync(
+                newName,
+                chatbot.Header,
+                chatbot.SubHeader,
+                chatbot.IconStyle.IconName,
+                chatbot.IconStyle.IconColor
+            );
+
+            // Copy additional properties
+            copyChatbot.BrandImageName = chatbot.BrandImageName;
+            copyChatbot.Description = chatbot.Description;
+
+            // Ensure current user is authenticated
+            if (_currentUser.Id == null)
+                throw new AppBusinessException("User is not authenticated.");
+
+            // Create bot-user mapping with the new chatbot ID
+            var botUserMapping = await _chatbotUserManager.CreateAsync(copyChatbot.Id, _currentUser.Id.Value);
+
+            // Save chatbot and mapping to the repositories
+            await _botRepo.InsertAsync(copyChatbot);
+            await _tenentBotUserRepo.InsertAsync(botUserMapping);
+
+            await CurrentUnitOfWork!.SaveChangesAsync();
+
+            // Return DTO
+            return ObjectMapper.Map<Chatbot, ChatbotDto>(copyChatbot);
         }
 
         public async Task<List<ChatBotListDto>> GetAllAsync()
@@ -114,7 +170,7 @@ namespace ChatUapp.Core.ChatbotManagement
             if (!string.IsNullOrEmpty(chatbot.BrandImageName))
             {
                 dto.BrandImageName = await _storage.GetUrlAsync(chatbot.BrandImageName);
-                
+
             }
             if (!string.IsNullOrEmpty(dto.iconName))
             {
@@ -156,7 +212,7 @@ namespace ChatUapp.Core.ChatbotManagement
             }
 
 
-            if (!string.IsNullOrEmpty(input.iconStream) )
+            if (!string.IsNullOrEmpty(input.iconStream))
             {
                 if (!string.IsNullOrWhiteSpace(input.iconName))
                 {
@@ -172,13 +228,12 @@ namespace ChatUapp.Core.ChatbotManagement
                 input.iconName = bot.iconName;
             }
 
-
             var result = await _chatbotManager.UpdateChatbotAsync(
             chatbot,
             input.Name,
             input.Header,
             input.SubHeader,
-            input.iconName ,
+            input.iconName,
             input.iconColor);
 
             chatbot.BrandImageName = input.BrandImageName;
@@ -189,5 +244,34 @@ namespace ChatUapp.Core.ChatbotManagement
             await CurrentUnitOfWork!.SaveChangesAsync();
             return ObjectMapper.Map<Chatbot, ChatbotDto>(chatbot);
         }
+
+        public async Task<ChatbotDto> UpdateNameAsync(Guid id, string name)
+        {
+            // Fetch the chatbot from the repository
+            var chatbot = await _botRepo.GetAsync(id);
+            Ensure.NotNull(chatbot, nameof(chatbot));
+
+            // Update chatbot using the manager (if internal logic exists there)
+            var updatedChatbot = await _chatbotManager.UpdateChatbotAsync(
+                chatbot,
+                name,                               // Updated name
+                chatbot.Header,
+                chatbot.SubHeader,
+                chatbot.IconStyle.IconName,
+                chatbot.IconStyle.IconColor
+            );
+
+            // Preserve existing properties if not being updated
+            updatedChatbot.BrandImageName = chatbot.BrandImageName;
+            updatedChatbot.Description = chatbot.Description;
+
+            // Save changes to repository
+            await _botRepo.UpdateAsync(updatedChatbot);
+            await CurrentUnitOfWork!.SaveChangesAsync();
+
+            // Return mapped DTO
+            return ObjectMapper.Map<Chatbot, ChatbotDto>(updatedChatbot);
+        }
+
     }
 }
