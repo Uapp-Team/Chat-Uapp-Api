@@ -3,6 +3,7 @@ using ChatUapp.Core.ChatbotManagement.DTOs.Session;
 using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.ChatbotManagement.VOs;
+using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.MessageServices;
 using System;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Users;
 
 namespace ChatUapp.Core.ChatbotManagement;
 
@@ -21,23 +23,28 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
     private readonly ChatSessionManager _sessionManager;
     private readonly IRepository<ChatSession, Guid> _sessionRepo;
     private readonly IAskMessageService _message;
+    private readonly ICurrentUser _currentUser;
 
     public ChatSessionAppService(
         ChatSessionManager sessionManager,
         IRepository<ChatSession, Guid> sessionRepo,
-        IAskMessageService message)
+        IAskMessageService message,
+        ICurrentUser currentUser)
     {
         _sessionManager = sessionManager;
         _sessionRepo = sessionRepo;
         _message = message;
+        _currentUser = currentUser;
     }
 
     public async Task<ChatSessionDto> CreateAsync(CreateSessionDto input)
     {
         Ensure.NotNull(input, nameof(input));
 
+        if (_currentUser.Id == null)
+            throw new AppBusinessException("User is not authenticated.");
         // Create a new chat session instance
-        var session = _sessionManager.CreateNewSession(input.userId, input.chatbotId, input.sessionTitle, input.Ip, input.BrowserSessionKey);
+        var session = _sessionManager.CreateNewSession(_currentUser.Id.Value, input.chatbotId, input.sessionTitle, input.Ip, input.BrowserSessionKey);
 
         // Send the initial user message to the chatbot and get the response
         var result = await _message.AskAnything(input.sessionTitle);
@@ -67,10 +74,10 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         Ensure.NotNull(session, nameof(session));
 
         // Send the new message to the chatbot and get the response
-        var result = await _message.AskAnything(input.sessionTitle);
+        var result = await _message.AskAnything(input.message);
 
         // Add both user and chatbot messages to the session
-        _sessionManager.AddMessageToSession(session, input.sessionTitle, MessageRole.User);
+        _sessionManager.AddMessageToSession(session, input.message, MessageRole.User);
         _sessionManager.AddMessageToSession(session, result, MessageRole.Chatbot);
 
         // Persist the changes to the database
