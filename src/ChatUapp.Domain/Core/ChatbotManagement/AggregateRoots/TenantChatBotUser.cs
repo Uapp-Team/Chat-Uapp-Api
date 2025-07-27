@@ -46,5 +46,11 @@ namespace ChatUapp.Core.ChatbotManagement.AggregateRoots
             Ensure.NotNull(userId, nameof(userId));
             UserId = userId;
         }
+        internal void UpdateChatbotUser(Guid chatbotId, Guid userId)
+        {
+            ChatbotId = chatbotId;
+            UserId = userId;
+        }
+
     }
 }

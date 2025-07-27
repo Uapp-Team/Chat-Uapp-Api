@@ -137,6 +137,34 @@ namespace ChatUapp.Core.ChatbotManagement
             return ObjectMapper.Map<Chatbot, ChatbotDto>(copyChatbot);
         }
 
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            // Retrieve the chatbot entity by its ID
+            var chatbot = await _botRepo.GetAsync(id);
+            Ensure.NotNull(chatbot, nameof(chatbot));
+
+            // Retrieve all TenantChatbotUser entities associated with this chatbot
+            var query = await _tenentBotUserRepo.GetQueryableAsync();
+            var tenetBotUser = query.Where(c => c.ChatbotId == chatbot.Id).ToList();
+
+            // Mark the chatbot entity as deleted (soft delete)
+            _chatbotManager.Delete(chatbot);
+
+            // Soft delete all related TenantChatbotUser records
+            _chatbotUserManager.DeleteAll(tenetBotUser);
+
+            // Update the chatbot entity in the database
+            await _botRepo.UpdateAsync(chatbot);
+
+            // Update all tenant chatbot user records in the database
+            await _tenentBotUserRepo.UpdateManyAsync(tenetBotUser);
+
+            // Persist all changes to the database
+            await CurrentUnitOfWork!.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<List<ChatBotListDto>> GetAllAsync()
         {
             var chatbotList = await _botRepo.GetListAsync();
@@ -176,6 +204,29 @@ namespace ChatUapp.Core.ChatbotManagement
             }
 
             return dto;
+        }
+
+        public async Task<List<ChatBotByUserDto>> GetAllByUserAsync(Guid userId)
+        {
+            // Get all TenantChatbotUser entries for the given user
+            var tenantUserQuery = await _tenentBotUserRepo.GetQueryableAsync();
+            var tenantUserLinks = tenantUserQuery
+                .Where(x => x.UserId == userId)
+                .ToList();
+
+            // Get all associated chatbot IDs
+            var chatbotIds = tenantUserLinks.Select(x => x.ChatbotId).Distinct().ToList();
+
+            if (!chatbotIds.Any())
+                return new List<ChatBotByUserDto>(); // No chatbots linked to this user
+
+            // Fetch chatbot entities based on collected IDs
+            var chatbotQuery = await _botRepo.GetQueryableAsync();
+            var chatbots = chatbotQuery
+                .Where(x => chatbotIds.Contains(x.Id))
+                .ToList();
+
+            return ObjectMapper.Map<List<Chatbot>, List<ChatBotByUserDto>>(chatbots); ;
         }
 
         public async Task<ChatbotDto> UpdateAsync(Guid id, UpdateChatbotDto input)
