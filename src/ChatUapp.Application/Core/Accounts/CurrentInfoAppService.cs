@@ -1,9 +1,15 @@
 ﻿using ChatUapp.Core.Accounts.DTOs;
 using ChatUapp.Core.Accounts.Interfaces;
+using ChatUapp.Core.ChatbotManagement.AggregateRoots;
+using ChatUapp.Core.ChatbotManagement.DTOs;
+using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using System;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 
@@ -13,13 +19,28 @@ public class CurrentInfoAppService : ApplicationService, ICurrentInfoAppService
 {
     private readonly ICurrentUser _currentUser;
     private readonly ICurrentTenant _currentTenant;
+    private readonly IRepository<Chatbot, Guid> _botRepo;
 
     public CurrentInfoAppService(
         ICurrentUser currentUser,
-        ICurrentTenant currentTenant)
+        ICurrentTenant currentTenant,
+        IRepository<Chatbot, Guid> botRepo)
     {
         _currentUser = currentUser;
         _currentTenant = currentTenant;
+        _botRepo = botRepo;
+    }
+
+    public async Task<CurrentBotDto> GetCurrentBotId()
+    {
+        Ensure.Authenticated(_currentUser);
+
+        var queryable = await _botRepo.GetQueryableAsync();
+        var chatBot = queryable.Where(x=>x.CreatorId == _currentUser.Id).FirstOrDefault();
+        if (chatBot == null)
+            throw new AppBusinessException("No chatbot found for the current user.");
+
+        return ObjectMapper.Map<Chatbot, CurrentBotDto>(chatBot);
     }
 
     public Task<CurrentTenantDto> GetCurrentTenant()
