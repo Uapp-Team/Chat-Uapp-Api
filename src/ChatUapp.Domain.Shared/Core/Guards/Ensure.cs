@@ -1,5 +1,6 @@
-﻿using System;
+﻿using ChatUapp.Core.Exceptions;
 using System.Collections.Generic;
+using Volo.Abp.Users;
 
 namespace ChatUapp.Core.Guards;
 
@@ -76,6 +77,18 @@ public static class Ensure
         if (collection == null || collection.Count == 0)
         {
             throw new AppValidationException($"{name} must not be empty.");
+        }
+    }
+
+    /// <summary>
+    /// Throws if the current user is not authenticated.
+    /// </summary>
+    /// <param name="currentUser">The current user context.</param>
+    public static void Authenticated(ICurrentUser currentUser)
+    {
+        if (currentUser == null || !currentUser.IsAuthenticated)
+        {
+            throw new AppBusinessException("User is not authenticated.");
         }
     }
 }
