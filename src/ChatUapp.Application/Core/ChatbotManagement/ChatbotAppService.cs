@@ -2,7 +2,6 @@
 using ChatUapp.Core.ChatbotManagement.DTOs;
 using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
-using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.FileStorage;
 using System;
@@ -87,8 +86,7 @@ namespace ChatUapp.Core.ChatbotManagement
             chatbot.BrandImageName = input.BrandImageName;
             chatbot.Description = input.Description;
 
-            if (_currentUser.Id == null)
-                throw new AppBusinessException("User is not authenticated.");
+            Ensure.Authenticated(_currentUser);
 
             var botUserMaping = await _chatbotUserManager.CreateAsync(chatbot.Id, _currentUser.Id.Value);
 
@@ -124,8 +122,7 @@ namespace ChatUapp.Core.ChatbotManagement
             copyChatbot.Description = chatbot.Description;
 
             // Ensure current user is authenticated
-            if (_currentUser.Id == null)
-                throw new AppBusinessException("User is not authenticated.");
+            Ensure.Authenticated(_currentUser);
 
             // Create bot-user mapping with the new chatbot ID
             var botUserMapping = await _chatbotUserManager.CreateAsync(copyChatbot.Id, _currentUser.Id.Value);
