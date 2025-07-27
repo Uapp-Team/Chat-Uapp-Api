@@ -24,8 +24,6 @@ public class ChatSessionConsts
     public const string CountryNameColumnName = "CountryName";
     public const string LatitudeColumnName = "Latitude";
     public const string LongitudeColumnName = "Longitude";
-    public const string FlagColumnName = "Latitude";
+    public const string FlagColumnName = "Flag";
     public const string IpColumnName = "IpAddress";
-
-
 }
