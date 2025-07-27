@@ -26,8 +26,34 @@ public class ChatSessionConfiguration : IEntityTypeConfiguration<ChatSession>
         builder.Property(s => s.Title)
             .HasMaxLength(ChatSessionConsts.TitleMaxLength);
 
-        builder.Property(s => s.Ip)
-            .HasMaxLength(ChatSessionConsts.IpMaxLength);
+        builder.OwnsOne(x => x.LocationSnapshot, cb =>
+        {
+            cb.Property(c => c.CountryName)
+              .IsRequired()
+              .HasColumnName(ChatSessionConsts.CountryNameColumnName)
+              .HasMaxLength(ChatSessionConsts.CountryNameMaxLength);
+
+            cb.Property(c => c.Longitude)
+              .IsRequired()
+              .HasColumnName(ChatSessionConsts.LongitudeColumnName)
+              .HasColumnType(ChatSessionConsts.LongitudePrecision);
+
+            cb.Property(c => c.Latitude)
+              .IsRequired()
+              .HasColumnName(ChatSessionConsts.LatitudeColumnName)
+              .HasColumnType(ChatSessionConsts.LattitudePrecision);
+
+            cb.Property(c => c.Flag)
+              .IsRequired()
+              .HasColumnName(ChatSessionConsts.FlagColumnName)
+              .HasMaxLength(ChatSessionConsts.FlagMaxLength);
+
+            cb.Property(c => c.Ip)
+              .IsRequired()
+              .HasColumnName(ChatSessionConsts.IpColumnName)
+              .HasMaxLength(ChatSessionConsts.IpMaxLength);
+        });
+
 
         builder.Property(s => s.BrowserSessionKey)
             .HasMaxLength(ChatSessionConsts.BrowserSessionKeyMaxLength);
@@ -36,7 +62,7 @@ public class ChatSessionConfiguration : IEntityTypeConfiguration<ChatSession>
             .WithMany()
             .HasForeignKey(s => s.ChatbotId)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         builder.HasOne<Tenant>()
             .WithMany()
             .HasForeignKey(s => s.TenantId)
