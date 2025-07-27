@@ -1,9 +1,12 @@
 ﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 using ChatUapp.Core.Exceptions;
+using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Chatbot;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace ChatUapp.Core.ChatbotManagement.Services
 {
@@ -29,6 +32,29 @@ namespace ChatUapp.Core.ChatbotManagement.Services
                 Enums.ChatbotUserStatus.Active);
 
             return Task.FromResult(obj);
+        }
+
+        public Task<TenantChatbotUser> UpdateChatbotAsync(
+            TenantChatbotUser tenantBotUser, 
+            Guid chatbotId, 
+            Guid userId)
+        {
+            Ensure.NotNull(tenantBotUser, nameof(tenantBotUser));
+            tenantBotUser.UpdateChatbotUser(chatbotId, userId);
+            return Task.FromResult(tenantBotUser);
+        }
+
+        public void Delete(TenantChatbotUser tenentUser)
+        {
+            tenentUser.IsDeleted = true;
+        }
+
+        public void DeleteAll(List<TenantChatbotUser> tenantUsers)
+        {
+            foreach (var user in tenantUsers)
+            {
+                user.IsDeleted = true;
+            }
         }
     }
 }

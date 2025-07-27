@@ -88,7 +88,7 @@ public static class Ensure
     {
         if (currentUser == null || !currentUser.IsAuthenticated)
         {
-            throw new AppBusinessException("User is not authenticated.");
+            throw new AppValidationException("User is not authenticated.");
         }
     }
 }
