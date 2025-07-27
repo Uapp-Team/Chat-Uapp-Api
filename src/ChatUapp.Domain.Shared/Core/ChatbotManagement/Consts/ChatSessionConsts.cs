@@ -17,7 +17,7 @@ public class ChatSessionConsts
 
     // LocationSnapshot consts
     public const int CountryNameMaxLength = 100;
-    public const int FlagMaxLength = 20;
+    public const int FlagMaxLength = 500;
     public const int IpMaxLength = AppConsts.IpMaxLength;
     public const string LongitudePrecision = "double precision";
     public const string LattitudePrecision = "double precision";
