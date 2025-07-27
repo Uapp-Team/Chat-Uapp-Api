@@ -13,7 +13,7 @@ public class LocationSnapshot : ValueObject
 
     private LocationSnapshot() { } // For EF Core
 
-    public LocationSnapshot(string name, double longitude, double latitude, int users, string flag, string ip)
+    public LocationSnapshot(string name, double longitude, double latitude, string flag, string ip)
     {
         CountryName = name;
         Longitude = longitude;

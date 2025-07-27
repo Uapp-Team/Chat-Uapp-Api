@@ -17,7 +17,7 @@ public class ChatSession : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public Guid SessionCreator { get; private set; }
     public Guid ChatbotId { get; private set; }
     public string? Title { get; private set; }
-    public string? Ip { get; private set; }
+    public LocationSnapshot LocationSnapshot { get; private set; } = default!;
     public string? BrowserSessionKey { get; private set; }
 
     private readonly List<ChatMessage> _messages = new();
@@ -25,14 +25,14 @@ public class ChatSession : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     private ChatSession() { } // EF Core
 
-    public ChatSession(Guid id, Guid userId, Guid chatbotId, string? title, Guid? tenantId, string? ip = null, string? browserSessionKey = null)
+    public ChatSession(Guid id, Guid userId, Guid chatbotId, string? title, Guid? tenantId, LocationSnapshot snapshot, string? browserSessionKey = null)
         : base(id)
     {
         TenantId = tenantId;
         SessionCreator = userId;
         Title = title;
         ChatbotId = chatbotId;
-        Ip = ip;
+        LocationSnapshot = snapshot;
         BrowserSessionKey = browserSessionKey;
     }
 

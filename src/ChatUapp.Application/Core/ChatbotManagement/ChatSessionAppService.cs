@@ -43,8 +43,17 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
 
         if (_currentUser.Id == null)
             throw new AppBusinessException("User is not authenticated.");
+
+        var locationSnapshot = new LocationSnapshot(
+                input.LocationSnapshot.CountryName,
+                input.LocationSnapshot.Longitude,
+                input.LocationSnapshot.Latitude,
+                input.LocationSnapshot.Flag, 
+                input.LocationSnapshot.Ip
+            );
+       
         // Create a new chat session instance
-        var session = _sessionManager.CreateNewSession(_currentUser.Id.Value, input.chatbotId, input.sessionTitle, input.Ip, input.BrowserSessionKey);
+        var session = _sessionManager.CreateNewSession(_currentUser.Id.Value, input.chatbotId, input.sessionTitle, locationSnapshot, input.BrowserSessionKey);
 
         // Send the initial user message to the chatbot and get the response
         var result = await _message.AskAnything(input.sessionTitle);
