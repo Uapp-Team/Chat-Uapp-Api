@@ -340,7 +340,6 @@ namespace ChatUapp.Core.ChatbotManagement
                 .Where(u => userIds.Contains(u.Id))
                 .ToList();
 
-            //  Map to DTO
             return ObjectMapper.Map<List<IdentityUser>, List<UserByChatBotDto>>(users);
         }
     }
