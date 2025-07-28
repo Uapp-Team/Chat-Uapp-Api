@@ -273,5 +273,3 @@ src/ChatUapp.Blazor.Server.Tiered/Logs/*
 tempkey.rsa
 tempkey.jwk
 /src/ChatUapp.Web/appsettings.Development.json
-/src/ChatUapp.DbMigrator/appsettings.secrets.json
-/src/ChatUapp.DbMigrator/appsettings.secrets.json
