@@ -1,5 +1,6 @@
 ﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 using ChatUapp.Core.ChatbotManagement.DTOs;
+using ChatUapp.Core.ChatbotManagement.DTOs.Chatbot;
 using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.Guards;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
@@ -22,6 +24,7 @@ namespace ChatUapp.Core.ChatbotManagement
         private readonly ChatBotUserManager _chatbotUserManager;
         private readonly IIdentityUserRepository _userRepo;
         private readonly IRepository<Chatbot, Guid> _botRepo;
+        private readonly IUserChatSummaryQueryService _userChatSummaryQueryService;
         private readonly IRepository<TenantChatbotUser, Guid> _tenentBotUserRepo;
         private readonly IBlobStorageService _storage;
         private readonly ICurrentUser _currentUser;
@@ -33,6 +36,7 @@ namespace ChatUapp.Core.ChatbotManagement
             ChatBotUserManager chatbotUserManager,
             ICurrentUser currentUser,
             IRepository<TenantChatbotUser, Guid> tenentBotUserRepo,
+            IUserChatSummaryQueryService userChatSummaryQueryService,
             IIdentityUserRepository userRepo)
         {
             _chatbotManager = chatbot;
@@ -41,6 +45,7 @@ namespace ChatUapp.Core.ChatbotManagement
             _chatbotUserManager = chatbotUserManager;
             _currentUser = currentUser;
             _tenentBotUserRepo = tenentBotUserRepo;
+            _userChatSummaryQueryService = userChatSummaryQueryService;
             _userRepo = userRepo;
         }
 
@@ -324,6 +329,12 @@ namespace ChatUapp.Core.ChatbotManagement
 
             // Return mapped DTO
             return ObjectMapper.Map<Chatbot, ChatbotDto>(updatedChatbot);
+        }
+
+        public async Task<PagedResultDto<GetAllChatDto>> GetAllChatAsync(GetAllChatFilterDto filter)
+        {
+            var result = await _userChatSummaryQueryService.GetUserChatSummariesAsync(filter);
+            return result;
         }
 
         public async Task<List<UserByChatBotDto>> GetAllUserByBotAsync(Guid botId)
