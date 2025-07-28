@@ -32,6 +32,7 @@ public class ChatUappDbContext :
     public DbSet<TrainingSource> TrainingSources { get; set; }
     public DbSet<ChatSession> ChatSessions { get; set; }
     public DbSet<TenantChatbotUser> TenantChatbotUsers { get; set; }
+    public DbSet<BotInvitation> BotInvitations { get; set; }
 
     #region Entities from the modules
 

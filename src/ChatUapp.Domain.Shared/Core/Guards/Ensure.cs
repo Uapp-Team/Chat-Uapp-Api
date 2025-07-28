@@ -1,5 +1,5 @@
-﻿using ChatUapp.Core.Exceptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 
 namespace ChatUapp.Core.Guards;
@@ -89,6 +89,14 @@ public static class Ensure
         if (currentUser == null || !currentUser.IsAuthenticated)
         {
             throw new AppValidationException("User is not authenticated.");
+        }
+    }
+
+    public static void IsAvailableTenant(ICurrentTenant currentTenant)
+    {
+        if (currentTenant == null || !currentTenant.IsAvailable)
+        {
+            throw new AppValidationException("Tenant is not IsAvailable.");
         }
     }
 }
