@@ -12,7 +12,6 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.Users;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace ChatUapp.Core.ChatbotManagement
 {

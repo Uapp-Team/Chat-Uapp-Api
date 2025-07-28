@@ -1,12 +1,10 @@
 ﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
-using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Chatbot;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace ChatUapp.Core.ChatbotManagement.Services
 {
@@ -19,10 +17,9 @@ namespace ChatUapp.Core.ChatbotManagement.Services
             _guidGenerator = guidGenerator;
         }
 
-        public Task<TenantChatbotUser> CreateAsync(Guid ChatbotId , Guid UserId)
+        public Task<TenantChatbotUser> CreateAsync(Guid ChatbotId, Guid UserId)
         {
-            if (CurrentTenant.Id == null)
-                throw new AppBusinessException("Tenant ID is not set. Ensure you are in a valid tenant context.");
+            Ensure.IsAvailableTenant(CurrentTenant);
 
             var obj = new TenantChatbotUser(
                 _guidGenerator.Create(),
@@ -35,8 +32,8 @@ namespace ChatUapp.Core.ChatbotManagement.Services
         }
 
         public Task<TenantChatbotUser> UpdateChatbotAsync(
-            TenantChatbotUser tenantBotUser, 
-            Guid chatbotId, 
+            TenantChatbotUser tenantBotUser,
+            Guid chatbotId,
             Guid userId)
         {
             Ensure.NotNull(tenantBotUser, nameof(tenantBotUser));
