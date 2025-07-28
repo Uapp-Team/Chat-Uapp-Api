@@ -37,7 +37,7 @@ public class ChatbotManager : DomainService
             subHeader,
             _guidGenerator.Create().ToString(),
             new IconStyle(iconName, iconColor),
-            ChatbotStatus.Active,
+            ChatbotStatus.Draft,
             CurrentTenant.Id);
 
         return bot;
