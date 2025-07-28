@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ChatUapp.Core.ChatbotManagement.DTOs.Session;
 
-public class CreateSessionDto 
+public class CreateSessionInputDto 
 {
     public Guid chatbotId { get;  set; }
     public string sessionTitle { get; set; } = default!;

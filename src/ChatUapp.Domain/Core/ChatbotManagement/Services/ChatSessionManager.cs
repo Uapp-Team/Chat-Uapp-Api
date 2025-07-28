@@ -49,4 +49,16 @@ public class ChatSessionManager : DomainService
         var sentAtUtc = DateTime.UtcNow;
         session.AddMessage(messageId, sentAtUtc, content, role, type);
     }
+
+    public void LikeMessage(ChatSession session, Guid messageId)
+    {
+        Ensure.NotNull(session, nameof(session));
+        session.ReactMessage(messageId, ReactType.Like);
+    }
+
+    public void DislikeMessage(ChatSession session, Guid messageId)
+    {
+        Ensure.NotNull(session, nameof(session));
+        session.ReactMessage(messageId, ReactType.Dislike);
+    }
 }

@@ -8,8 +8,8 @@ namespace ChatUapp.Core.ChatbotManagement.Interfaces
 {
     public interface IChatSessionAppService : IApplicationService
     {
-        Task<ChatSessionDto> CreateAsync(CreateSessionDto input);
-        Task<ChatSessionDto> UpdateAsync(UpdateSessionDto input);
+        Task<ChatSessionDto> CreateAsync(CreateSessionInputDto input);
+        Task<ChatSessionDto> UpdateAsync(UpdateSessionInputDto input);
         Task<ChatSessionDto> GetAsync(Guid Id);
         Task<PagedResultDto<ChatSessionTitleDto>> GetTitlesAsync(GetSessionTitlesListDto input);
     }
