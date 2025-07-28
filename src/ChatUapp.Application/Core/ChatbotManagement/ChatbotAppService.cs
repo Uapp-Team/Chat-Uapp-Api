@@ -3,7 +3,6 @@ using ChatUapp.Core.ChatbotManagement.DTOs;
 using ChatUapp.Core.ChatbotManagement.DTOs.Chatbot;
 using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
-using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.FileStorage;
 using System;
@@ -13,7 +12,9 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Identity;
 using Volo.Abp.Users;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace ChatUapp.Core.ChatbotManagement
 {
@@ -21,6 +22,7 @@ namespace ChatUapp.Core.ChatbotManagement
     {
         private readonly ChatbotManager _chatbotManager;
         private readonly ChatBotUserManager _chatbotUserManager;
+        private readonly IIdentityUserRepository _userRepo;
         private readonly IRepository<Chatbot, Guid> _botRepo;
         private readonly IUserChatSummaryQueryService _userChatSummaryQueryService;
         private readonly IRepository<TenantChatbotUser, Guid> _tenentBotUserRepo;
@@ -34,7 +36,8 @@ namespace ChatUapp.Core.ChatbotManagement
             ChatBotUserManager chatbotUserManager,
             ICurrentUser currentUser,
             IRepository<TenantChatbotUser, Guid> tenentBotUserRepo,
-            IUserChatSummaryQueryService userChatSummaryQueryService)
+            IUserChatSummaryQueryService userChatSummaryQueryService,
+            IIdentityUserRepository userRepo)
         {
             _chatbotManager = chatbot;
             _botRepo = botRepo;
@@ -43,6 +46,7 @@ namespace ChatUapp.Core.ChatbotManagement
             _currentUser = currentUser;
             _tenentBotUserRepo = tenentBotUserRepo;
             _userChatSummaryQueryService = userChatSummaryQueryService;
+            _userRepo = userRepo;
         }
 
         public async Task<bool> ChangeStatusAsync(ChangeBotStatusDto input)
@@ -92,8 +96,7 @@ namespace ChatUapp.Core.ChatbotManagement
             chatbot.BrandImageName = input.BrandImageName;
             chatbot.Description = input.Description;
 
-            if (_currentUser.Id == null)
-                throw new AppBusinessException("User is not authenticated.");
+            Ensure.Authenticated(_currentUser);
 
             var botUserMaping = await _chatbotUserManager.CreateAsync(chatbot.Id, _currentUser.Id.Value);
 
@@ -129,8 +132,7 @@ namespace ChatUapp.Core.ChatbotManagement
             copyChatbot.Description = chatbot.Description;
 
             // Ensure current user is authenticated
-            if (_currentUser.Id == null)
-                throw new AppBusinessException("User is not authenticated.");
+            Ensure.Authenticated(_currentUser);
 
             // Create bot-user mapping with the new chatbot ID
             var botUserMapping = await _chatbotUserManager.CreateAsync(copyChatbot.Id, _currentUser.Id.Value);
@@ -143,6 +145,34 @@ namespace ChatUapp.Core.ChatbotManagement
 
             // Return DTO
             return ObjectMapper.Map<Chatbot, ChatbotDto>(copyChatbot);
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            // Retrieve the chatbot entity by its ID
+            var chatbot = await _botRepo.GetAsync(id);
+            Ensure.NotNull(chatbot, nameof(chatbot));
+
+            // Retrieve all TenantChatbotUser entities associated with this chatbot
+            var query = await _tenentBotUserRepo.GetQueryableAsync();
+            var tenetBotUser = query.Where(c => c.ChatbotId == chatbot.Id).ToList();
+
+            // Mark the chatbot entity as deleted (soft delete)
+            _chatbotManager.Delete(chatbot);
+
+            // Soft delete all related TenantChatbotUser records
+            _chatbotUserManager.DeleteAll(tenetBotUser);
+
+            // Update the chatbot entity in the database
+            await _botRepo.UpdateAsync(chatbot);
+
+            // Update all tenant chatbot user records in the database
+            await _tenentBotUserRepo.UpdateManyAsync(tenetBotUser);
+
+            // Persist all changes to the database
+            await CurrentUnitOfWork!.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<List<ChatBotListDto>> GetAllAsync()
@@ -184,6 +214,29 @@ namespace ChatUapp.Core.ChatbotManagement
             }
 
             return dto;
+        }
+
+        public async Task<List<ChatBotByUserDto>> GetAllByUserAsync(Guid userId)
+        {
+            // Get all TenantChatbotUser entries for the given user
+            var tenantUserQuery = await _tenentBotUserRepo.GetQueryableAsync();
+            var tenantUserLinks = tenantUserQuery
+                .Where(x => x.UserId == userId)
+                .ToList();
+
+            // Get all associated chatbot IDs
+            var chatbotIds = tenantUserLinks.Select(x => x.ChatbotId).Distinct().ToList();
+
+            if (!chatbotIds.Any())
+                return new List<ChatBotByUserDto>(); // No chatbots linked to this user
+
+            // Fetch chatbot entities based on collected IDs
+            var chatbotQuery = await _botRepo.GetQueryableAsync();
+            var chatbots = chatbotQuery
+                .Where(x => chatbotIds.Contains(x.Id))
+                .ToList();
+
+            return ObjectMapper.Map<List<Chatbot>, List<ChatBotByUserDto>>(chatbots); ;
         }
 
         public async Task<ChatbotDto> UpdateAsync(Guid id, UpdateChatbotDto input)
@@ -282,6 +335,30 @@ namespace ChatUapp.Core.ChatbotManagement
         {
             var result = await _userChatSummaryQueryService.GetUserChatSummariesAsync(filter);
             return result;
+        }
+
+        public async Task<List<UserByChatBotDto>> GetAllUserByBotAsync(Guid botId)
+        {
+            //  Get all TenantChatbotUser entries for the given bot
+            var tenantUserQuery = await _tenentBotUserRepo.GetQueryableAsync();
+            var userLinks = tenantUserQuery
+                .Where(x => x.ChatbotId == botId)
+                .ToList();
+
+            //  Get distinct UserIds
+            var userIds = userLinks.Select(x => x.UserId).Distinct().ToList();
+
+            if (!userIds.Any())
+                return new List<UserByChatBotDto>(); // No users linked to this bot
+
+            //  Fetch User entities from the User Repository
+            var userQuery = await _userRepo.GetListAsync();
+            var users = userQuery
+                .Where(u => userIds.Contains(u.Id))
+                .ToList();
+
+            //  Map to DTO
+            return ObjectMapper.Map<List<IdentityUser>, List<UserByChatBotDto>>(users);
         }
     }
 }

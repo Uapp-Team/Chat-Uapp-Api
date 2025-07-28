@@ -15,7 +15,10 @@ public class ChatUappApplicationAutoMapperProfile : Profile
         CreateMap<IdentityUser, AppIdentityUserDto>()
         .IncludeBase<IdentityUser, IdentityUserDto>();
         CreateMap<IdentityUser, AppProfileDto>();
+        CreateMap<IdentityUser, UserByChatBotDto>();
         CreateMap<Chatbot, CreateChatbotDto>();
+        CreateMap<Chatbot, CurrentBotDto>();
+        CreateMap<Chatbot, ChatBotByUserDto>();
         CreateMap<Chatbot, UpdateChatbotDto>();
         CreateMap<ChatSession, ChatSessionTitleDto>();
         CreateMap<Chatbot, ChatbotDto>()
