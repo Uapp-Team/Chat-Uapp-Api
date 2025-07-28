@@ -12,6 +12,7 @@ public class ChatMessage : Entity<Guid>
     public MessageText Content { get; private set; } = default!; // Using MessageText value object for content
     public MessageRole Role { get; private set; } = default!;
     public MessageType Type { get; private set; } = MessageType.Text; // Default to Text type
+    public ReactType ReactType { get; private set; } = ReactType.NotSet; // Default to NotSet
     public DateTime SentAt { get; private set; }
 
     private ChatMessage() { }
@@ -24,5 +25,10 @@ public class ChatMessage : Entity<Guid>
         Content = content;
         Type = type;
         SentAt = sentAt;
+    }
+
+    internal void SetReactType(ReactType type)
+    {
+        ReactType = type;
     }
 }

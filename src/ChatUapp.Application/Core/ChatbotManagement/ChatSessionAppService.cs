@@ -1,5 +1,6 @@
 ﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 using ChatUapp.Core.ChatbotManagement.DTOs.Session;
+using ChatUapp.Core.ChatbotManagement.Enums;
 using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.ChatbotManagement.VOs;
@@ -37,7 +38,7 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         _currentUser = currentUser;
     }
 
-    public async Task<ChatSessionDto> CreateAsync(CreateSessionDto input)
+    public async Task<ChatSessionDto> CreateAsync(CreateSessionInputDto input)
     {
         Ensure.NotNull(input, nameof(input));
 
@@ -71,7 +72,7 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         // Return the session as a DTO
         return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
     }
-    public async Task<ChatSessionDto> UpdateAsync(UpdateSessionDto input)
+    public async Task<ChatSessionDto> UpdateAsync(UpdateSessionInputDto input)
     {
         Ensure.NotNull(input, nameof(input));
 
@@ -88,6 +89,48 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         // Add both user and chatbot messages to the session
         _sessionManager.AddMessageToSession(session, input.message, MessageRole.User);
         _sessionManager.AddMessageToSession(session, result, MessageRole.Chatbot);
+
+        // Persist the changes to the database
+        await _sessionRepo.UpdateAsync(session);
+        await CurrentUnitOfWork!.SaveChangesAsync();
+
+        // Return the updated session as a DTO
+        return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
+    }
+    public async Task<ChatSessionDto> LikeAsync(LikeDislikeInputDto input)
+    {
+        Ensure.NotNull(input, nameof(input));
+
+        // Load the session along with its related messages
+        var queryable = await _sessionRepo.WithDetailsAsync(x => x.Messages);
+
+        // Find the specific session by ID
+        var session = queryable.First(s => s.Id == input.sessionId);
+        Ensure.NotNull(session, nameof(session));
+  
+        // Add both user and chatbot messages to the session
+        _sessionManager.LikeMessage(session, input.messageId);
+
+        // Persist the changes to the database
+        await _sessionRepo.UpdateAsync(session);
+        await CurrentUnitOfWork!.SaveChangesAsync();
+
+        // Return the updated session as a DTO
+        return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
+    }
+    public async Task<ChatSessionDto> DislikeAsync(LikeDislikeInputDto input)
+    {
+        Ensure.NotNull(input, nameof(input));
+
+        // Load the session along with its related messages
+        var queryable = await _sessionRepo.WithDetailsAsync(x => x.Messages);
+
+        // Find the specific session by ID
+        var session = queryable.First(s => s.Id == input.sessionId);
+        Ensure.NotNull(session, nameof(session));
+
+        // Add both user and chatbot messages to the session
+        _sessionManager.DislikeMessage(session, input.messageId);
 
         // Persist the changes to the database
         await _sessionRepo.UpdateAsync(session);

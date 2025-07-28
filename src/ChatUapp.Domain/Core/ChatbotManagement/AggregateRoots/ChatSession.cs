@@ -36,7 +36,7 @@ public class ChatSession : FullAuditedAggregateRoot<Guid>, IMultiTenant
         BrowserSessionKey = browserSessionKey;
     }
 
-    public void Rename(string newTitle)
+    internal void Rename(string newTitle)
     {
         if (string.IsNullOrWhiteSpace(newTitle))
         {
@@ -45,11 +45,21 @@ public class ChatSession : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Title = newTitle;
     }
 
-    public void AddMessage(Guid messageId, DateTime sentAtUtc, MessageText content, MessageRole role, MessageType type = MessageType.Text)
+    internal void AddMessage(Guid messageId, DateTime sentAtUtc, MessageText content, MessageRole role, MessageType type = MessageType.Text)
     {
         var message = new ChatMessage(messageId, Id, role, content, type, sentAtUtc);
         _messages.Add(message);
 
         AddDistributedEvent(new ChatMessageSentEvent(Id, messageId, content.Value, role));
+    }
+
+    internal void ReactMessage(Guid messageId, ReactType reactType)
+    {
+        var message = _messages.Find(m => m.Id == messageId);
+        if (message == null)
+        {
+            throw new AppBusinessException("Message not found.");
+        }
+        message.SetReactType(reactType);
     }
 }
