@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ChatUapp.Application.Contracts\ChatUapp.Application.Contracts.csproj" />
     <ProjectReference Include="..\ChatUapp.Domain\ChatUapp.Domain.csproj" />
   </ItemGroup>
 
