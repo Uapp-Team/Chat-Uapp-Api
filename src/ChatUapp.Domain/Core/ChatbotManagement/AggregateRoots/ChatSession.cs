@@ -6,6 +6,7 @@ using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Messages.VOs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -21,7 +22,7 @@ public class ChatSession : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? BrowserSessionKey { get; private set; }
 
     private readonly List<ChatMessage> _messages = new();
-    public IReadOnlyCollection<ChatMessage> Messages => _messages.AsReadOnly();
+    public IReadOnlyCollection<ChatMessage> Messages => _messages.OrderByDescending(x => x.SentAt).ToList().AsReadOnly();
 
     private ChatSession() { } // EF Core
 

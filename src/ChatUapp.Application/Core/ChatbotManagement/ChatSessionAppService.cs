@@ -147,6 +147,8 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         // Find the specific session by ID
         var session = queryable.First(s => s.Id == Id);
 
+        Ensure.NotNull(session, nameof(session));
+
         // Return the updated session as a DTO
         return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
     }
