@@ -1,9 +1,13 @@
 ﻿using ChatUapp.Core.Message.Interfaces;
+using ChatUapp.Core.PermissionManagement.DefinitionProviders;
+using ChatUapp.Core.PermissionManagement.Definitions;
 using ChatUapp.HttpClients;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
 using System;
+using System.Linq;
 using System.Net.Http.Headers;
+using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.FeatureManagement;
@@ -49,5 +53,18 @@ public class ChatUappApplicationModule : AbpModule
             .ConfigureHttpClient(c => c.BaseAddress = new Uri(configuration["ChatBotEngine:BaseUrl"]))
             .AddPolicyHandler(PollyPolicies.GetRetryPolicy());
 
+        context.Services.AddScoped<ChatbotPermissionDefinitionProvider, MyChatbotPermissionDefinitionProvider>();
+    }
+
+    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    {
+        var providers = context.ServiceProvider.GetServices<ChatbotPermissionDefinitionProvider>().ToList();
+
+        if (!providers.Any())
+        {
+            throw new InvalidOperationException("No ChatbotPermissionDefinitionProviders registered.");
+        }
+
+        ChatbotPermissionRegistry.Initialize(providers);
     }
 }

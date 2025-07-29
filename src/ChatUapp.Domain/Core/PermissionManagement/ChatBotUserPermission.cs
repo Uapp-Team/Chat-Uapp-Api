@@ -5,21 +5,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace ChatUapp.Core.PermissionManagement;
 
-public class ChatBotUserPermission : FullAuditedAggregateRoot<Guid>
+public class ChatbotUserPermission : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
     public Guid UserId { get; private set; }
     public Guid ChatBotId { get; private set; }
     public string PermissionName { get; private set; } = string.Empty;
-    private ChatBotUserPermission() { } // EF Core
-    public ChatBotUserPermission(Guid id, Guid userId, Guid chatBotId, string permissionName)
+
+    public Guid? TenantId { get; private set; }
+
+    private ChatbotUserPermission() { } // EF Core
+    public ChatbotUserPermission(Guid id, Guid userId, Guid chatBotId, string permissionName, Guid tenantId)
         : base(id)
     {
         UserId = userId;
         ChatBotId = chatBotId;
         PermissionName = permissionName;
+        TenantId = tenantId;
     }
     public void UpdatePermission(string newPermissionName)
     {

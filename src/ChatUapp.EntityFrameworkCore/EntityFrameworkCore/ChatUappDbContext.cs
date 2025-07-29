@@ -1,5 +1,6 @@
 using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 using ChatUapp.Core.Messages.AggregateRoots;
+using ChatUapp.Core.PermissionManagement;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -33,6 +34,7 @@ public class ChatUappDbContext :
     public DbSet<ChatSession> ChatSessions { get; set; }
     public DbSet<TenantChatbotUser> TenantChatbotUsers { get; set; }
     public DbSet<BotInvitation> BotInvitations { get; set; }
+    public DbSet<ChatbotUserPermission> ChatbotUserPermissions { get; set; }
 
     #region Entities from the modules
 

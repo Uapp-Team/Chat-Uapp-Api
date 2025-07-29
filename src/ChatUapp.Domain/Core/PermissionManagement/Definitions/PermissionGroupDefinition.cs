@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ChatUapp.Core.PermissionManagement.Definitions;
 
@@ -6,7 +7,7 @@ public class PermissionGroupDefinition
 {
     internal string Name { get; }
     internal string DisplayName { get; }
-    internal List<PermissionDefinition> Permissions { get; } = new();
+    public List<PermissionDefinition> Permissions { get; } = new();
 
     internal PermissionGroupDefinition(string name, string displayName)
     {
@@ -14,10 +15,41 @@ public class PermissionGroupDefinition
         DisplayName = displayName;
     }
 
-    internal PermissionDefinition AddPermission(string name, string displayName)
+    public PermissionDefinition AddPermission(string name, string displayName)
     {
         var perm = new PermissionDefinition(name, displayName);
         Permissions.Add(perm);
         return perm;
+    }
+
+    public PermissionGroupDefinition WithPermissions(Action<PermissionListBuilder> buildAction)
+    {
+        var builder = new PermissionListBuilder(Permissions);
+        buildAction(builder);
+        return this;
+    }
+}
+
+public class PermissionListBuilder
+{
+    private readonly List<PermissionDefinition> _permissionList;
+
+    public PermissionListBuilder(List<PermissionDefinition> list)
+    {
+        _permissionList = list;
+    }
+
+    public PermissionListBuilder Add(string name, string displayName, Action<PermissionListBuilder>? children = null)
+    {
+        var permission = new PermissionDefinition(name, displayName);
+
+        if (children != null)
+        {
+            var childBuilder = new PermissionListBuilder(permission.Children);
+            children(childBuilder);
+        }
+
+        _permissionList.Add(permission);
+        return this;
     }
 }
