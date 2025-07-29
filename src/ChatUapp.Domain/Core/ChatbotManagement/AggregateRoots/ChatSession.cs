@@ -22,7 +22,7 @@ public class ChatSession : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? BrowserSessionKey { get; private set; }
 
     private readonly List<ChatMessage> _messages = new();
-    public IReadOnlyCollection<ChatMessage> Messages => _messages.OrderByDescending(x => x.SentAt).ToList().AsReadOnly();
+    public IReadOnlyCollection<ChatMessage> Messages => _messages.OrderBy(x => x.SentAt).ToList().AsReadOnly();
 
     private ChatSession() { } // EF Core
 
