@@ -1,7 +1,7 @@
-﻿using System;
-using System.Net.Http;
-using Polly;
+﻿using Polly;
 using Polly.Extensions.Http;
+using System;
+using System.Net.Http;
 
 namespace ChatUapp.HttpClients;
 

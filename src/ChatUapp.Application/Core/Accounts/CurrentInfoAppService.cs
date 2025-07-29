@@ -36,7 +36,7 @@ public class CurrentInfoAppService : ApplicationService, ICurrentInfoAppService
         Ensure.Authenticated(_currentUser);
 
         var queryable = await _botRepo.GetQueryableAsync();
-        var chatBot = queryable.Where(x=>x.CreatorId == _currentUser.Id).FirstOrDefault();
+        var chatBot = queryable.Where(x => x.CreatorId == _currentUser.Id).FirstOrDefault();
         if (chatBot == null)
             throw new AppBusinessException("No chatbot found for the current user.");
 

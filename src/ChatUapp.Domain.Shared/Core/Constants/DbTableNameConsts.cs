@@ -1,6 +1,6 @@
 ﻿namespace ChatUapp.Core.Constants;
 
-public class DbTableNameConsts 
+public class DbTableNameConsts
 {
     public const string Messages = "Messages";
     public const string ChatMessages = "ChatMessages";
@@ -10,4 +10,5 @@ public class DbTableNameConsts
     public const string ChatSessions = "ChatSesions";
     public const string TrainingSources = "TrainingSources";
     public const string BotInvitations = "BotInvitations";
+    public const string ChatbotUserPermissions = "ChatbotUserPermissions";
 }

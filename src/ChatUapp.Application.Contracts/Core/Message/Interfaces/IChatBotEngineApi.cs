@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using ChatUapp.Core.Message.ApiResponsesDtos;
+﻿using ChatUapp.Core.Message.ApiResponsesDtos;
 using Refit;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ChatUapp.Core.Message.Interfaces;
 

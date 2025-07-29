@@ -1,7 +1,7 @@
-﻿using Volo.Abp.Ui.Branding;
-using Volo.Abp.DependencyInjection;
+﻿using ChatUapp.Localization;
 using Microsoft.Extensions.Localization;
-using ChatUapp.Localization;
+using Volo.Abp.DependencyInjection;
+using Volo.Abp.Ui.Branding;
 
 namespace ChatUapp.Web;
 

@@ -45,7 +45,7 @@ public class TrainingSourceAppService : ApplicationService, ITrainingSourceAppSe
     {
         var queryable = await _repository.GetQueryableAsync();
 
-        if(!string.IsNullOrWhiteSpace(input.TrainingSourceTitle))
+        if (!string.IsNullOrWhiteSpace(input.TrainingSourceTitle))
         {
             queryable = queryable.Where(x => x.Name.Contains(input.TrainingSourceTitle));
         }

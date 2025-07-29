@@ -6,7 +6,7 @@ namespace ChatUapp.Core.ChatbotManagement.VOs;
 public class LocationSnapshot : ValueObject
 {
     public string CountryName { get; } = string.Empty;
-    public double Longitude { get; } 
+    public double Longitude { get; }
     public double Latitude { get; }
     public string Flag { get; } = string.Empty;
     public string Ip { get; } = string.Empty;

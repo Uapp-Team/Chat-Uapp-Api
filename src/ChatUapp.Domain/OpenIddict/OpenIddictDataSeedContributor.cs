@@ -1,12 +1,12 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Localization;
+using OpenIddict.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Localization;
-using OpenIddict.Abstractions;
 using Volo.Abp;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Data;
@@ -60,8 +60,11 @@ public class OpenIddictDataSeedContributor : IDataSeedContributor, ITransientDep
     {
         if (await _openIddictScopeRepository.FindByNameAsync("ChatUapp") == null)
         {
-            await _scopeManager.CreateAsync(new OpenIddictScopeDescriptor {
-                Name = "ChatUapp", DisplayName = "ChatUapp API", Resources = { "ChatUapp" }
+            await _scopeManager.CreateAsync(new OpenIddictScopeDescriptor
+            {
+                Name = "ChatUapp",
+                DisplayName = "ChatUapp API",
+                Resources = { "ChatUapp" }
             });
         }
     }
@@ -162,7 +165,8 @@ public class OpenIddictDataSeedContributor : IDataSeedContributor, ITransientDep
 
         var client = await _openIddictApplicationRepository.FindByClientIdAsync(name);
 
-        var application = new AbpApplicationDescriptor {
+        var application = new AbpApplicationDescriptor
+        {
             ApplicationType = applicationType,
             ClientId = name,
             ClientType = type,
@@ -298,9 +302,9 @@ public class OpenIddictDataSeedContributor : IDataSeedContributor, ITransientDep
                     application.RedirectUris.Add(uri);
                 }
             }
-            
+
         }
-        
+
         if (!postLogoutRedirectUris.IsNullOrEmpty())
         {
             foreach (var postLogoutRedirectUri in postLogoutRedirectUris!.Where(postLogoutRedirectUri => !postLogoutRedirectUri.IsNullOrWhiteSpace()))

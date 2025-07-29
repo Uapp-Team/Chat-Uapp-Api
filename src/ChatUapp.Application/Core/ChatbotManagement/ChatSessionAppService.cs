@@ -1,6 +1,5 @@
 ﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 using ChatUapp.Core.ChatbotManagement.DTOs.Session;
-using ChatUapp.Core.ChatbotManagement.Enums;
 using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.ChatbotManagement.VOs;
@@ -49,10 +48,10 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
                 input.LocationSnapshot.CountryName,
                 input.LocationSnapshot.Longitude,
                 input.LocationSnapshot.Latitude,
-                input.LocationSnapshot.Flag, 
+                input.LocationSnapshot.Flag,
                 input.LocationSnapshot.Ip
             );
-       
+
         // Create a new chat session instance
         var session = _sessionManager.CreateNewSession(_currentUser.Id.Value, input.chatbotId, input.sessionTitle, locationSnapshot, input.BrowserSessionKey);
 
@@ -107,7 +106,7 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         // Find the specific session by ID
         var session = queryable.First(s => s.Id == input.sessionId);
         Ensure.NotNull(session, nameof(session));
-  
+
         // Add both user and chatbot messages to the session
         _sessionManager.LikeMessage(session, input.messageId);
 

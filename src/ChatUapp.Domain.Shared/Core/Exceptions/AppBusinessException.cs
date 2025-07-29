@@ -1,5 +1,5 @@
-﻿using Volo.Abp;
-using ChatUapp.Core.Constants;
+﻿using ChatUapp.Core.Constants;
+using Volo.Abp;
 
 namespace ChatUapp.Core.Exceptions;
 

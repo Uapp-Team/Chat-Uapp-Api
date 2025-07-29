@@ -1,6 +1,4 @@
-﻿using Volo.Abp;
-
-namespace ChatUapp.EntityFrameworkCore;
+﻿namespace ChatUapp.EntityFrameworkCore;
 
 public abstract class ChatUappEntityFrameworkCoreTestBase : ChatUappTestBase<ChatUappEntityFrameworkCoreTestModule>
 {

@@ -20,7 +20,7 @@ public class ChatSessionManager : DomainService
         _chatSessionRepository = chatSessionRepository;
     }
 
-    public ChatSession CreateNewSession(Guid userId, Guid chatbotId, string sessionTitle,LocationSnapshot snapshot, string? BrowserSessionKey = null)
+    public ChatSession CreateNewSession(Guid userId, Guid chatbotId, string sessionTitle, LocationSnapshot snapshot, string? BrowserSessionKey = null)
     {
         var session = new ChatSession(
             _guidGenerator.Create(),

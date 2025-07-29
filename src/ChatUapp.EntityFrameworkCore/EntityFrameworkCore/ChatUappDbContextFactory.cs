@@ -1,8 +1,8 @@
-﻿using System;
-using System.IO;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 
 namespace ChatUapp.EntityFrameworkCore;
 
@@ -14,14 +14,14 @@ public class ChatUappDbContextFactory : IDesignTimeDbContextFactory<ChatUappDbCo
     {
         // https://www.npgsql.org/efcore/release-notes/6.0.html#opting-out-of-the-new-timestamp-mapping-logic
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        
+
         var configuration = BuildConfiguration();
-        
+
         ChatUappEfCoreEntityExtensionMappings.Configure();
 
         var builder = new DbContextOptionsBuilder<ChatUappDbContext>()
             .UseNpgsql(configuration.GetConnectionString("Default"));
-        
+
         return new ChatUappDbContext(builder.Options);
     }
 

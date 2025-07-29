@@ -17,7 +17,7 @@ public class BotInvitation : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     private BotInvitation() { }
 
-    internal BotInvitation(Guid id, Guid? InvitedBy, Guid ? TenantId, Guid botId, string userEmail, string role, bool isRegistered = false)
+    internal BotInvitation(Guid id, Guid? InvitedBy, Guid? TenantId, Guid botId, string userEmail, string role, bool isRegistered = false)
         : base(id)
     {
         SetBotId(botId);
@@ -76,8 +76,8 @@ public class BotInvitation : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     internal void UpdateInvitation(string email, string role)
     {
-            SetEmail(email);
-            SetRole(role);
+        SetEmail(email);
+        SetRole(role);
         RegenerateToken();
     }
 }

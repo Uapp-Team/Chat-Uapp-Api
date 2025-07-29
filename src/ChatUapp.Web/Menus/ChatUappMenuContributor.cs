@@ -1,12 +1,10 @@
-using System.Threading.Tasks;
 using ChatUapp.Localization;
-using ChatUapp.Permissions;
 using ChatUapp.MultiTenancy;
-using Volo.Abp.SettingManagement.Web.Navigation;
-using Volo.Abp.Authorization.Permissions;
+using System.Threading.Tasks;
 using Volo.Abp.Identity.Web.Navigation;
-using Volo.Abp.UI.Navigation;
+using Volo.Abp.SettingManagement.Web.Navigation;
 using Volo.Abp.TenantManagement.Web.Navigation;
+using Volo.Abp.UI.Navigation;
 
 namespace ChatUapp.Web.Menus;
 
@@ -42,7 +40,7 @@ public class ChatUappMenuContributor : IMenuContributor
 
         //Administration->Identity
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 1);
-    
+
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
@@ -51,12 +49,12 @@ public class ChatUappMenuContributor : IMenuContributor
         {
             administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
         }
-        
+
         administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 3);
 
         //Administration->Settings
         administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 7);
-        
+
         return Task.CompletedTask;
     }
 }

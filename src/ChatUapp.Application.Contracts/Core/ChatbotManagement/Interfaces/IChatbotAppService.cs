@@ -10,8 +10,8 @@ public interface IChatbotAppService : IApplicationService
 {
     Task<ChatbotDto> CreateAsync(CreateChatbotDto input);
     Task<ChatbotDto> CreateCopyAsync(Guid Id);
-    Task<ChatbotDto> UpdateAsync(Guid id,UpdateChatbotDto input);
-    Task<ChatbotDto> UpdateNameAsync(Guid id,string Name);
+    Task<ChatbotDto> UpdateAsync(Guid id, UpdateChatbotDto input);
+    Task<ChatbotDto> UpdateNameAsync(Guid id, string Name);
     Task<bool> DeleteAsync(Guid id);
     Task<List<ChatBotByUserDto>> GetAllByUserAsync(Guid userId);
     Task<List<UserByChatBotDto>> GetAllUserByBotAsync(Guid botId);

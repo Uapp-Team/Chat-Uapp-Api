@@ -1,15 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using ChatUapp.Core.Accounts.DTOs;
+using ChatUapp.Core.Accounts.Interfaces;
 using ChatUapp.Core.Guards;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Emailing;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Identity;
-using ChatUapp.Core.Accounts.DTOs;
-using ChatUapp.Core.Accounts.Interfaces;
 
 namespace ChatUapp.Core.Accounts;
 
@@ -40,7 +40,7 @@ public class AppAccountAppService : AccountAppService,
     {
     }
 
-    [RemoteService(IsEnabled =false)]
+    [RemoteService(IsEnabled = false)]
     public override Task<IdentityUserDto> RegisterAsync(RegisterDto input)
     {
         return base.RegisterAsync(input);
@@ -60,7 +60,7 @@ public class AppAccountAppService : AccountAppService,
         // Update user properties
         identityUser!.Name = input.FirstName;
         identityUser.Surname = input.LastName;
-        identityUser.SetPhoneNumber(input.PhoneNumber,true);
+        identityUser.SetPhoneNumber(input.PhoneNumber, true);
         identityUser.SetProperty("TitlePrefix", input.TitlePrefix);
 
         // Save updates

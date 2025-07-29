@@ -4,7 +4,6 @@ using ChatUapp.Core.Extensions;
 using ChatUapp.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ using Volo.Abp.Identity;
 
 namespace ChatUapp.Core.ChatbotManagement.QueryServices;
 
-public class UserChatSummaryQueryService : IUserChatSummaryQueryService,ITransientDependency
+public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransientDependency
 {
     private readonly ChatUappDbContext _dbContext;
     private readonly UserManager<IdentityUser> _userManager;
@@ -42,8 +41,8 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService,ITransie
             .WhereIf(filter.CreatedBefore.HasValue, x => x.CreationTime <= filter.CreatedBefore!.Value);
 
 
-        var filteredUserQuery =  _dbContext.Users.AsNoTracking().WhereIf(
-            !string.IsNullOrWhiteSpace(filter.Text), 
+        var filteredUserQuery = _dbContext.Users.AsNoTracking().WhereIf(
+            !string.IsNullOrWhiteSpace(filter.Text),
             x => x.Name.Contains(filter.Text!) || x.Email.Contains(filter.Text!));
 
 

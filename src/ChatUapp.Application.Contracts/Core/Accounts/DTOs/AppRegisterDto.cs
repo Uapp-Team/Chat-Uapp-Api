@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ChatUapp.Core.Constants;
+﻿using ChatUapp.Core.Constants;
+using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Account;
 using Volo.Abp.Identity;
 using Volo.Abp.Validation;
