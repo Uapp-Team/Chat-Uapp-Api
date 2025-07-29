@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using ChatUapp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ChatUapp.Data;
+using System;
+using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
 
 namespace ChatUapp.EntityFrameworkCore;
@@ -25,9 +25,9 @@ public class EntityFrameworkCoreChatUappDbSchemaMigrator
          * current scope.
          */
 
-         await _serviceProvider
-            .GetRequiredService<ChatUappDbContext>()
-            .Database
-            .MigrateAsync();
+        await _serviceProvider
+           .GetRequiredService<ChatUappDbContext>()
+           .Database
+           .MigrateAsync();
     }
 }

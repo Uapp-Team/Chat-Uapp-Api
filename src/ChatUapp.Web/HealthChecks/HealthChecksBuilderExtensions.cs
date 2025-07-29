@@ -1,10 +1,10 @@
-﻿using System;
-using HealthChecks.UI.Client;
+﻿using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace ChatUapp.Web.HealthChecks;
 
@@ -51,7 +51,7 @@ public static class HealthChecksBuilderExtensions
                     new PathString(path.EnsureStartsWith('/')),
                     new HealthCheckOptions
                     {
-                        Predicate = _ =>true,
+                        Predicate = _ => true,
                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
                         AllowCachingResponses = false,
                     });

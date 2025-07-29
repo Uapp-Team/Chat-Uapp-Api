@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ChatUapp.Core.Exceptions;
+﻿using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Message.ApiResponsesDtos;
 using ChatUapp.Core.Message.Interfaces;
 using Microsoft.Extensions.Logging;
 using Refit;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
 namespace ChatUapp.Core.Message;
 
-public class ChatMessageService: ApplicationService
+public class ChatMessageService : ApplicationService
 {
     private readonly IChatBotEngineApi _chatBotEnginerApi;
     private readonly IChatGPTApi _chatGptApi;
@@ -98,7 +98,7 @@ public class ChatMessageService: ApplicationService
         {
 
             return "Sorry I don't know please connect with our consultant";
-        }    
+        }
     }
 }
 

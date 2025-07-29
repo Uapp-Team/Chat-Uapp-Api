@@ -6,8 +6,8 @@ namespace ChatUapp.Core.Accounts.AggregateRoots
     public class TenantUser : FullAuditedAggregateRoot<Guid>
     {
         public TenantUser(
-            Guid tenantId, 
-            Guid userId, 
+            Guid tenantId,
+            Guid userId,
             bool isDefault = false)
         {
             TenantId = tenantId;

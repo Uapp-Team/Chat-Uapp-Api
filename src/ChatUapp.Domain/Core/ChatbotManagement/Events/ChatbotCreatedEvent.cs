@@ -1,5 +1,4 @@
-﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
-using ChatUapp.Core.ChatbotManagement.VOs;
+﻿using ChatUapp.Core.ChatbotManagement.VOs;
 using System;
 
 namespace ChatUapp.Core.ChatbotManagement.Events;

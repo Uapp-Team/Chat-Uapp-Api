@@ -19,7 +19,7 @@ namespace ChatUapp.Infrastructure.FileStorage
         private readonly ICurrentUser _currentUser;
         private readonly ICurrentTenant _currentTenant;
 
-        
+
         public BlobStorageService(IConfiguration configuration, ICurrentUser currentUser, ICurrentTenant currentTenant)
         {
             _configuration = configuration;
@@ -60,7 +60,7 @@ namespace ChatUapp.Infrastructure.FileStorage
                 uploadOptions.HttpHeaders = new BlobHttpHeaders
                 {
                     ContentType = contentType,
-                    
+
                 };
             }
             var Stream = await ConvertBase64ToStream(fileStream);
@@ -80,7 +80,7 @@ namespace ChatUapp.Infrastructure.FileStorage
 
 
 
-        public Task<string> GetUrlAsync(string ? blobPath , int expireInMinutes = 30)
+        public Task<string> GetUrlAsync(string? blobPath, int expireInMinutes = 30)
         {
             if (string.IsNullOrWhiteSpace(blobPath))
             {
@@ -95,7 +95,7 @@ namespace ChatUapp.Infrastructure.FileStorage
             var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
             var blobClient = containerClient.GetBlobClient(blobPath);
 
-           
+
 
             //  Correct SAS builder
             var sasBuilder = new BlobSasBuilder
@@ -103,15 +103,15 @@ namespace ChatUapp.Infrastructure.FileStorage
                 BlobContainerName = blobClient.BlobContainerName,
                 BlobName = blobClient.Name,
                 Resource = "b",
-                StartsOn = DateTimeOffset.UtcNow.AddMinutes(-1), 
+                StartsOn = DateTimeOffset.UtcNow.AddMinutes(-1),
                 ExpiresOn = DateTimeOffset.UtcNow.AddDays(1000)
             };
 
-            sasBuilder.SetPermissions(BlobSasPermissions.Read); 
+            sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
-            var sasUri =  blobClient.GenerateSasUri(sasBuilder).ToString();
+            var sasUri = blobClient.GenerateSasUri(sasBuilder).ToString();
 
-            return  Task.FromResult(sasUri);
+            return Task.FromResult(sasUri);
         }
 
 

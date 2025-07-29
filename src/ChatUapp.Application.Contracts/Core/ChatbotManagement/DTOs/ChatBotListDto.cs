@@ -16,7 +16,7 @@ namespace ChatUapp.Core.ChatbotManagement.DTOs
         public string? BrandImageName { get; set; } = default!;
         public string? iconName { get; set; } = default!;
         public string? iconColor { get; set; } = default!;
-        public int ? satisfactionRate { get; set; } = default!;
+        public int? satisfactionRate { get; set; } = default!;
         public List<UserInfo> Users { get; set; } = new List<UserInfo>();
     }
 

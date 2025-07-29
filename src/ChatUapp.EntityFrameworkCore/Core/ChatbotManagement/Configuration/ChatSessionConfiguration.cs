@@ -62,7 +62,7 @@ public class ChatSessionConfiguration : IEntityTypeConfiguration<ChatSession>
             .WithMany()
             .HasForeignKey(s => s.ChatbotId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.HasOne<Tenant>()
             .WithMany()
             .HasForeignKey(s => s.TenantId)

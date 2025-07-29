@@ -1,2 +1,2 @@
 ﻿using System.Runtime.CompilerServices;
-[assembly:InternalsVisibleToAttribute("ChatUapp.EntityFrameworkCore.Tests")]
+[assembly: InternalsVisibleToAttribute("ChatUapp.EntityFrameworkCore.Tests")]

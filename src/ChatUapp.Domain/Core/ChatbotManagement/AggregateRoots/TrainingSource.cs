@@ -1,5 +1,4 @@
-﻿using ChatUapp.Core.ChatbotManagement.Enums;
-using ChatUapp.Core.ChatbotManagement.VOs;
+﻿using ChatUapp.Core.ChatbotManagement.VOs;
 using ChatUapp.Core.Exceptions;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;

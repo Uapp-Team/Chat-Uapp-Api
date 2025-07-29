@@ -1,7 +1,6 @@
 ﻿using ChatUapp.Core.ChatbotManagement.Enums;
 using ChatUapp.Core.Guards;
 using System.Collections.Generic;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Values;
 
 namespace ChatUapp.Core.ChatbotManagement.VOs;

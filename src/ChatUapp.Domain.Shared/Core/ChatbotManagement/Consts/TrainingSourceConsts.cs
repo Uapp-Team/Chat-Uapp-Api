@@ -13,7 +13,7 @@ public class TrainingSourceConsts
     public const int SourceUrlMaxLength = 500; // For Web sources
     public const int FileNameMaxLength = 200; // For File sources
     public const int FileTypeMaxLength = 100; // For File sources
-    
+
     public const string OriginTextContentColumnType = AppConsts.TextColumnType; // For large text content in PostgreSQL
 
     public const string OriginSourceTypeColumnName = "Origin_SourceType";

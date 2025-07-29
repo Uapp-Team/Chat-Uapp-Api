@@ -1,5 +1,4 @@
-﻿using ChatUapp.EntityFrameworkCore;
-using Xunit;
+﻿using Xunit;
 
 namespace ChatUapp.EntityFrameworkCore;
 

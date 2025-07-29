@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ChatUapp.Core.Exceptions;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using ChatUapp.Core.Exceptions;
 
 namespace ChatUapp.Core.Guards;
 

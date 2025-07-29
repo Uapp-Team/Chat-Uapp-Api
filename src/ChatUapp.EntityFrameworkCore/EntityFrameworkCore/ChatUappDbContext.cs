@@ -1,3 +1,5 @@
+using ChatUapp.Core.ChatbotManagement.AggregateRoots;
+using ChatUapp.Core.Messages.AggregateRoots;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -8,13 +10,11 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
+using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
-using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using ChatUapp.Core.Messages.AggregateRoots;
-using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 
 namespace ChatUapp.EntityFrameworkCore;
 
@@ -85,7 +85,7 @@ public class ChatUappDbContext :
         builder.ConfigureBlobStoring();
 
         builder.ApplyConfigurationsFromAssembly(typeof(ChatUappDbContext).Assembly);
-        
+
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>

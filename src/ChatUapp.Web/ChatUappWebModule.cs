@@ -4,7 +4,6 @@ using ChatUapp.Localization;
 using ChatUapp.MultiTenancy;
 using ChatUapp.Web.HealthChecks;
 using ChatUapp.Web.Menus;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
@@ -15,8 +14,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
-using Pages.Abp.MultiTenancy;
-using Swashbuckle.AspNetCore.Filters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,13 +28,11 @@ using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.Toolbars;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.BlobStoring;
-using Volo.Abp.BlobStoring.Azure;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.Web;
@@ -49,7 +44,6 @@ using Volo.Abp.Security.Claims;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.Studio.Client.AspNetCore;
 using Volo.Abp.Swashbuckle;
-using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.Web;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
@@ -81,7 +75,7 @@ public class ChatUappWebModule : AbpModule
         context.Services.Configure<AbpAspNetCoreMvcOptions>(options =>
         {
             options.ControllersToRemove.Add(typeof(AccountController));
-            
+
             options.ControllersToRemove.Add(typeof(AbpApiDefinitionController));
             options.ControllersToRemove.Add(typeof(AbpApplicationConfigurationController));
             options.ControllersToRemove.Add(typeof(AbpApplicationLocalizationController));
@@ -302,18 +296,18 @@ public class ChatUappWebModule : AbpModule
 
     private void ConfigureSwaggerServices(ServiceConfigurationContext context, IConfiguration configuration)
     {
-            context.Services.AddAbpSwaggerGenWithOAuth(
-             configuration["AuthServer:Authority"]!,
-             new Dictionary<string, string>
-             {
+        context.Services.AddAbpSwaggerGenWithOAuth(
+         configuration["AuthServer:Authority"]!,
+         new Dictionary<string, string>
+         {
                  {"ChatUapp", "ChatUapp API"}
-             },
-             options =>
-             {
-                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatUapp API", Version = "v1" });
-                 options.DocInclusionPredicate((docName, description) => true);
-                 options.CustomSchemaIds(type => type.FullName);
-             });
+         },
+         options =>
+         {
+             options.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatUapp API", Version = "v1" });
+             options.DocInclusionPredicate((docName, description) => true);
+             options.CustomSchemaIds(type => type.FullName);
+         });
     }
 
 
