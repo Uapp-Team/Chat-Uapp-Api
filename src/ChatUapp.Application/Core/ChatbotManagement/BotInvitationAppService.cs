@@ -5,8 +5,6 @@ using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Emailing;
 using System;
-using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -122,7 +120,7 @@ public class BotInvitationAppService : ApplicationService, IBotInvitationAppServ
             result.isValidate = false;
             return result;
         }
-            
+
 
         result.isValidate = true;
 
@@ -134,7 +132,7 @@ public class BotInvitationAppService : ApplicationService, IBotInvitationAppServ
             result.isRegister = false;
             return result;
         }
-            
+
 
         result.isRegister = true;
 
