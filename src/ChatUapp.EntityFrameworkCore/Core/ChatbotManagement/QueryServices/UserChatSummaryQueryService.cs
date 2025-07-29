@@ -42,7 +42,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService,ITransie
             .WhereIf(filter.CreatedBefore.HasValue, x => x.CreationTime <= filter.CreatedBefore!.Value);
 
 
-        var filteredUserQuery =  _dbContext.Users.WhereIf(
+        var filteredUserQuery =  _dbContext.Users.AsNoTracking().WhereIf(
             !string.IsNullOrWhiteSpace(filter.Text), 
             x => x.Name.Contains(filter.Text!) || x.Email.Contains(filter.Text!));
 
