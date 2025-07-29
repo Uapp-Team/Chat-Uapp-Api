@@ -124,6 +124,12 @@ public class ChatUappWebModule : AbpModule
                 options.UseLocalServer();
                 options.UseAspNetCore();
             });
+            builder.AddServer(x =>
+            {
+                x.SetAccessTokenLifetime(TimeSpan.FromDays(30));
+                x.SetIdentityTokenLifetime(TimeSpan.FromDays(30));
+                x.SetRefreshTokenLifetime(TimeSpan.FromDays(30));
+            });
         });
 
         if (!hostingEnvironment.IsDevelopment())
