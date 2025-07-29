@@ -11,5 +11,6 @@ namespace ChatUapp.Core.ChatbotManagement.DTOs.Session
         public string Role { get; set; } = default!;
         public MessageType Type { get; set; }
         public DateTime SentAt { get; set; }
+        public ReactType ReactType { get; set; }
     }
 }

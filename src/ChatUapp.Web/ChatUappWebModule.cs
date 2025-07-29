@@ -81,15 +81,15 @@ public class ChatUappWebModule : AbpModule
         context.Services.Configure<AbpAspNetCoreMvcOptions>(options =>
         {
             options.ControllersToRemove.Add(typeof(AccountController));
-            options.ControllersToRemove.Add(typeof(AbpTenantController));
+            
             options.ControllersToRemove.Add(typeof(AbpApiDefinitionController));
             options.ControllersToRemove.Add(typeof(AbpApplicationConfigurationController));
             options.ControllersToRemove.Add(typeof(AbpApplicationLocalizationController));
             options.ControllersToRemove.Add(typeof(DynamicClaimsController));
             options.ControllersToRemove.Add(typeof(EmailSettingsController));
             options.ControllersToRemove.Add(typeof(FeaturesController));
-            options.ControllersToRemove.Add(typeof(PermissionsController));
-            options.ControllersToRemove.Add(typeof(TenantController));
+
+
             options.ControllersToRemove.Add(typeof(TimeZoneSettingsController));
             options.ControllersToRemove.Add(typeof(IdentityUserLookupController));
             options.ControllersToRemove.Add(typeof(ProfileController));
@@ -123,6 +123,12 @@ public class ChatUappWebModule : AbpModule
                 options.AddAudiences("ChatUapp");
                 options.UseLocalServer();
                 options.UseAspNetCore();
+            });
+            builder.AddServer(x =>
+            {
+                x.SetAccessTokenLifetime(TimeSpan.FromDays(30));
+                x.SetIdentityTokenLifetime(TimeSpan.FromDays(30));
+                x.SetRefreshTokenLifetime(TimeSpan.FromDays(30));
             });
         });
 
