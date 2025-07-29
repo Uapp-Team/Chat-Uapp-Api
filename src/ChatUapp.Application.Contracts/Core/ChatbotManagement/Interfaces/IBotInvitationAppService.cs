@@ -7,5 +7,5 @@ namespace ChatUapp.Core.ChatbotManagement.Interfaces;
 public interface IBotInvitationAppService : IApplicationService
 {
     Task<bool> CreateInviteAsync(CreateInviteDto input);
-    Task<bool> ValidateTokenAsync(string token);
+    Task<ValidateTokenResDto> ValidateTokenAsync(string token);
 }

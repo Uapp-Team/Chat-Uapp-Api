@@ -5,6 +5,8 @@ using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Emailing;
 using System;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -43,7 +45,8 @@ public class BotInvitationAppService : ApplicationService, IBotInvitationAppServ
 
         var invited = await _botInvitatioManager.CreateAsync(input.BotId, input.UserEmail, input.Role);
 
-        var acceptUrl = $"https://your-domain.com/register?token={invited.Id}";
+        var acceptUrl = $"http://localhost:3000/ValidateUser?token={invited.InvitationToken}";
+
 
         var emailBody = $@"
         <!DOCTYPE html>
@@ -105,11 +108,52 @@ public class BotInvitationAppService : ApplicationService, IBotInvitationAppServ
         return true;
     }
 
-    public async Task<bool> ValidateTokenAsync(string token)
+    public async Task<ValidateTokenResDto> ValidateTokenAsync(string token)
     {
-        Ensure.NotNull(token,nameof(token));
-        var invited = await _botInvitationRepo.FindAsync(t=>t.InvitationToken == token);
+        Ensure.NotNull(token, nameof(token));
 
-        throw new NotImplementedException();
+        var result = new ValidateTokenResDto();
+
+        // Step 1: Find Invitation by Token
+        var invitation = await _botInvitationRepo.FindAsync(x => x.InvitationToken == token);
+
+        if (invitation == null)
+        {
+            result.isValidate = false;
+            return result;
+        }
+            
+
+        result.isValidate = true;
+
+        // Step 2: Check if user is registered
+        var user = await _userRepo.FindByNormalizedEmailAsync(invitation.UserEmail.ToUpper());
+
+        if (user == null)
+        {
+            result.isRegister = false;
+            return result;
+        }
+            
+
+        result.isRegister = true;
+
+        // Step 3: Map User to Bot
+        var mapping = await _chatbotUserManager.CreateAsync(invitation.BotId, user.Id);
+
+        // Step 4: Save mapping
+        await _tenentBotUserRepo.InsertAsync(mapping);
+        // Step 5: Clean up the invitation
+        _botInvitatioManager.Delete(invitation);
+
+        await _botInvitationRepo.UpdateAsync(invitation);
+
+        // Step 6: Commit transaction
+        await CurrentUnitOfWork!.SaveChangesAsync();
+
+        result.isLogin = true;
+
+        return result;
     }
+
 }

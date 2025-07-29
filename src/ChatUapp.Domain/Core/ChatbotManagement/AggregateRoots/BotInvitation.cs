@@ -22,7 +22,7 @@ public class BotInvitation : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
         SetBotId(botId);
         SetInvitedBy(InvitedBy);
-        SetTenantId(InvitedBy);
+        SetTenantId(TenantId);
         SetEmail(userEmail);
         SetRole(role);
         IsRegistered = isRegistered;
