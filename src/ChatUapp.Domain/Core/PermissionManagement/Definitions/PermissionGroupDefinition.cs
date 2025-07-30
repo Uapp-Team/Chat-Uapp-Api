@@ -5,8 +5,8 @@ namespace ChatUapp.Core.PermissionManagement.Definitions;
 
 public class PermissionGroupDefinition
 {
-    internal string Name { get; }
-    internal string DisplayName { get; }
+    public string Name { get; }
+    public string DisplayName { get; }
     public List<PermissionDefinition> Permissions { get; } = new();
 
     internal PermissionGroupDefinition(string name, string displayName)
@@ -15,11 +15,11 @@ public class PermissionGroupDefinition
         DisplayName = displayName;
     }
 
-    public PermissionDefinition AddPermission(string name, string displayName)
+    public PermissionGroupDefinition AddPermission(string name, string displayName)
     {
         var perm = new PermissionDefinition(name, displayName);
         Permissions.Add(perm);
-        return perm;
+        return this;
     }
 
     public PermissionGroupDefinition WithPermissions(Action<PermissionListBuilder> buildAction)

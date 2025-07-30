@@ -32,6 +32,20 @@ public class ChatbotPermissionManager : DomainService, ITransientDependency
             _currentTenant.Id!.Value);
     }
 
+    public async Task<ChatbotUserPermission> UnassignAsync(Guid userId, Guid chatbotId, string permissionName)
+    {
+        AppGuard.Check(
+            !_currentTenant.IsAvailable,
+            "User must have a tenant to take permission.");
+
+        var permission = await _chatbotUserRepository.FirstOrDefaultAsync(
+            p => p.UserId == userId && p.ChatBotId == chatbotId && p.PermissionName == permissionName);
+
+        Ensure.NotNull(permission, "Permission not found for the specified user and chatbot.");
+
+        return permission!;
+    }
+
     public async Task<bool> CheckAsync(Guid chatbotId, string permissionName)
     {
         AppGuard.Check(
