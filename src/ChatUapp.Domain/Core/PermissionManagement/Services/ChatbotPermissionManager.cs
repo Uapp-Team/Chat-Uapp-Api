@@ -18,6 +18,18 @@ public class ChatbotPermissionManager : DomainService, ITransientDependency
     private readonly ICurrentUser _currentUser;
     private readonly ICurrentTenant _currentTenant;
 
+    public ChatbotPermissionManager(
+        IDomainGuidGenerator guidGenerator,
+        IRepository<ChatbotUserPermission, Guid> chatbotUserRepository,
+        ICurrentUser currentUser,
+        ICurrentTenant currentTenant)
+    {
+        _guidGenerator = guidGenerator;
+        _chatbotUserRepository = chatbotUserRepository;
+        _currentUser = currentUser;
+        _currentTenant = currentTenant;
+    }
+
     public ChatbotUserPermission AssignPermission(
         Guid userId, Guid chatbotId, string permissionName)
     {
@@ -48,9 +60,9 @@ public class ChatbotPermissionManager : DomainService, ITransientDependency
 
     public async Task<bool> CheckAsync(Guid chatbotId, string permissionName)
     {
-        AppGuard.Check(
-            !_currentUser.IsAuthenticated,
-            "User is not authenticated. Cannot check permissions without a valid user context.");
+        //AppGuard.Check(
+        //    !_currentUser.IsAuthenticated,
+        //    "User is not authenticated. Cannot check permissions without a valid user context.");
 
         var permission = await _chatbotUserRepository.FirstOrDefaultAsync(
             p => p.UserId == _currentUser.Id && p.ChatBotId == chatbotId && p.PermissionName == permissionName);
