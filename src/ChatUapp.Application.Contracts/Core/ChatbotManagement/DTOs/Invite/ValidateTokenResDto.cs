@@ -2,8 +2,7 @@
 {
     public class ValidateTokenResDto
     {
-        public bool isLogin { get; set; } = false;
-        public bool isValidate { get; set; } = false;
-        public bool isRegister { get; set; } = false;
+        public bool IsInvited { get; set; } = true;
+        public bool IsValid { get; set; } = true;
     }
 }
