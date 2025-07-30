@@ -19,11 +19,25 @@ namespace ChatUapp.Core.ChatbotManagement.Services
 
         public Task<TenantChatbotUser> CreateAsync(Guid ChatbotId, Guid UserId)
         {
-            Ensure.IsAvailableTenant(CurrentTenant);
+            //Ensure.IsAvailableTenant(CurrentTenant);
 
             var obj = new TenantChatbotUser(
                 _guidGenerator.Create(),
                 CurrentTenant.Id,
+                ChatbotId,
+                UserId,
+                Enums.ChatbotUserStatus.Active);
+
+            return Task.FromResult(obj);
+        }
+
+        public Task<TenantChatbotUser> CreateAsync(Guid ChatbotId, Guid UserId,Guid TenantId)
+        {
+            //Ensure.IsAvailableTenant(CurrentTenant);
+
+            var obj = new TenantChatbotUser(
+                _guidGenerator.Create(),
+                TenantId,
                 ChatbotId,
                 UserId,
                 Enums.ChatbotUserStatus.Active);
