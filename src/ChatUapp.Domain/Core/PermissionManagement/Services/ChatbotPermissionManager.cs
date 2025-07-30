@@ -56,4 +56,9 @@ public class ChatbotPermissionManager : DomainService, ITransientDependency
             p => p.UserId == _currentUser.Id && p.ChatBotId == chatbotId && p.PermissionName == permissionName);
         return permission != null;
     }
+
+    public async Task<bool> HasPermissionAsync(Guid chatBotId, string permissionName)
+    {
+        return await CheckAsync(chatBotId, permissionName);
+    }
 }
