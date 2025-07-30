@@ -6,7 +6,7 @@ namespace ChatUapp.Core.PermissionManagement.Definitions;
 public static class ChatbotPermissionRegistry
 {
     private static readonly List<PermissionGroupDefinition> _groups = new();
-    public static IList<PermissionGroupDefinition> Groups => _groups;
+    public static IReadOnlyList<PermissionGroupDefinition> Groups => _groups;
 
     public static void Initialize(IEnumerable<ChatbotPermissionDefinitionProvider> providers)
     {

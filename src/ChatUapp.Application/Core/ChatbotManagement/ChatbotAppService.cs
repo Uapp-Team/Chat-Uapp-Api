@@ -351,7 +351,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
     }
 
     [HttpGet("api/app/chatbot/permissions")]
-    public async Task<IList<PermissionGroupDefinition>> GetPermissions(Guid botId)
+    public async Task<IReadOnlyList<PermissionGroupDefinition>> GetPermissions(Guid botId)
     {
         var permisions = ChatbotPermissionRegistry.Groups;
 
