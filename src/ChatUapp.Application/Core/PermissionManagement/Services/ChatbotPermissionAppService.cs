@@ -11,7 +11,7 @@ using Volo.Abp.Domain.Repositories;
 namespace ChatUapp.Core.PermissionManagement.Services;
 
 public class ChatbotPermissionAppService :
-    IChatbotPermissionAppService
+    ApplicationService, IChatbotPermissionAppService
 {
     private readonly ChatbotPermissionManager _botPermissionManager;
     private readonly IRepository<ChatbotUserPermission, Guid> _repository;
