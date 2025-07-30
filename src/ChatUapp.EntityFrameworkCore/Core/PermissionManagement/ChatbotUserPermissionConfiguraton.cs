@@ -1,5 +1,4 @@
-﻿using ChatUapp.Core.ChatbotManagement.Consts;
-using ChatUapp.Core.Constants;
+﻿using ChatUapp.Core.Constants;
 using ChatUapp.Core.PermisionManagement.Consts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

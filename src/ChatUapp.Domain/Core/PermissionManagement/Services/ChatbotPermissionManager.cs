@@ -1,5 +1,4 @@
-﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
-using ChatUapp.Core.Guards;
+﻿using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Chatbot;
 using System;
 using System.Threading.Tasks;

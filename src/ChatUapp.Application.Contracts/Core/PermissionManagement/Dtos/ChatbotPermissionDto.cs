@@ -15,5 +15,5 @@ public class ChatbotPermissionCreateDto
 {
     public Guid UserId { get; set; }
     public Guid ChatbotId { get; set; }
-    public string PermissionName { get; set; } = string.Empty;  
+    public string PermissionName { get; set; } = string.Empty;
 }

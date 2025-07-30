@@ -31,7 +31,7 @@ namespace ChatUapp.Core.ChatbotManagement.Services
             return Task.FromResult(obj);
         }
 
-        public Task<TenantChatbotUser> CreateAsync(Guid ChatbotId, Guid UserId,Guid TenantId)
+        public Task<TenantChatbotUser> CreateAsync(Guid ChatbotId, Guid UserId, Guid TenantId)
         {
             //Ensure.IsAvailableTenant(CurrentTenant);
 
