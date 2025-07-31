@@ -34,10 +34,39 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         _currentUser = currentUser;
     }
 
-    public Task<UserDashboardSummaryDto> GetDashboardAnalyticsAsync(
+    public async Task<IList<DashboardAnalyticsDto>> GetDashboardAnalyticsAsync(
         DateTime? startDate, DateTime? endDate, Guid? chatbotId)
     {
-        throw new NotImplementedException();
+        var query = _dbContext.ChatSessions.AsNoTracking();
+
+        if (chatbotId is not null)
+            query = query.Where(x => x.ChatbotId == chatbotId);
+
+        if (startDate is not null)
+            query = query.Where(x => x.CreationTime >= startDate.Value);
+
+        if (endDate is not null)
+            query = query.Where(x => x.CreationTime <= endDate.Value);
+
+        var countryStats = await query
+            .GroupBy(s => new
+            {
+                s.LocationSnapshot.CountryName,
+                s.LocationSnapshot.Longitude,
+                s.LocationSnapshot.Latitude,
+                s.LocationSnapshot.Flag
+            })
+            .Select(g => new DashboardAnalyticsDto
+            {
+                Name = g.Key.CountryName ?? string.Empty,
+                Coordinates = new[] { g.Key.Longitude, g.Key.Latitude }.ToList(),
+                Users = g.Select(x => x.SessionCreator).Distinct().Count(),
+                Flag = g.Key.Flag ?? string.Empty
+            })
+            .OrderByDescending(x => x.Users)
+            .ToListAsync();
+
+        return countryStats;
     }
 
     public async Task<PagedResultDto<GetAllChatDto>> GetUserChatSummariesAsync(GetAllChatFilterDto filter)
@@ -187,7 +216,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
                 BotId= bp.BotId,
                 BotName = bp.BotName!,
                 SatisfactionRate = Math.Round(bp.SatisfactionRate, 2)
-            }).ToList()
+            }).ToList(),
         };
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ChatUapp.Core.ChatbotManagement.DTOs.Chatbot;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 
@@ -11,6 +12,6 @@ public interface IUserChatSummaryQueryService
     Task<UserDashboardSummaryDto> GetUserDashboardSummariesAsync(
         DateTime? startDate, DateTime? endDate, Guid? chatbotId);
 
-    Task<UserDashboardSummaryDto> GetDashboardAnalyticsAsync(
+    Task<IList<DashboardAnalyticsDto>> GetDashboardAnalyticsAsync(
         DateTime? startDate, DateTime? endDate, Guid? chatbotId);
 }
