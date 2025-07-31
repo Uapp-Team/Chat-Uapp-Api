@@ -34,6 +34,47 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         _currentUser = currentUser;
     }
 
+    public async Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(
+        DateTime? startDate, DateTime? endDate, Guid? chatbotId)
+    {
+        var query = _dbContext.ChatSessions.AsNoTracking();
+
+        if (chatbotId is not null)
+            query = query.Where(x => x.ChatbotId == chatbotId);
+
+        if (startDate is not null)
+            query = query.Where(x => x.CreationTime >= startDate.Value);
+
+        if (endDate is not null)
+            query = query.Where(x => x.CreationTime <= endDate.Value);
+
+        var countryStats =  await query
+            .GroupBy(s => new
+            {
+                CountryName = s.LocationSnapshot.CountryName,
+                Flag = s.LocationSnapshot.Flag,
+                Latitude = s.LocationSnapshot.Latitude,
+                Longitude = s.LocationSnapshot.Longitude
+            })
+            .Select(g => new CountryStatisticsDto
+            {
+                Name = g.Key.CountryName ?? string.Empty,
+                Coordinates = new List<double> { g.Key.Latitude, g.Key.Longitude},
+                Users = g.Select(x => x.SessionCreator).Distinct().Count(),
+                Flag = g.Key.Flag ?? string.Empty
+            }).AsSplitQuery()
+            .OrderByDescending(x => x.Users)
+            .ToListAsync();
+
+        var analytics = new DashboardAnalyticsDto
+        {
+            CountryNames = countryStats.Select(x => x.Name).Distinct().ToList(),
+            CountryStatistics = countryStats
+        };
+
+        return analytics;
+    }
+
     public async Task<PagedResultDto<GetAllChatDto>> GetUserChatSummariesAsync(GetAllChatFilterDto filter)
     {
         var sessionQuery = _dbContext.ChatSessions
@@ -181,7 +222,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
                 BotId= bp.BotId,
                 BotName = bp.BotName!,
                 SatisfactionRate = Math.Round(bp.SatisfactionRate, 2)
-            }).ToList()
+            }).ToList(),
         };
     }
 }
