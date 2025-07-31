@@ -48,7 +48,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         if (endDate is not null)
             query = query.Where(x => x.CreationTime <= endDate.Value);
 
-        var countryStats =  query
+        var countryStats =  await query
             .GroupBy(s => new
             {
                 CountryName = s.LocationSnapshot.CountryName,
@@ -64,7 +64,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
                 Flag = g.Key.Flag ?? string.Empty
             }).AsSplitQuery()
             .OrderByDescending(x => x.Users)
-            .ToList();
+            .ToListAsync();
 
         var analytics = new DashboardAnalyticsDto
         {
