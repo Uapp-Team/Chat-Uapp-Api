@@ -7,7 +7,7 @@ namespace ChatUapp.Core.Accounts.Interfaces;
 
 public interface ICurrentInfoAppService : IApplicationService
 {
-    Task<CurrentUserDto> GetCurrentUser();
+    Task<AppIdentityUserDto> GetCurrentUser();
     Task<CurrentTenantDto> GetCurrentTenant();
     Task<CurrentBotDto> GetCurrentBotId();
 }
