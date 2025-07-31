@@ -1,9 +1,8 @@
 ﻿using Volo.Abp.Account;
 
-namespace ChatUapp.Core.Accounts.DTOs
+namespace ChatUapp.Core.Accounts.DTOs;
+
+public class AppProfileDto : ProfileDto
 {
-    public class AppProfileDto : ProfileDto
-    {
-        public string? ProfileImgUrl { get; set; }
-    }
+    public string? ProfileImgUrl { get; set; }
 }
