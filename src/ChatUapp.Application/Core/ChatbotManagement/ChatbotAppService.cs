@@ -176,9 +176,19 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
     public async Task<List<ChatBotListDto>> GetAllAsync()
     {
-        var chatbotList = await _botRepo.GetListAsync();
+        var tenantBotUserQueryable = await _tenentBotUserRepo.GetQueryableAsync();
 
-        var dtoList = ObjectMapper.Map<List<Chatbot>, List<ChatBotListDto>>(chatbotList);
+        var chatbotIds = tenantBotUserQueryable
+            .Where(tbu => tbu.UserId == _currentUser.Id)
+            .Select(tbu => tbu.ChatbotId)
+            .ToList();
+        var chatbotQueryable = await _botRepo.GetQueryableAsync();
+
+        var chatbots = chatbotQueryable
+            .Where(cb => chatbotIds.Contains(cb.Id))
+            .ToList();
+
+        var dtoList = ObjectMapper.Map<List<Chatbot>, List<ChatBotListDto>>(chatbots);
 
         var tasks = dtoList.Select(async dto =>
         {
@@ -386,7 +396,6 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
         return dtos;
     }
-
 
     [HttpGet("api/app/chatbot/permissions")]
     public async Task<IReadOnlyList<PermissionGroupDefinition>> GetPermissions(Guid botId)
