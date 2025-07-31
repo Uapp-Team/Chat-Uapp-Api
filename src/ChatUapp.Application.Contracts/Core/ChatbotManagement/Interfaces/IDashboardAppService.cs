@@ -1,6 +1,5 @@
 ﻿using ChatUapp.Core.ChatbotManagement.DTOs.Chatbot;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ChatUapp.Core.ChatbotManagement.Interfaces;
