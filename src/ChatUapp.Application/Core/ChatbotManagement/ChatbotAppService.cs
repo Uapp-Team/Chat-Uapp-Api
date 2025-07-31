@@ -215,7 +215,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
         return dto;
     }
 
-    public async Task<List<ChatBotByUserDto>> GetAllByUserAsync(Guid userId)
+    public async Task<List<ChatBotListDto>> GetAllByUserAsync(Guid userId)
     {
         // Get all TenantChatbotUser entries for the given user
         var tenantUserQuery = await _tenentBotUserRepo.GetQueryableAsync();
@@ -227,7 +227,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
         var chatbotIds = tenantUserLinks.Select(x => x.ChatbotId).Distinct().ToList();
 
         if (!chatbotIds.Any())
-            return new List<ChatBotByUserDto>(); // No chatbots linked to this user
+            return new List<ChatBotListDto>(); // No chatbots linked to this user
 
         // Fetch chatbot entities based on collected IDs
         var chatbotQuery = await _botRepo.GetQueryableAsync();
@@ -235,7 +235,18 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
             .Where(x => chatbotIds.Contains(x.Id))
             .ToList();
 
-        return ObjectMapper.Map<List<Chatbot>, List<ChatBotByUserDto>>(chatbots); ;
+        var dtoList = ObjectMapper.Map<List<Chatbot>, List<ChatBotListDto>>(chatbots);
+
+        await Task.WhenAll(dtoList.Select(async item =>
+        {
+            if (!string.IsNullOrWhiteSpace(item.iconName))
+                item.iconName = await _storage.GetUrlAsync(item.iconName);
+
+            if (!string.IsNullOrWhiteSpace(item.BrandImageName))
+                item.BrandImageName = await _storage.GetUrlAsync(item.BrandImageName);
+        }));
+
+        return dtoList;
     }
 
     public async Task<ChatbotDto> UpdateAsync(Guid id, UpdateChatbotDto input)
