@@ -113,11 +113,11 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
     }
 
     public async Task<UserDashboardSummaryDto> GetUserDashboardSummariesAsync(
-        DateTime startDate, DateTime endDate, Guid? chatbotId)
+        DateTime? startDate, DateTime? endDate, Guid? chatbotId)
     {
         // Normalize dates to cover the full days
-        var normalizedStartDate = startDate.Date; // 00:00:00
-        var normalizedEndDate = endDate.Date.AddDays(1); // exclusive upper bound
+        var normalizedStartDate = startDate.GetValueOrDefault(); // 00:00:00
+        var normalizedEndDate = endDate.GetValueOrDefault(); // exclusive upper bound
 
         var userBotIds = await _dbContext.TenantChatbotUsers
              .AsNoTracking()
@@ -130,7 +130,8 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         var totalMessagesCount = await _dbContext.ChatSessions
             .Where(x => userBotIds.Contains(x.ChatbotId))
             .SelectMany(s => s.Messages)
-            .Where(m => m.SentAt >= normalizedStartDate && m.SentAt < normalizedEndDate)
+            .WhereIf(startDate is not null, m => m.SentAt >= normalizedStartDate)
+            .WhereIf(endDate is not null, m => m.SentAt >= normalizedEndDate)
             .CountAsync();
 
         // 2. Active chat bots (regardless of date range)
@@ -140,14 +141,18 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
 
         // 3. Total users (within date range)
         var totalUsersCount = await _dbContext.ChatSessions.AsNoTracking()
-            .Where(x => userBotIds.Contains(x.ChatbotId) && x.CreationTime >= normalizedStartDate && x.CreationTime < normalizedEndDate)
+            .Where(x => userBotIds.Contains(x.ChatbotId))
+            .WhereIf(startDate is not null, m => m.CreationTime >= normalizedStartDate)
+            .WhereIf(endDate is not null, m => m.CreationTime >= normalizedEndDate)
             .Select(u => u.CreatorId)
             .Distinct()
             .CountAsync();
 
         // 4. Satisfaction rate
         var botPerformance = await _dbContext.ChatSessions
-            .Where(x => userBotIds.Contains(x.ChatbotId) && x.CreationTime >= normalizedStartDate && x.CreationTime < normalizedEndDate)
+            .Where(x => userBotIds.Contains(x.ChatbotId))
+            .WhereIf(startDate is not null, m => m.CreationTime >= normalizedStartDate)
+            .WhereIf(endDate is not null, m => m.CreationTime >= normalizedEndDate)
             .Select(s => new
             {
                 BotId = s.ChatbotId,

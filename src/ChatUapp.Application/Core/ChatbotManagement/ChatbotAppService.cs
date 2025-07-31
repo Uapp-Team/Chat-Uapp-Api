@@ -325,12 +325,6 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
         return result;
     }
 
-    public async Task<UserDashboardSummaryDto> GetUserDashboardSummaryAsync(DateTime startDate, DateTime endDate, Guid? chatbotId)
-    {
-        var result = await _userChatSummaryQueryService.GetUserDashboardSummariesAsync(startDate, endDate, chatbotId);
-        return result;
-    }
-
     public async Task<List<UserByChatBotDto>> GetAllUserByBotAsync(Guid botId)
     {
         //  Get all TenantChatbotUser entries for the given bot
