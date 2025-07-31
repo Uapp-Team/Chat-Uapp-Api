@@ -48,23 +48,23 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         if (endDate is not null)
             query = query.Where(x => x.CreationTime <= endDate.Value);
 
-        var countryStats = await query
+        var countryStats =  query
             .GroupBy(s => new
             {
-                s.LocationSnapshot.CountryName,
-                s.LocationSnapshot.Longitude,
-                s.LocationSnapshot.Latitude,
-                s.LocationSnapshot.Flag
+                CountryName = s.LocationSnapshot.CountryName,
+                Flag = s.LocationSnapshot.Flag,
+                Latitude = s.LocationSnapshot.Latitude,
+                Longitude = s.LocationSnapshot.Longitude
             })
             .Select(g => new CountryStatisticsDto
             {
                 Name = g.Key.CountryName ?? string.Empty,
-                Coordinates = new[] { g.Key.Longitude, g.Key.Latitude }.ToList(),
+                Coordinates = new List<double> { g.Key.Latitude, g.Key.Longitude},
                 Users = g.Select(x => x.SessionCreator).Distinct().Count(),
                 Flag = g.Key.Flag ?? string.Empty
-            })
+            }).AsSplitQuery()
             .OrderByDescending(x => x.Users)
-            .ToListAsync();
+            .ToList();
 
         var analytics = new DashboardAnalyticsDto
         {

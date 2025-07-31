@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 
@@ -20,7 +21,8 @@ public class ChatUappDbContextFactory : IDesignTimeDbContextFactory<ChatUappDbCo
         ChatUappEfCoreEntityExtensionMappings.Configure();
 
         var builder = new DbContextOptionsBuilder<ChatUappDbContext>()
-            .UseNpgsql(configuration.GetConnectionString("Default"));
+            .UseNpgsql(configuration.GetConnectionString("Default"))
+            .LogTo(Console.WriteLine, LogLevel.Information);
 
         return new ChatUappDbContext(builder.Options);
     }
