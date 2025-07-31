@@ -34,7 +34,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         _currentUser = currentUser;
     }
 
-    public async Task<IList<DashboardAnalyticsDto>> GetDashboardAnalyticsAsync(
+    public async Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(
         DateTime? startDate, DateTime? endDate, Guid? chatbotId)
     {
         var query = _dbContext.ChatSessions.AsNoTracking();
@@ -56,7 +56,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
                 s.LocationSnapshot.Latitude,
                 s.LocationSnapshot.Flag
             })
-            .Select(g => new DashboardAnalyticsDto
+            .Select(g => new CountryStatisticsDto
             {
                 Name = g.Key.CountryName ?? string.Empty,
                 Coordinates = new[] { g.Key.Longitude, g.Key.Latitude }.ToList(),
@@ -66,7 +66,13 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
             .OrderByDescending(x => x.Users)
             .ToListAsync();
 
-        return countryStats;
+        var analytics = new DashboardAnalyticsDto
+        {
+            CountryNames = countryStats.Select(x => x.Name).Distinct().ToList(),
+            CountryStatistics = countryStats
+        };
+
+        return analytics;
     }
 
     public async Task<PagedResultDto<GetAllChatDto>> GetUserChatSummariesAsync(GetAllChatFilterDto filter)

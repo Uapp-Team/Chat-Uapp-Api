@@ -10,6 +10,6 @@ public interface IDashboardAppService
     Task<UserDashboardSummaryDto> GetUserDashboardSummaryAsync(
         DateTime? startDate = null, DateTime? endDate = null, Guid? chatbotId = null);
 
-    Task<IList<DashboardAnalyticsDto>> GetDashboardAnalyticsAsync(
+    Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(
         DateTime? startDate = null, DateTime? endDate = null, Guid? chatbotId = null);
 }
