@@ -34,6 +34,12 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         _currentUser = currentUser;
     }
 
+    public Task<UserDashboardSummaryDto> GetDashboardAnalyticsAsync(
+        DateTime? startDate, DateTime? endDate, Guid? chatbotId)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<PagedResultDto<GetAllChatDto>> GetUserChatSummariesAsync(GetAllChatFilterDto filter)
     {
         var sessionQuery = _dbContext.ChatSessions

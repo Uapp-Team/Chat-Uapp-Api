@@ -10,4 +10,7 @@ public interface IUserChatSummaryQueryService
     Task<PagedResultDto<GetAllChatDto>> GetUserChatSummariesAsync(GetAllChatFilterDto filter);
     Task<UserDashboardSummaryDto> GetUserDashboardSummariesAsync(
         DateTime? startDate, DateTime? endDate, Guid? chatbotId);
+
+    Task<UserDashboardSummaryDto> GetDashboardAnalyticsAsync(
+        DateTime? startDate, DateTime? endDate, Guid? chatbotId);
 }
