@@ -11,6 +11,7 @@ namespace ChatUapp.Core.ChatbotManagement.Interfaces
         Task<ChatSessionDto> CreateAsync(CreateSessionInputDto input);
         Task<ChatSessionDto> UpdateAsync(UpdateSessionInputDto input);
         Task<ChatSessionDto> GetAsync(Guid Id);
+        Task<bool> DeleteAsync(Guid Id);
         Task<PagedResultDto<ChatSessionTitleDto>> GetTitlesAsync(GetSessionTitlesListDto input);
     }
 }
