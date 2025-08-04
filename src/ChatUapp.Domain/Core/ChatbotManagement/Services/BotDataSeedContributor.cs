@@ -39,7 +39,7 @@ public class BotDataSeedContributor : IDataSeedContributor, ITransientDependency
 
         using (_currentTenant.Change(tenant.Id))
         {
-            // Don't insert if chatbot with name "Defolt" already exists
+            // Don't insert if chatbot with name "Default" already exists
             var existingBots = await _botRepository.GetListAsync();
 
             if (existingBots.Any(b => b.Name == "ChatUapp"))
