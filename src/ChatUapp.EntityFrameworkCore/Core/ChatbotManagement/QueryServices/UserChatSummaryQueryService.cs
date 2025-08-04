@@ -124,7 +124,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
             .ToListAsync();
 
         // Step 5: Load required chatbot data (batch fetch)
-        var botIds = paged.Select(x => x.FirstSession.ChatbotId).Distinct().ToList();
+        var botIds = paged.Select(x => x.FirstSession!.ChatbotId).Distinct().ToList();
         var botDict = await _dbContext.Chatbots
             .Where(b => botIds.Contains(b.Id))
             .Select(b => new { b.Id, b.Name })
@@ -133,7 +133,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         // Step 6: Final projection
         var result = paged.Select(x =>
         {
-            var botName = botDict.GetValueOrDefault(x.FirstSession.ChatbotId) ?? string.Empty;
+            var botName = botDict.GetValueOrDefault(x.FirstSession!.ChatbotId) ?? string.Empty;
 
             return new GetAllChatDto
             {
