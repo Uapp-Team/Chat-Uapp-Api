@@ -91,13 +91,15 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
             input.iconName,
             input.iconColor
         );
+        
+        if(await _botRepo.CountAsync() < 0) await _chatbotManager.SetDefaultAsync(chatbot);
 
         chatbot.BrandImageName = input.BrandImageName;
         chatbot.Description = input.Description;
 
         Ensure.Authenticated(_currentUser);
 
-        var botUserMaping = await _chatbotUserManager.CreateAsync(chatbot.Id, _currentUser.Id.Value);
+        var botUserMaping = await _chatbotUserManager.CreateAsync(chatbot.Id, _currentUser.Id!.Value);
 
         await _botRepo.InsertAsync(chatbot);
 
@@ -414,5 +416,18 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
             }
         }
         return permisions;
+    }
+
+    public async Task<DefaultBotDto> CreateDefaultAsync(Guid botId)
+    {
+        var bot = await _botRepo.GetAsync(botId);
+
+        Ensure.NotNull(bot,nameof(bot));
+
+        await _chatbotManager.SetDefaultAsync(bot);
+
+        await _botRepo.UpdateAsync(bot);
+
+        return ObjectMapper.Map<Chatbot, DefaultBotDto>(bot);
     }
 }

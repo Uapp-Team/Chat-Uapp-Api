@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace ChatUapp.Migrations
 {
     [DbContext(typeof(ChatUappDbContext))]
-    [Migration("20250804101822_Add_bot_defalt_field")]
-    partial class Add_bot_defalt_field
+    [Migration("20250806090909_Add_Default_Bot_field")]
+    partial class Add_Default_Bot_field
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -327,7 +327,7 @@ namespace ChatUapp.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<bool>("isDefalt")
+                    b.Property<bool>("isDefault")
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");

@@ -5,6 +5,7 @@ using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Chatbot;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
@@ -113,10 +114,23 @@ public class ChatbotManager : DomainService
         chatbot.IsDeleted = true;
     }
 
-    public void SetDefault(Chatbot chatbot)
+    public async Task SetDefaultAsync(Chatbot chatbot)
     {
+        var botList = await _chatbotRepository.GetListAsync();
+
+        if (botList != null)
+        {
+            foreach (var item in botList)
+            {
+                if (item.Id != chatbot.Id && item.isDefault)
+                {
+                    item.SetNotDefault();
+                }
+            }
+        }
         chatbot.SetDefault();
     }
+
 
     private async Task HandleDuplicateChatbotAsync(string name)
     {

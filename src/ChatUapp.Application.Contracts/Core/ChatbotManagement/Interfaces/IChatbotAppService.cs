@@ -17,5 +17,6 @@ public interface IChatbotAppService : IApplicationService
     Task<List<UserByChatBotDto>> GetAllUserByBotAsync(Guid botId);
     Task<ChatbotDto> GetAsync(Guid id);
     Task<List<ChatBotListDto>> GetAllAsync();
+    Task<DefaultBotDto> CreateDefaultAsync(Guid botId);
     Task<bool> ChangeStatusAsync(ChangeBotStatusDto input);
 }

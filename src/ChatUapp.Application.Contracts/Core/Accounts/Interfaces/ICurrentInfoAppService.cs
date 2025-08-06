@@ -9,5 +9,5 @@ public interface ICurrentInfoAppService : IApplicationService
 {
     Task<AppIdentityUserDto> GetCurrentUser();
     Task<CurrentTenantDto> GetCurrentTenant();
-    Task<CurrentBotDto> GetCurrentBotId();
+    Task<DefaultBotDto> GetDeafultBot();
 }
