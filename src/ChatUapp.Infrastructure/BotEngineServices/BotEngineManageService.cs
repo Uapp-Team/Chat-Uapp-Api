@@ -39,11 +39,11 @@ public class BotEngineManageService : IBotEngineManageService
                 {
                     Answer = await AskAsync(query),
                     Success = true,
-                    BotName = botName
+                    BotName = "chatuapp"
                 };
             }
 
-            var reply = await _chatbotEngineApi.QueryAsync(query, botName, session);
+            var reply = await _chatbotEngineApi.QueryAsync(query, "chatuapp", session);
 
             if (reply.Answer?.Contains("Sorry", StringComparison.OrdinalIgnoreCase) == true)
             {
