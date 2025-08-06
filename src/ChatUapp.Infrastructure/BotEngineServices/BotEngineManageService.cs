@@ -1,14 +1,12 @@
-﻿using Azure.Core;
-using ChatUapp.Core.Exceptions;
+﻿using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
-using ChatUapp.Core.Interfaces.MessageServices;
 using ChatUapp.Core.Message.ApiResponsesDtos;
 using ChatUapp.Core.Message.Interfaces;
-using Microsoft.Extensions.Logging;
+using ChatUapp.Core.Thirdparty.Interfaces;
 
 namespace ChatUapp.Infrastructure.BotEngineServices;
 
-public class BotEngineManageService : IBotEngineManageServiceService
+public class BotEngineManageService : IBotEngineManageService
 {
     private readonly IChatBotEngineApi _chatbotEngineApi;
     private readonly IChatGPTApi _chatGptApi;
@@ -25,7 +23,7 @@ public class BotEngineManageService : IBotEngineManageServiceService
         return "This message perfectly executed.";
     }
 
-    public async Task<object> AskAnything(string query, string botName, string session)
+    public async Task<ReplyMessageResponseDto> AskAnything(string query, string botName, string session)
     {
         try
         {

@@ -5,7 +5,7 @@ using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.ChatbotManagement.VOs;
 using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
-using ChatUapp.Core.Interfaces.MessageServices;
+using ChatUapp.Core.Thirdparty.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +22,13 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
 {
     private readonly ChatSessionManager _sessionManager;
     private readonly IRepository<ChatSession, Guid> _sessionRepo;
-    private readonly IBotEngineManageServiceService _botEngineManageService;
+    private readonly IBotEngineManageService _botEngineManageService;
     private readonly ICurrentUser _currentUser;
 
     public ChatSessionAppService(
         ChatSessionManager sessionManager,
         IRepository<ChatSession, Guid> sessionRepo,
-        IBotEngineManageServiceService message,
+        IBotEngineManageService message,
         ICurrentUser currentUser)
     {
         _sessionManager = sessionManager;
@@ -56,13 +56,13 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         var session = _sessionManager.CreateNewSession(_currentUser.Id.Value, input.chatbotId, input.sessionTitle, locationSnapshot, input.BrowserSessionKey);
 
         // Send the initial user message to the chatbot and get the response
-        var result = await _botEngineManageService.AskAnything(input.sessionTitle);
+        var result = await _botEngineManageService.AskAnything(input.sessionTitle, session.ChatbotId.ToString(), session.Id.ToString());
 
         // Add the user's message to the session
         _sessionManager.AddMessageToSession(session, input.sessionTitle, MessageRole.User);
 
         // Add the chatbot's response to the session
-        _sessionManager.AddMessageToSession(session, result, MessageRole.Chatbot);
+        _sessionManager.AddMessageToSession(session, result.Answer, MessageRole.Chatbot);
 
         // Persist the session to the database
         await _sessionRepo.InsertAsync(session);
@@ -83,11 +83,11 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         Ensure.NotNull(session, nameof(session));
 
         // Send the new message to the chatbot and get the response
-        var result = await _botEngineManageService.AskAnything(input.message);
+        var result = await _botEngineManageService.AskAnything(input.message, session.ChatbotId.ToString(), session.Id.ToString());
 
         // Add both user and chatbot messages to the session
         _sessionManager.AddMessageToSession(session, input.message, MessageRole.User);
-        _sessionManager.AddMessageToSession(session, result, MessageRole.Chatbot);
+        _sessionManager.AddMessageToSession(session, result.Answer, MessageRole.Chatbot);
 
         // Persist the changes to the database
         await _sessionRepo.UpdateAsync(session);
