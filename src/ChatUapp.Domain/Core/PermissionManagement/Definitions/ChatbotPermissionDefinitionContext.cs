@@ -8,9 +8,9 @@ public class ChatbotPermissionDefinitionContext
 
     public IReadOnlyList<PermissionGroupDefinition> Groups => _groups;
 
-    public PermissionGroupDefinition AddGroup(string name, string displayName)
+    public PermissionGroupDefinition AddGroup(string name, string displayName, bool isMenu, string menuDisplayName)
     {
-        var group = new PermissionGroupDefinition(name, displayName);
+        var group = new PermissionGroupDefinition(name, displayName, isMenu, menuDisplayName);
         _groups.Add(group);
         return group;
     }
