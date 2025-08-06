@@ -61,4 +61,9 @@ public class ChatSessionManager : DomainService
         Ensure.NotNull(session, nameof(session));
         session.ReactMessage(messageId, ReactType.Dislike);
     }
+    public void Delete(ChatSession session)
+    {
+        Ensure.NotNull(session, nameof(session));
+       session.IsDeleted = true;
+    }
 }
