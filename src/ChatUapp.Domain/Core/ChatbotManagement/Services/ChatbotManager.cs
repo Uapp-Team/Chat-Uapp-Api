@@ -5,7 +5,6 @@ using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Chatbot;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
@@ -130,7 +129,6 @@ public class ChatbotManager : DomainService
         }
         chatbot.SetDefault();
     }
-
 
     private async Task HandleDuplicateChatbotAsync(string name)
     {
