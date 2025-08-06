@@ -7,17 +7,21 @@ public class PermissionGroupDefinition
 {
     public string Name { get; }
     public string DisplayName { get; }
+    public bool IsMenu { get; }
+    public string MenuDisplayName { get; }
     public List<PermissionDefinition> Permissions { get; } = new();
 
-    internal PermissionGroupDefinition(string name, string displayName)
+    internal PermissionGroupDefinition(string name, string displayName, bool isMenu, string menuDisplayName)
     {
         Name = name;
         DisplayName = displayName;
+        IsMenu = isMenu;
+        MenuDisplayName = menuDisplayName;
     }
 
-    public PermissionGroupDefinition AddPermission(string name, string displayName)
+    public PermissionGroupDefinition AddPermission(string name, string displayName, bool isMenu, string menuDisplayName)
     {
-        var perm = new PermissionDefinition(name, displayName);
+        var perm = new PermissionDefinition(name, displayName, isMenu, menuDisplayName);
         Permissions.Add(perm);
         return this;
     }
@@ -39,9 +43,9 @@ public class PermissionListBuilder
         _permissionList = list;
     }
 
-    public PermissionListBuilder Add(string name, string displayName, Action<PermissionListBuilder>? children = null)
+    public PermissionListBuilder Add(string name, string displayName, bool isMenu, string menuDisplayName, Action<PermissionListBuilder>? children = null)
     {
-        var permission = new PermissionDefinition(name, displayName);
+        var permission = new PermissionDefinition(name, displayName, isMenu, menuDisplayName);
 
         if (children != null)
         {
