@@ -41,38 +41,46 @@ public class ChatbotPermissionAppService :
         var resutlPermisions = new List<ChatbotPermissionGroupDto>();
         var permisions = ChatbotPermissionRegistry.Groups;
 
-        foreach (var p in permisions)
+        foreach (var group in permisions)
         {
             var perGroup = new ChatbotPermissionGroupDto()
             {
-                Name = p.Name,
-                DisplayName = p.DisplayName,
+                Name = group.Name,
+                DisplayName = group.DisplayName,
                 Permissions = new List<ChatbotPermissionDto>()
             };
-            foreach (var np in p.Permissions)
+            foreach (var np in group.Permissions)
             {
                 if (np.Children.Count > 0)
                 {
-                    var perChildGroup = new ChatbotPermissionGroupDto()
+                    var perChild = new ChatbotPermissionDto()
                     {
                         Name = np.Name,
                         DisplayName = np.DisplayName,
-                        Permissions = new List<ChatbotPermissionDto>()
                     };
-                    foreach (var child in np.Children)
-                    {
-                        var per = await MapAsync(botId, child);
-                        perGroup.Permissions.Add(per);
-                    }
+
+                    perChild.Children.AddRange(await MapChildrenAsync(botId, np.Children));
+                    perGroup.Permissions.Add(perChild);
                 }
                 else
                 {
                     perGroup.Permissions.Add(await MapAsync(botId, np));
                 }
             }
+            resutlPermisions.Add(perGroup); // Add the group to the result list
         }
 
         return resutlPermisions;
+    }
+
+    private async Task<List<ChatbotPermissionDto>> MapChildrenAsync(Guid botId, List<PermissionDefinition> children)
+    {
+        var childPermissions = new List<ChatbotPermissionDto>();
+        foreach (var child in children)
+        {
+            childPermissions.Add(await MapAsync(botId, child));
+        }
+        return childPermissions;
     }
 
     private async Task<ChatbotPermissionDto> MapAsync(Guid botId, PermissionDefinition p)
