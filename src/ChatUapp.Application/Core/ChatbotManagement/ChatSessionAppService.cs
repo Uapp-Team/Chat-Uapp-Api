@@ -180,7 +180,6 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
             items.Select(ObjectMapper.Map<ChatSession, ChatSessionTitleDto>).ToList()
         );
     }
-
     public async Task<bool> DeleteAsync(Guid Id)
     {
         Ensure.NotNull(Id,nameof(Id));

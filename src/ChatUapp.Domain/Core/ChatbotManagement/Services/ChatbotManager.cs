@@ -8,15 +8,16 @@ using System;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
+using Volo.Abp.Guids;
 
 namespace ChatUapp.Core.ChatbotManagement.Services;
 
 public class ChatbotManager : DomainService
 {
-    private readonly IDomainGuidGenerator _guidGenerator;
+    private readonly IGuidGenerator _guidGenerator;
     private readonly IRepository<Chatbot, Guid> _chatbotRepository;
 
-    public ChatbotManager(IDomainGuidGenerator guidGenerator, IRepository<Chatbot, Guid> chatbotRepository)
+    public ChatbotManager(IGuidGenerator guidGenerator, IRepository<Chatbot, Guid> chatbotRepository)
     {
         _guidGenerator = guidGenerator;
         _chatbotRepository = chatbotRepository;
@@ -39,6 +40,26 @@ public class ChatbotManager : DomainService
             new IconStyle(iconName, iconColor),
             ChatbotStatus.Draft,
             CurrentTenant.Id);
+
+        return bot;
+    }
+
+    public async Task<Chatbot> SeedAsync(
+        string name, string header, string subHeader, string iconName, string iconColor,Guid tenantId)
+    {
+        Ensure.NotNull(tenantId, nameof(tenantId));
+
+        await HandleDuplicateChatbotAsync(name);
+
+        var bot = new Chatbot(
+            _guidGenerator.Create(),
+            name,
+            header,
+            subHeader,
+            _guidGenerator.Create().ToString(),
+            new IconStyle(iconName, iconColor),
+            ChatbotStatus.Draft,
+            tenantId);
 
         return bot;
     }
@@ -91,6 +112,11 @@ public class ChatbotManager : DomainService
     public void Delete(Chatbot chatbot)
     {
         chatbot.IsDeleted = true;
+    }
+
+    public void SetDefault(Chatbot chatbot)
+    {
+        chatbot.SetDefault();
     }
 
     private async Task HandleDuplicateChatbotAsync(string name)

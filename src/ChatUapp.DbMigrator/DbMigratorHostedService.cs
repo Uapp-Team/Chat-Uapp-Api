@@ -38,6 +38,9 @@ public class DbMigratorHostedService : IHostedService
                 .GetRequiredService<ChatUappDbMigrationService>()
                 .MigrateAsync();
 
+            var dataSeeder = application.ServiceProvider.GetRequiredService<IDataSeeder>();
+            await dataSeeder.SeedAsync();
+
             await application.ShutdownAsync();
 
             _hostApplicationLifetime.StopApplication();
