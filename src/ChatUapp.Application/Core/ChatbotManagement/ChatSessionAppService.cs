@@ -180,4 +180,18 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
             items.Select(ObjectMapper.Map<ChatSession, ChatSessionTitleDto>).ToList()
         );
     }
+    public async Task<bool> DeleteAsync(Guid Id)
+    {
+        Ensure.NotNull(Id,nameof(Id));
+
+        var session = await _sessionRepo.GetAsync(Id);
+
+        _sessionManager.Delete(session);
+
+        await _sessionRepo.UpdateAsync(session);
+
+        await CurrentUnitOfWork!.SaveChangesAsync();
+
+        return true;
+    }
 }

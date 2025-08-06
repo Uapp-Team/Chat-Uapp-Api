@@ -43,6 +43,26 @@ public class ChatbotManager : DomainService
         return bot;
     }
 
+    public async Task<Chatbot> SeedAsync(
+        string name, string header, string subHeader, string iconName, string iconColor, Guid tenantId)
+    {
+        Ensure.NotNull(tenantId, nameof(tenantId));
+
+        await HandleDuplicateChatbotAsync(name);
+
+        var bot = new Chatbot(
+            _guidGenerator.Create(),
+            name,
+            header,
+            subHeader,
+            _guidGenerator.Create().ToString(),
+            new IconStyle(iconName, iconColor),
+            ChatbotStatus.Draft,
+            tenantId);
+
+        return bot;
+    }
+
     public async Task<Chatbot> UpdateChatbotAsync(
         Chatbot chatbot, string name, string header, string subHeader, string iconName, string iconColor)
     {
@@ -91,6 +111,11 @@ public class ChatbotManager : DomainService
     public void Delete(Chatbot chatbot)
     {
         chatbot.IsDeleted = true;
+    }
+
+    public void SetDefault(Chatbot chatbot)
+    {
+        chatbot.SetDefault();
     }
 
     private async Task HandleDuplicateChatbotAsync(string name)
