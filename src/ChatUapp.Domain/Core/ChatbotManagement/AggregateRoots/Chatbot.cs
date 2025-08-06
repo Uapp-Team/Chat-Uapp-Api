@@ -84,10 +84,12 @@ public class Chatbot : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Ensure.NotNullOrEmpty(key, nameof(key));
         UniqueKey = key;
     }
+
     internal void SetDefault()
     {
         isDefault = true;
     }
+
     internal void SetNotDefault()
     {
         isDefault = false;

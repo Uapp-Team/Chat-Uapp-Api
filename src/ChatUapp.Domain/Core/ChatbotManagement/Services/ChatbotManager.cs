@@ -127,6 +127,7 @@ public class ChatbotManager : DomainService
                 }
             }
         }
+
         chatbot.SetDefault();
     }
 
