@@ -125,12 +125,13 @@ public class ChatbotPermissionAppService :
 
     private async Task<ChatbotPermissionDto> MapAsync(Guid botId, PermissionDefinition p)
     {
+        var isAccess = await _botPermissionManager.CheckAsync(botId, p.Name);
         return new ChatbotPermissionDto
         {
             Name = p.Name,
             DisplayName = p.DisplayName,
-            IsGranted = await _botPermissionManager.CheckAsync(botId, p.Name),
-            IsMenu = p.IsMenu
+            IsGranted = isAccess,
+            IsMenu = isAccess
         };
     }
 }
