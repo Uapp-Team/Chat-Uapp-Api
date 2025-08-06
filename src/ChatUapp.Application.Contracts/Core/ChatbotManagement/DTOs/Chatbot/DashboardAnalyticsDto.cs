@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ChatUapp.Core.ChatbotManagement.DTOs.Chatbot;
 
 public class DashboardAnalyticsDto
 {
-    public List<string>  CountryNames{ get; set; } = new();
+    public List<string> CountryNames { get; set; } = new();
     public List<CountryStatisticsDto> CountryStatistics { get; set; } = new();
 }
 

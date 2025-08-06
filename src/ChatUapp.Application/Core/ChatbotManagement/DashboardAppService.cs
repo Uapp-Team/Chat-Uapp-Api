@@ -1,8 +1,6 @@
 ﻿using ChatUapp.Core.ChatbotManagement.DTOs.Chatbot;
 using ChatUapp.Core.ChatbotManagement.Interfaces;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
