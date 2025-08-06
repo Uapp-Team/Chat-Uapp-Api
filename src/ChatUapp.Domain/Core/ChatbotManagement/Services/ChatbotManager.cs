@@ -8,16 +8,15 @@ using System;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
-using Volo.Abp.Guids;
 
 namespace ChatUapp.Core.ChatbotManagement.Services;
 
 public class ChatbotManager : DomainService
 {
-    private readonly IGuidGenerator _guidGenerator;
+    private readonly IDomainGuidGenerator _guidGenerator;
     private readonly IRepository<Chatbot, Guid> _chatbotRepository;
 
-    public ChatbotManager(IGuidGenerator guidGenerator, IRepository<Chatbot, Guid> chatbotRepository)
+    public ChatbotManager(IDomainGuidGenerator guidGenerator, IRepository<Chatbot, Guid> chatbotRepository)
     {
         _guidGenerator = guidGenerator;
         _chatbotRepository = chatbotRepository;
@@ -45,7 +44,7 @@ public class ChatbotManager : DomainService
     }
 
     public async Task<Chatbot> SeedAsync(
-        string name, string header, string subHeader, string iconName, string iconColor,Guid tenantId)
+        string name, string header, string subHeader, string iconName, string iconColor, Guid tenantId)
     {
         Ensure.NotNull(tenantId, nameof(tenantId));
 
