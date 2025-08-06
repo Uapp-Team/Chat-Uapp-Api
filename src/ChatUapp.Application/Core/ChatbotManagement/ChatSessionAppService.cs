@@ -194,4 +194,19 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
 
         return true;
     }
+
+    public async Task<bool> RenameAsync(Guid id, string updatedName)
+    {
+        Ensure.NotNull(id, nameof(id));
+
+        var session = await _sessionRepo.GetAsync(id);
+
+        _sessionManager.RenameSession(session, updatedName);
+
+        await _sessionRepo.UpdateAsync(session);
+
+        await CurrentUnitOfWork!.SaveChangesAsync();
+
+        return true;
+    }
 }
