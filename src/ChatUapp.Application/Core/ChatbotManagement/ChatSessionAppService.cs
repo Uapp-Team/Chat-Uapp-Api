@@ -144,7 +144,7 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         var queryable = await _sessionRepo.WithDetailsAsync(x => x.Messages);
 
         // Find the specific session by ID
-        var session = queryable.First(s => s.Id == Id);
+        var session = queryable.FirstOrDefault(s => s.Id == Id);
 
         Ensure.NotNull(session, nameof(session));
 

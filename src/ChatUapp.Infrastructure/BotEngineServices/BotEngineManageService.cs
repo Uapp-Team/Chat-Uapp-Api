@@ -1,8 +1,11 @@
-﻿using ChatUapp.Core.Exceptions;
+﻿using ChatUapp.Core.ChatbotManagement.AggregateRoots;
+using ChatUapp.Core.ChatbotManagement.VOs;
+using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Message.ApiResponsesDtos;
 using ChatUapp.Core.Message.Interfaces;
 using ChatUapp.Core.Thirdparty.Interfaces;
+using Volo.Abp.Domain.Repositories;
 
 namespace ChatUapp.Infrastructure.BotEngineServices;
 
@@ -10,11 +13,14 @@ public class BotEngineManageService : IBotEngineManageService
 {
     private readonly IChatBotEngineApi _chatbotEngineApi;
     private readonly IChatGPTApi _chatGptApi;
+    private readonly IRepository<ChatSession, Guid> _sessionRepo;
 
-    public BotEngineManageService(IChatBotEngineApi chatbotEngineApi, IChatGPTApi chatGptApi)
+    public BotEngineManageService(
+        IChatBotEngineApi chatbotEngineApi, IChatGPTApi chatGptApi, IRepository<ChatSession, Guid> sessionRepo = null)
     {
         _chatbotEngineApi = chatbotEngineApi;
         _chatGptApi = chatGptApi;
+        _sessionRepo = sessionRepo;
     }
 
     public async Task<string> AskAnything(string message)
@@ -47,7 +53,7 @@ public class BotEngineManageService : IBotEngineManageService
 
             if (reply.Answer?.Contains("Sorry", StringComparison.OrdinalIgnoreCase) == true)
             {
-                reply.Answer = await AskAsync(query);
+                reply.Answer = await AskGptAsync(query, Guid.Parse(session));
             }
 
             reply.Answer = string.IsNullOrWhiteSpace(reply.Answer)
@@ -68,6 +74,56 @@ public class BotEngineManageService : IBotEngineManageService
         {
             //Logger.LogError(ex, "Unexpected error during chatbot message handling.");
             throw new AppSafeException("Something went wrong while processing your message.");
+        }
+    }
+
+    public async Task<string> AskGptAsync(string userQuery, Guid sessionId)
+    {
+        var queryable = await _sessionRepo.WithDetailsAsync(x => x.Messages);
+
+        // Find the specific session by ID
+        var session = queryable.FirstOrDefault(s => s.Id == sessionId);
+
+        var request = new GptRequestDto
+        {
+            messages = new List<GptMessage>
+            {
+                new GptMessage
+                {
+                    role = "system",
+                    content = "You are a University expert. Only answer university students related questions.Don't express that you are a ai of openai. Mention that you are a ai of Uapp"
+                },
+            }
+        };
+
+        if (session !=null && session.Messages.Count > 0)
+        {
+            foreach (var message in session.Messages)
+            {
+                request.messages.Add(
+                    new GptMessage
+                    {
+                        role = message.Role == MessageRole.User ? "user" : "system",
+                        content = message.Content
+                    });
+            }
+        }
+
+        request.messages.Add(new GptMessage
+        {
+            role = "user",
+            content = userQuery
+        });
+
+        try
+        {
+            var response = await _chatGptApi.QueryAsync(request);
+            return response?.choices.FirstOrDefault()?.message?.content ?? "Sorry I don't know the answer. You can connect with your consultant.";
+
+        }
+        catch (System.Exception)
+        {
+            return "Sorry I don't know please connect with our consultant";
         }
     }
 
