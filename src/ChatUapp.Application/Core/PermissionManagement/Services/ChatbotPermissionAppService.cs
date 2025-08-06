@@ -3,6 +3,7 @@ using ChatUapp.Core.PermissionManagement.Dtos;
 using ChatUapp.Core.PermissionManagement.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -73,6 +74,45 @@ public class ChatbotPermissionAppService :
         return resutlPermisions;
     }
 
+    public async Task<IList<ChatbotPermissionGroupDto>> GetMenuByChatBotIdAsync(Guid botId)
+    {
+        var resutlPermisions = new List<ChatbotPermissionGroupDto>();
+        var permisions = ChatbotPermissionRegistry.Groups;
+
+        foreach (var group in permisions)
+        {
+            var perGroup = new ChatbotPermissionGroupDto()
+            {
+                Name = group.Name,
+                DisplayName = group.MenuDisplayName,
+                IsMenu = group.Permissions.Where(x => x.IsGranted).Count() > 0,
+                Permissions = new List<ChatbotPermissionDto>()
+            };
+            foreach (var np in group.Permissions)
+            {
+                if (np.Children.Count > 0)
+                {
+                    var perChild = new ChatbotPermissionDto()
+                    {
+                        Name = np.Name,
+                        DisplayName = np.MenuDisplayName,
+                        IsMenu = np.IsMenu,
+                    };
+
+                    perChild.Children.AddRange(await MapChildrenAsync(botId, np.Children));
+                    perGroup.Permissions.Add(perChild);
+                }
+                else
+                {
+                    perGroup.Permissions.Add(await MapAsync(botId, np));
+                }
+            }
+            resutlPermisions.Add(perGroup); // Add the group to the result list
+        }
+
+        return resutlPermisions;
+    }
+
     private async Task<List<ChatbotPermissionDto>> MapChildrenAsync(Guid botId, List<PermissionDefinition> children)
     {
         var childPermissions = new List<ChatbotPermissionDto>();
@@ -89,7 +129,8 @@ public class ChatbotPermissionAppService :
         {
             Name = p.Name,
             DisplayName = p.DisplayName,
-            IsGranted = await _botPermissionManager.CheckAsync(botId, p.Name)
+            IsGranted = await _botPermissionManager.CheckAsync(botId, p.Name),
+            IsMenu = p.IsMenu
         };
     }
 }

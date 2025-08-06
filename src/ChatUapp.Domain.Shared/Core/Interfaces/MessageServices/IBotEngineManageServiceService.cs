@@ -2,7 +2,7 @@
 
 namespace ChatUapp.Core.Interfaces.MessageServices;
 
-public interface IAskMessageService
+public interface IBotEngineManageServiceService
 {
     Task<string> AskAnything(string message);
 }

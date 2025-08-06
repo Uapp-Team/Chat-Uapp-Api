@@ -22,18 +22,18 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
 {
     private readonly ChatSessionManager _sessionManager;
     private readonly IRepository<ChatSession, Guid> _sessionRepo;
-    private readonly IAskMessageService _message;
+    private readonly IBotEngineManageServiceService _botEngineManageService;
     private readonly ICurrentUser _currentUser;
 
     public ChatSessionAppService(
         ChatSessionManager sessionManager,
         IRepository<ChatSession, Guid> sessionRepo,
-        IAskMessageService message,
+        IBotEngineManageServiceService message,
         ICurrentUser currentUser)
     {
         _sessionManager = sessionManager;
         _sessionRepo = sessionRepo;
-        _message = message;
+        _botEngineManageService = message;
         _currentUser = currentUser;
     }
 
@@ -56,7 +56,7 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         var session = _sessionManager.CreateNewSession(_currentUser.Id.Value, input.chatbotId, input.sessionTitle, locationSnapshot, input.BrowserSessionKey);
 
         // Send the initial user message to the chatbot and get the response
-        var result = await _message.AskAnything(input.sessionTitle);
+        var result = await _botEngineManageService.AskAnything(input.sessionTitle);
 
         // Add the user's message to the session
         _sessionManager.AddMessageToSession(session, input.sessionTitle, MessageRole.User);
@@ -83,7 +83,7 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         Ensure.NotNull(session, nameof(session));
 
         // Send the new message to the chatbot and get the response
-        var result = await _message.AskAnything(input.message);
+        var result = await _botEngineManageService.AskAnything(input.message);
 
         // Add both user and chatbot messages to the session
         _sessionManager.AddMessageToSession(session, input.message, MessageRole.User);

@@ -17,23 +17,24 @@ public class MyChatbotPermissionDefinitionProvider : ChatbotPermissionDefinition
           );
         */
 
-        context.AddGroup("Chatbot.Dashboard", "Dashboard")
+        context.AddGroup("Chatbot.Dashboard", "Dashboard", true, "Dashboard")
           .WithPermissions(p => p
-              .Add("Chatbot.Dashboard.View", "View Dasboard")
-              .Add("Chatbot.Analytics.View", "View Analytics")
+              .Add("Chatbot.Dashboard.View", "View Dasboard", true, "Dashboard")
+              .Add("Chatbot.Analytics.View", "View Analytics", true, "Analytics")
           );
 
-        context.AddGroup("Chatbot.Chats", "Chats")
+        context.AddGroup("Chatbot.Chats", "Chats", true, "Chats")
           .WithPermissions(p => p
-              .Add("Chatbot.Chats.AllChat", "View All Chat")
-              .Add("Chatbot.Chats.Details", "View Chat Details")
+              .Add("Chatbot.Chats.AllChat", "View All Chat", true, "All Chats")
+              .Add("Chatbot.Chats.Details", "View Chat Details", false, "Chat Details")
           );
 
-        context.AddGroup("Chatbot.TrainingCenter", "Training Center")
+        context.AddGroup("Chatbot.TrainingCenter", "Training Center", true, "Training Center")
           .WithPermissions(p => p
-              .Add("Chatbot.TrainingCenter.Train", "Add Train Source")
-              .Add("Chatbot.TrainingCenter.Edit", "Edit Train Source")
-              .Add("Chatbot.TrainingCenter.Delete", "Delete Train Source")
+              .Add("Chatbot.TrainingCenter.View", "View Trained Sources", false, "Training Center")
+              .Add("Chatbot.TrainingCenter.Train", "Add Train Source", false, "Training Center")
+              .Add("Chatbot.TrainingCenter.Edit", "Edit Train Source", false, "Training Center")
+              .Add("Chatbot.TrainingCenter.Delete", "Delete Train Source", false, "Training Center")
           );
     }
 }
