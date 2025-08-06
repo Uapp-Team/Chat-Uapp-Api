@@ -84,7 +84,7 @@ public class CurrentInfoAppService : ApplicationService, ICurrentInfoAppService
         dto.TwitterUrl = user.GetProperty<string>("TwitterUrl");
         dto.ProfileImg = user.GetProperty<string>("ProfileImg");
 
-        if(dto.ProfileImg !=null) dto.ProfileImg = await _storage.GetUrlAsync(dto.ProfileImg);
+        if (dto.ProfileImg != null) dto.ProfileImg = await _storage.GetUrlAsync(dto.ProfileImg);
         // Get Role Names
         var roleIds = user.Roles.Select(r => r.RoleId).ToList();
 

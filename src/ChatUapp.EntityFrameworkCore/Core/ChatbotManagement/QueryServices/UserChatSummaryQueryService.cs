@@ -5,7 +5,6 @@ using ChatUapp.Core.Extensions;
 using ChatUapp.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +47,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         if (endDate is not null)
             query = query.Where(x => x.CreationTime <= endDate.Value);
 
-        var countryStats =  await query
+        var countryStats = await query
             .GroupBy(s => new
             {
                 CountryName = s.LocationSnapshot.CountryName,
@@ -59,7 +58,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
             .Select(g => new CountryStatisticsDto
             {
                 Name = g.Key.CountryName ?? string.Empty,
-                Coordinates = new List<double> { g.Key.Latitude, g.Key.Longitude},
+                Coordinates = new List<double> { g.Key.Latitude, g.Key.Longitude },
                 Users = g.Select(x => x.SessionCreator).Distinct().Count(),
                 Flag = g.Key.Flag ?? string.Empty
             }).AsSplitQuery()
@@ -219,7 +218,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
             TotalUsersCount = totalUsersCount,
             BotPerformance = botPerformance.Select(bp => new BotPerformanceDto
             {
-                BotId= bp.BotId,
+                BotId = bp.BotId,
                 BotName = bp.BotName!,
                 SatisfactionRate = Math.Round(bp.SatisfactionRate, 2)
             }).ToList(),
