@@ -159,6 +159,4 @@ public class BotInvitationAppService : ApplicationService, IBotInvitationAppServ
         result.IsValid = true;
         return result;
     }
-
-
 }

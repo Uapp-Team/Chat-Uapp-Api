@@ -113,8 +113,21 @@ public class ChatbotManager : DomainService
         chatbot.IsDeleted = true;
     }
 
-    public void SetDefault(Chatbot chatbot)
+    public async Task SetDefaultAsync(Chatbot chatbot)
     {
+        var botList = await _chatbotRepository.GetListAsync();
+
+        if (botList != null)
+        {
+            foreach (var item in botList)
+            {
+                if (item.Id != chatbot.Id && item.isDefault)
+                {
+                    item.SetNotDefault();
+                }
+            }
+        }
+
         chatbot.SetDefault();
     }
 

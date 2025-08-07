@@ -19,7 +19,7 @@ public class Chatbot : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string UniqueKey { get; private set; } = default!;
     public ChatbotStatus Status { get; set; } = ChatbotStatus.Draft;
     public string? BrandImageName { get; set; } = default!;
-    public bool isDefalt {  get; private set; } = false;
+    public bool isDefault {  get; private set; } = false;
     public IconStyle IconStyle { get; private set; } = default!;
 
     private Chatbot() { } // Required for EF Core
@@ -84,9 +84,15 @@ public class Chatbot : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Ensure.NotNullOrEmpty(key, nameof(key));
         UniqueKey = key;
     }
+
     internal void SetDefault()
     {
-        isDefalt = true;
+        isDefault = true;
+    }
+
+    internal void SetNotDefault()
+    {
+        isDefault = false;
     }
 }
 
