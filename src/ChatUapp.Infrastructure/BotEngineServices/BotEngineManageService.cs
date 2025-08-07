@@ -39,22 +39,22 @@ public class BotEngineManageService : IBotEngineManageService
 
             var lowerQuery = query.Trim().ToLower();
 
-            if (lowerQuery is "hi" or "hello" or "how are you?")
-            {
-                return new ReplyMessageResponseDto
-                {
-                    Answer = await AskAsync(query),
-                    Success = true,
-                    BotName = "chatuapp"
-                };
-            }
+            //if (lowerQuery is "hi" or "hello" or "how are you?")
+            //{
+            //    return new ReplyMessageResponseDto
+            //    {
+            //        Answer = await AskAsync(query),
+            //        Success = true,
+            //        BotName = "chatuapp"
+            //    };
+            //}
 
-            var reply = await _chatbotEngineApi.QueryAsync(query, "chatuapp", session);
+            var reply = new ReplyMessageResponseDto { Answer = "", Success = true, BotName = "chatuapp" };//await _chatbotEngineApi.QueryAsync(query, "chatuapp", session);
 
-            if (reply.Answer?.Contains("Sorry", StringComparison.OrdinalIgnoreCase) == true)
-            {
+            //if (reply.Answer?.Contains("Sorry", StringComparison.OrdinalIgnoreCase) == true)
+            //{
                 reply.Answer = await AskGptAsync(query, Guid.Parse(session));
-            }
+            //}
 
             reply.Answer = string.IsNullOrWhiteSpace(reply.Answer)
                 ? "No result found"
