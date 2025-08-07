@@ -224,4 +224,36 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
             }).ToList(),
         };
     }
+
+    public async Task<UserDashboardSummaryDto> GetChatbotDashboardSummariesAsync(
+     DateTime? startDate, DateTime? endDate, Guid? chatbotId)
+    {
+        // Normalize dates to cover the full days
+        endDate ??= DateTime.UtcNow.Date;
+        startDate ??= DateTime.UtcNow.Date.AddDays(-30); // exclusive upper bound   
+
+        var range = (endDate!.Value - startDate!.Value).TotalDays;
+        string aggregation;
+
+        if (range <= 30) aggregation = "daily";
+        else if (range <= 180) aggregation = "weekly";
+        else if (range <= 730) aggregation = "monthly";
+        else aggregation = "yearly";
+
+        var data = await GetAggregatedData(startDate, endDate, aggregation);
+
+        
+        return new UserDashboardSummaryDto
+        {
+            TotalMessagesCount = totalMessagesCount,
+            ActiveChatbotsCount = activeChatbotsCount,
+            TotalUsersCount = totalUsersCount,
+            BotPerformance = botPerformance.Select(bp => new BotPerformanceDto
+            {
+                BotId = bp.BotId,
+                BotName = bp.BotName!,
+                SatisfactionRate = Math.Round(bp.SatisfactionRate, 2)
+            }).ToList(),
+        };
+    }
 }
