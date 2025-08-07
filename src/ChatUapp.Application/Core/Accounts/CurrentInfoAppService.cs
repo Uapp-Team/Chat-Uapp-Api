@@ -43,16 +43,16 @@ public class CurrentInfoAppService : ApplicationService, ICurrentInfoAppService
         _storage = storage;
     }
 
-    public async Task<DefaultBotDto> GetDeafultBot()
+    public async Task<CurrentBotDto> GetCurrentBotId()
     {
         Ensure.Authenticated(_currentUser);
 
         var queryable = await _botRepo.GetQueryableAsync();
-        var chatBot = queryable.Where(x => x.isDefault == true).FirstOrDefault();
+        var chatBot = queryable.Where(x => x.isDefalt == true).FirstOrDefault();
         if (chatBot == null)
             throw new AppBusinessException("No chatbot found for the current user.");
 
-        return ObjectMapper.Map<Chatbot, DefaultBotDto>(chatBot);
+        return ObjectMapper.Map<Chatbot, CurrentBotDto>(chatBot);
     }
 
     public Task<CurrentTenantDto> GetCurrentTenant()
