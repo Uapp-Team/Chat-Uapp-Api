@@ -10,7 +10,7 @@ namespace ChatUapp.Infrastructure.FileStorage
     /// <summary>
     /// Provides functionality to upload, retrieve, delete, and verify user profile images in Azure Blob Storage.
     /// </summary>
-    public class BlobStorageService : BlobProviderBase, IBlobStorageService
+    public class BlobStorageService : IBlobStorageService
     {
 
         private readonly IBlobContainer _blobContainer;
