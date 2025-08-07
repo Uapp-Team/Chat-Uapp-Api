@@ -160,13 +160,13 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         var filteredQuery = queryable
             .Where(x => x.ChatbotId == input.ChatbotId)
             .WhereIf(!string.IsNullOrWhiteSpace(input.Title),
-                x => x.Title != null && input.Title != null &&
-                     x.Title.ToLower().Trim().Contains(input.Title.ToLower().Trim()));
+                x => x.Title!.ToLower().Trim().Contains(input.Title!.ToLower().Trim()));
 
         // Apply sorting and paging
         var items = await AsyncExecuter.ToListAsync(
-            filteredQuery
-                .OrderByDescending(x => x.LastModificationTime)
+                 filteredQuery
+                .OrderByDescending(x => x.CreationTime)
+                .ThenByDescending(x => x.LastModificationTime)
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount)
         );
