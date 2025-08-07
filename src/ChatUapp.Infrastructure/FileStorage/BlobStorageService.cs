@@ -4,6 +4,7 @@ using Azure.Storage.Sas;
 using ChatUapp.Core.Interfaces.FileStorage;
 using ChatUapp.Infrastructure.FileStorage.Helpers;
 using Microsoft.Extensions.Configuration;
+using Volo.Abp.BlobStoring;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 
@@ -18,9 +19,15 @@ namespace ChatUapp.Infrastructure.FileStorage
         private readonly BlobServiceClient _blobServiceClient;
         private readonly ICurrentUser _currentUser;
         private readonly ICurrentTenant _currentTenant;
+        private readonly IBlobContainer _blobContainer;
 
 
-        public BlobStorageService(IConfiguration configuration, ICurrentUser currentUser, ICurrentTenant currentTenant)
+        public BlobStorageService(
+            IConfiguration configuration, 
+            ICurrentUser currentUser, 
+            ICurrentTenant currentTenant, 
+            IBlobContainer blobContainer
+            )
         {
             _configuration = configuration;
             _currentUser = currentUser;
@@ -34,6 +41,7 @@ namespace ChatUapp.Infrastructure.FileStorage
 
             _blobServiceClient = new BlobServiceClient(connectionString);
             _currentTenant = currentTenant;
+            _blobContainer = blobContainer;
         }
 
 
