@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace ChatUapp.Migrations
 {
     [DbContext(typeof(ChatUappDbContext))]
-    [Migration("20250806090909_Add_Default_Bot_field")]
-    partial class Add_Default_Bot_field
+    [Migration("20250807050545_fix_vulnurable_migration")]
+    partial class fix_vulnurable_migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

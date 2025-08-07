@@ -5,7 +5,7 @@
 namespace ChatUapp.Migrations
 {
     /// <inheritdoc />
-    public partial class Add_Default_Bot_field : Migration
+    public partial class fix_vulnurable_migration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
