@@ -8,11 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
+using Volo.Abp.Linq;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 
 namespace ChatUapp.Core.ChatbotManagement.QueryServices;
@@ -22,15 +26,18 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
     private readonly ChatUappDbContext _dbContext;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ICurrentUser _currentUser;
+    private readonly IDataFilter _dataFilter;
 
     public UserChatSummaryQueryService(
         ChatUappDbContext dbContext,
         UserManager<IdentityUser> userManager,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IDataFilter dataFilter)
     {
         _dbContext = dbContext;
         _userManager = userManager;
         _currentUser = currentUser;
+        _dataFilter = dataFilter;
     }
 
     public async Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(
@@ -224,4 +231,133 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
             }).ToList(),
         };
     }
+
+    public async Task<object> GetChatbotDashboardSummariesAsync(
+     DateTime? startDate, DateTime? endDate, Guid? chatbotId)
+    {
+        endDate ??= DateTime.UtcNow.Date.AddDays(1);
+        startDate ??= DateTime.UtcNow.Date.AddDays(-30); // default: last 30 days
+
+        var range = (endDate.Value - startDate.Value).TotalDays;
+        string aggregation;
+
+        if (range <= 30) aggregation = "daily";
+        else if (range <= 180) aggregation = "weekly"; // we'll treat it same as daily for now
+        else if (range <= 730) aggregation = "monthly";
+        else aggregation = "yearly";
+
+        var subquery = _dbContext.ChatSessions
+        .Where(x => x.ChatbotId == chatbotId)
+        .Where(x => x.CreationTime >= startDate && x.CreationTime <= endDate)
+        .Select(s => new
+        {
+            Date = s.CreationTime,
+            LikeCount = s.Messages.Count(x => x.ReactType == ReactType.Like),
+            DislikeCount = s.Messages.Count(x => x.ReactType == ReactType.Dislike)
+        })
+        .ToList(); // switch to LINQ-to-objects so we can use C# DateTime ops
+
+        var groupquery = subquery.Select(x => new
+        {
+            GroupDate = aggregation switch
+            {
+                "daily" => x.Date.Date,
+                "monthly" => new DateTime(x.Date.Year, x.Date.Month, 1),
+                "yearly" => new DateTime(x.Date.Year, 1, 1),
+                _ => x.Date.Date
+            },
+            x.LikeCount,
+            x.DislikeCount
+        })
+        .GroupBy(x => x.GroupDate);
+        var query = await groupquery.Select(g => new
+        {
+            Date = g.Key.ToString("yyyy-MM-dd"),
+            Value = g.Sum(x => x.LikeCount + x.DislikeCount) == 0
+                ? 100
+                : Math.Round(g.Sum(x => x.LikeCount) * 100.0 / (g.Sum(x => x.LikeCount + x.DislikeCount)), 2)
+        })
+        .OrderBy(x => x.Date).ToDynamicListAsync();
+
+        // 1. Total messages (within date range)
+        var totalMessagesCount = await _dbContext.ChatSessions
+            .Where(x => x.ChatbotId == chatbotId)
+            .SelectMany(s => s.Messages)
+            .WhereIf(startDate is not null, m => m.SentAt >= startDate)
+            .WhereIf(endDate is not null, m => m.SentAt >= endDate)
+            .CountAsync();
+
+        // 2. Active chat bots (regardless of date range)
+        var activeChatbotsCount = await _dbContext.Chatbots
+            .Where(x => x.Id == chatbotId && x.Status == ChatbotStatus.Active)
+            .CountAsync();
+
+        // 3. Total users (within date range)
+        var totalUsersCount = await _dbContext.ChatSessions.AsNoTracking()
+            .Where(x => x.ChatbotId == chatbotId)
+            .WhereIf(startDate is not null, m => m.CreationTime >= startDate)
+            .WhereIf(endDate is not null, m => m.CreationTime >= endDate)
+            .Select(u => u.CreatorId)
+            .Distinct()
+            .CountAsync();
+
+        return new
+        {
+            TotalMessageCount = totalMessagesCount,
+            TotalChatbotCount = activeChatbotsCount,
+            TotalUsersCount = totalUsersCount,
+            Aggregration = aggregation,
+            ChartInfo = query
+        };
+    }
 }
+
+
+
+
+/*
+    WITH vars AS (
+  SELECT 
+    'weekly'::text AS aggregation,
+    '2024-01-01'::timestamp AS startDate,
+    '2025-12-12'::timestamp AS endDate,
+    '3a1b910b-0249-69be-8572-b4243dbb2634'::uuid AS chatbotId -- or ::int if you're using int IDs
+),
+
+Aggregated AS (
+    SELECT
+        cs."ChatbotId",
+        CASE 
+            WHEN v.aggregation = 'daily' THEN DATE_TRUNC('day', cs."CreationTime")
+            WHEN v.aggregation = 'weekly' THEN DATE_TRUNC('week', cs."CreationTime")
+            WHEN v.aggregation = 'monthly' THEN DATE_TRUNC('month', cs."CreationTime")
+            WHEN v.aggregation = 'yearly' THEN DATE_TRUNC('year', cs."CreationTime")
+        END AS "GroupDate",
+
+        SUM(CASE WHEN m."ReactType" = 1 THEN 1 ELSE 0 END) AS "LikeCount",
+        SUM(CASE WHEN m."ReactType" = 2 THEN 1 ELSE 0 END) AS "DislikeCount"
+
+    FROM bot."ChatSesions" cs
+    LEFT JOIN bot."ChatMessages" m ON cs."Id" = m."SessionId"
+    CROSS JOIN vars v
+    WHERE cs."ChatbotId" = v.chatbotId
+      AND cs."CreationTime" BETWEEN v.startDate AND v.endDate
+
+    GROUP BY cs."ChatbotId", v.aggregation,
+        CASE 
+            WHEN v.aggregation = 'daily' THEN DATE_TRUNC('day', cs."CreationTime")
+            WHEN v.aggregation = 'weekly' THEN DATE_TRUNC('week', cs."CreationTime")
+            WHEN v.aggregation = 'monthly' THEN DATE_TRUNC('month', cs."CreationTime")
+            WHEN v.aggregation = 'yearly' THEN DATE_TRUNC('year', cs."CreationTime")
+        END
+)
+
+SELECT
+    "GroupDate"::date AS "Date",
+    CASE 
+        WHEN ("LikeCount" + "DislikeCount") = 0 THEN 0
+        ELSE ROUND(("LikeCount" * 100.0) / ("LikeCount" + "DislikeCount"), 2)
+    END AS "SatisfactionRate"
+FROM Aggregated
+ORDER BY "GroupDate" ASC;
+ */

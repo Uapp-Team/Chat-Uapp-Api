@@ -27,4 +27,11 @@ public class DashboardAppService : ApplicationService, IDashboardAppService
         var result = await _userChatSummaryQueryService.GetUserDashboardSummariesAsync(startDate, endDate, chatbotId);
         return result;
     }
+
+    public async Task<object> GetChatbotDashboardSummaryAsync(
+       DateTime? startDate = null, DateTime? endDate = null, Guid? chatbotId = null)
+    {
+        var result = await _userChatSummaryQueryService.GetChatbotDashboardSummariesAsync(startDate, endDate, chatbotId);
+        return result;
+    }
 }

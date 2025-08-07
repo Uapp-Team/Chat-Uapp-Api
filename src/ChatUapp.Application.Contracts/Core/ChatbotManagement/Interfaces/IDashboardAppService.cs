@@ -11,4 +11,7 @@ public interface IDashboardAppService
 
     Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(
         DateTime? startDate = null, DateTime? endDate = null, Guid? chatbotId = null);
+
+    Task<object> GetChatbotDashboardSummaryAsync(
+       DateTime? startDate = null, DateTime? endDate = null, Guid? chatbotId = null);
 }
