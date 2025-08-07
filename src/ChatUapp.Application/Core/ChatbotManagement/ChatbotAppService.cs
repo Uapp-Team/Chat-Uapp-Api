@@ -92,7 +92,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
             input.iconColor
         );
         
-        if(await _botRepo.CountAsync() < 0) await _chatbotManager.SetDefaultAsync(chatbot);
+        if(await _botRepo.CountAsync() <= 0) await _chatbotManager.SetDefaultAsync(chatbot);
 
         chatbot.BrandImageName = input.BrandImageName;
         chatbot.Description = input.Description;
