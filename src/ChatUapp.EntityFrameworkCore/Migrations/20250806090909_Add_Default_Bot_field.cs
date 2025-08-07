@@ -5,27 +5,26 @@
 namespace ChatUapp.Migrations
 {
     /// <inheritdoc />
-    public partial class Add_bot_defalt_field : Migration
+    public partial class Add_Default_Bot_field : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
+            migrationBuilder.RenameColumn(
                 name: "isDefalt",
                 schema: "bot",
                 table: "ChatBots",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
+                newName: "isDefault");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "isDefalt",
+            migrationBuilder.RenameColumn(
+                name: "isDefault",
                 schema: "bot",
-                table: "ChatBots");
+                table: "ChatBots",
+                newName: "isDefalt");
         }
     }
 }

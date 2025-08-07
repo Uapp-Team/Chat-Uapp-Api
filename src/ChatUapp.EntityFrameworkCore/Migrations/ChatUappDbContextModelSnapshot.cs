@@ -324,7 +324,7 @@ namespace ChatUapp.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<bool>("isDefalt")
+                    b.Property<bool>("isDefault")
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
