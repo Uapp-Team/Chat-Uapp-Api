@@ -235,7 +235,7 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
     public async Task<object> GetChatbotDashboardSummariesAsync(
      DateTime? startDate, DateTime? endDate, Guid? chatbotId)
     {
-        endDate ??= DateTime.UtcNow.Date;
+        endDate ??= DateTime.UtcNow.Date.AddDays(1);
         startDate ??= DateTime.UtcNow.Date.AddDays(-30); // default: last 30 days
 
         var range = (endDate.Value - startDate.Value).TotalDays;
@@ -274,13 +274,38 @@ public class UserChatSummaryQueryService : IUserChatSummaryQueryService, ITransi
         {
             Date = g.Key.ToString("yyyy-MM-dd"),
             Value = g.Sum(x => x.LikeCount + x.DislikeCount) == 0
-                ? 0
+                ? 100
                 : Math.Round(g.Sum(x => x.LikeCount) * 100.0 / (g.Sum(x => x.LikeCount + x.DislikeCount)), 2)
         })
         .OrderBy(x => x.Date).ToDynamicListAsync();
 
+        // 1. Total messages (within date range)
+        var totalMessagesCount = await _dbContext.ChatSessions
+            .Where(x => x.ChatbotId == chatbotId)
+            .SelectMany(s => s.Messages)
+            .WhereIf(startDate is not null, m => m.SentAt >= startDate)
+            .WhereIf(endDate is not null, m => m.SentAt >= endDate)
+            .CountAsync();
+
+        // 2. Active chat bots (regardless of date range)
+        var activeChatbotsCount = await _dbContext.Chatbots
+            .Where(x => x.Id == chatbotId && x.Status == ChatbotStatus.Active)
+            .CountAsync();
+
+        // 3. Total users (within date range)
+        var totalUsersCount = await _dbContext.ChatSessions.AsNoTracking()
+            .Where(x => x.ChatbotId == chatbotId)
+            .WhereIf(startDate is not null, m => m.CreationTime >= startDate)
+            .WhereIf(endDate is not null, m => m.CreationTime >= endDate)
+            .Select(u => u.CreatorId)
+            .Distinct()
+            .CountAsync();
+
         return new
         {
+            TotalMessageCount = totalMessagesCount,
+            TotalChatbotCount = activeChatbotsCount,
+            TotalUsersCount = totalUsersCount,
             Aggregration = aggregation,
             ChartInfo = query
         };
