@@ -13,4 +13,6 @@ public interface IUserChatSummaryQueryService
 
     Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(
         DateTime? startDate, DateTime? endDate, Guid? chatbotId);
+    Task<object> GetChatbotDashboardSummariesAsync(
+     DateTime? startDate, DateTime? endDate, Guid? chatbotId);
 }
