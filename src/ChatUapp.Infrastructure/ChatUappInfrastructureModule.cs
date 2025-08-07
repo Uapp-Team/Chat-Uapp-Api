@@ -6,6 +6,7 @@ using ChatUapp.Infrastructure.BotEngineServices;
 using ChatUapp.Infrastructure.Emailing;
 using ChatUapp.Infrastructure.FileStorage;
 using ChatUapp.Infrastructure.Utility;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Volo.Abp.BlobStoring;
@@ -16,7 +17,8 @@ using Volo.Abp.Modularity;
 namespace ChatUapp.Infrastructure
 {
     [DependsOn(
-    typeof(AbpEmailingModule)
+    typeof(AbpEmailingModule),
+    typeof(AbpBlobStoringAzureModule)
     )]
     public class ChatUappInfrastructureModule : AbpModule
     {
