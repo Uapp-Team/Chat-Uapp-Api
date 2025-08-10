@@ -9,6 +9,9 @@ public interface IChatBotEngineApi
 {
     [Get("/advanced-query?query={query}&botName={botName}&session={session}")]
     Task<ReplyMessageResponseDto> QueryAsync(string query, string botName, string session);
+
+    [Post("/train-text")]
+    Task<BotTrainResponseModel> TrainTextAsync([Body] BotTrainRequestModel request);
 }
 
 public interface IChatGPTApi
@@ -17,6 +20,22 @@ public interface IChatGPTApi
     Task<GptResponseDto> QueryAsync([Body] GptRequestDto request);
 }
 
+public class BotTrainRequestModel
+{
+    public string Text { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string BotName { get; set; } = string.Empty;
+    public int ChunkSize { get; set; } = 1000;
+    public int ChunkOverlap { get; set; } = 150;
+}
+
+public class BotTrainResponseModel
+{
+    public bool Success { get; set; }
+    public int DocumentCount { get; set; }
+    public string CollectionName { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+}
 
 public class GptRequestDto
 {
