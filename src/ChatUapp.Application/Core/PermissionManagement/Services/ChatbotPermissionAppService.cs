@@ -48,7 +48,7 @@ public class ChatbotPermissionAppService :
             {
                 Name = group.Name,
                 DisplayName = group.DisplayName,
-                Permissions = new List<ChatbotPermissionDto>()
+                Children = new List<ChatbotPermissionDto>()
             };
             foreach (var np in group.Permissions)
             {
@@ -61,11 +61,11 @@ public class ChatbotPermissionAppService :
                     };
 
                     perChild.Children.AddRange(await MapChildrenAsync(botId, np.Children));
-                    perGroup.Permissions.Add(perChild);
+                    perGroup.Children.Add(perChild);
                 }
                 else
                 {
-                    perGroup.Permissions.Add(await MapAsync(botId, np));
+                    perGroup.Children.Add(await MapAsync(botId, np));
                 }
             }
             resutlPermisions.Add(perGroup); // Add the group to the result list
@@ -86,7 +86,7 @@ public class ChatbotPermissionAppService :
                 Name = group.Name,
                 DisplayName = group.MenuDisplayName,
                 IsMenu = group.Permissions.Where(x => x.IsGranted).Count() > 0,
-                Permissions = new List<ChatbotPermissionDto>()
+                Children = new List<ChatbotPermissionDto>()
             };
             foreach (var np in group.Permissions)
             {
@@ -100,11 +100,11 @@ public class ChatbotPermissionAppService :
                     };
 
                     perChild.Children.AddRange(await MapChildrenAsync(botId, np.Children));
-                    perGroup.Permissions.Add(perChild);
+                    perGroup.Children.Add(perChild);
                 }
                 else
                 {
-                    perGroup.Permissions.Add(await MapAsync(botId, np));
+                    perGroup.Children.Add(await MapAsync(botId, np));
                 }
             }
             resutlPermisions.Add(perGroup); // Add the group to the result list

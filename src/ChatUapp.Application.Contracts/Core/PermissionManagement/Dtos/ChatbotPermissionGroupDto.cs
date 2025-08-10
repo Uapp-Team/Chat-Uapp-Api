@@ -8,5 +8,5 @@ public class ChatbotPermissionGroupDto
     public string DisplayName { get; set; } = string.Empty;
     public bool isGranted { get; set; } = false;
     public bool IsMenu { get; set; } = false;
-    public List<ChatbotPermissionDto> Permissions { get; set; } = default!;
+    public List<ChatbotPermissionDto> Children { get; set; } = default!;
 }
