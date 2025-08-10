@@ -16,11 +16,40 @@ public class BotEngineManageService : IBotEngineManageService
     private readonly IRepository<ChatSession, Guid> _sessionRepo;
 
     public BotEngineManageService(
-        IChatBotEngineApi chatbotEngineApi, IChatGPTApi chatGptApi, IRepository<ChatSession, Guid> sessionRepo = null)
+        IChatBotEngineApi chatbotEngineApi, IChatGPTApi chatGptApi, IRepository<ChatSession, Guid> sessionRepo)
     {
         _chatbotEngineApi = chatbotEngineApi;
         _chatGptApi = chatGptApi;
         _sessionRepo = sessionRepo;
+    }
+
+    public async Task<BotTrainResponseModel> TrainAsync(BotTrainRequestModel model)
+    {
+        return await _chatbotEngineApi.TrainTextAsync(model);
+    }
+
+    public async Task<BotTrainResponseModel> UpdateTrainAsync(BotTrainRequestModel model)
+    {
+        return await _chatbotEngineApi.UpdateTrainTextAsync(model);
+    }
+
+    public async Task<BotTrainResponseModel> DeleteTrainAsync(string uniqueKey, string botName)
+    {
+        var result = await _chatbotEngineApi.DeleteDocAsync(uniqueKey, botName);
+        if(result.IsSuccessful)
+        {
+            return new BotTrainResponseModel
+            {
+                Success = true,
+                DocumentCount = 0, // Assuming deletion means no documents left
+                CollectionName = botName,
+                Message = "Document deleted successfully."
+            };
+        }
+        else
+        {
+            throw new AppBusinessException($"Failed to delete document: {result.Error?.Message}");
+        }
     }
 
     public async Task<string> AskAnything(string message)

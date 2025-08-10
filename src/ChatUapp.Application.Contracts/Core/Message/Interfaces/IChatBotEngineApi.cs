@@ -12,6 +12,15 @@ public interface IChatBotEngineApi
 
     [Post("/train-text")]
     Task<BotTrainResponseModel> TrainTextAsync([Body] BotTrainRequestModel request);
+
+    [Put("/update-train-text")]
+    Task<BotTrainResponseModel> UpdateTrainTextAsync([Body] BotTrainRequestModel request);
+
+    [Delete("/delete-train-text?unique_key={unique_key}&botName={botName}")]
+    Task<ApiResponse<string>> DeleteDocAsync(
+        string unique_key,                // goes into {unique_key}
+        string botName            // becomes ?botName=value
+    );
 }
 
 public interface IChatGPTApi
