@@ -43,7 +43,9 @@ public class BlobStorageService : IBlobStorageService
 
     public async Task<string> SaveAsync(string base64, string fileName)
     {
-        ValidateFileName(fileName);
+        if (string.IsNullOrWhiteSpace(base64) || string.IsNullOrWhiteSpace(fileName))
+            return string.Empty;
+
         using var stream = ConvertBase64ToStream(base64);
         await _blobContainer.SaveAsync(fileName, stream, overrideExisting: true);
         return fileName;
@@ -53,7 +55,7 @@ public class BlobStorageService : IBlobStorageService
     {
         ValidateFileName(fileName);
         if (!await _blobContainer.ExistsAsync(fileName))
-            throw new FileNotFoundException($"File '{fileName}' not found.");
+            throw new AppValidationException($"File '{fileName}' not found.");
 
         using var stream = await _blobContainer.GetAsync(fileName);
         using var ms = new MemoryStream();
@@ -81,7 +83,7 @@ public class BlobStorageService : IBlobStorageService
 
         var ext = Path.GetExtension(newFileName).ToLowerInvariant();
         if (!AllowedImageExtensions.Contains(ext))
-            throw new InvalidOperationException($"Invalid image type: {ext}");
+            throw new AppValidationException($"Invalid image type: {ext}");
 
         var context = await GetUploadContextAsync(newFileName);
         var blobClient = context.ContainerClient.GetBlobClient(context.BlobPath);
@@ -101,26 +103,36 @@ public class BlobStorageService : IBlobStorageService
 
     public Task<string> GetUrlAsync(string fileName, int expireInDays = 365)
     {
-        ValidateFileName(fileName);
+        if (string.IsNullOrWhiteSpace(fileName))
+            return Task.FromResult(string.Empty);
 
         var (containerName, blobName) = GetContainerAndBlobName(fileName);
         var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
         var blobClient = containerClient.GetBlobClient(blobName);
 
         if (!containerClient.CanGenerateSasUri)
-            throw new AppValidationException("SAS URI generation is not allowed with current credentials.");
+            return Task.FromResult(fileName);
 
-        var sasBuilder = new BlobSasBuilder
+        try
         {
-            BlobContainerName = containerName,
-            BlobName = blobName,
-            Resource = "b",
-            StartsOn = DateTimeOffset.UtcNow.AddMinutes(-1),
-            ExpiresOn = DateTimeOffset.UtcNow.AddDays(expireInDays)
-        };
-        sasBuilder.SetPermissions(BlobSasPermissions.Read);
+            var sasBuilder = new BlobSasBuilder
+            {
+                BlobContainerName = containerName,
+                BlobName = blobName,
+                Resource = "b",
+                StartsOn = DateTimeOffset.UtcNow.AddMinutes(-1),
+                ExpiresOn = DateTimeOffset.UtcNow.AddDays(expireInDays)
+            };
+            sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
-        return Task.FromResult(blobClient.GenerateSasUri(sasBuilder).ToString());
+            var sasUri = blobClient.GenerateSasUri(sasBuilder).ToString();
+            return Task.FromResult(sasUri);
+        }
+        catch
+        {
+            // If something fails during SAS generation, fallback to returning the fileName
+            return Task.FromResult(fileName);
+        }
     }
 
     private Stream ConvertBase64ToStream(string base64)
