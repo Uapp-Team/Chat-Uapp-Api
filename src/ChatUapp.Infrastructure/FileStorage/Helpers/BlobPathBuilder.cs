@@ -1,17 +1,25 @@
-﻿namespace ChatUapp.Infrastructure.FileStorage.Helpers
+﻿namespace ChatUapp.Infrastructure.FileStorage.Helpers;
+
+public static class BlobPathBuilder
 {
-    public static class BlobPathBuilder
+    public static string BuildPath(string tenantId, string fileType, string originalFileName)
     {
-        public static string BuildPath(string tenantId, string userId, string fileType, string originalFileName)
-        {
-            tenantId ??= "Default_Tenant";
-            userId ??= "anonymous";
-            fileType = string.IsNullOrWhiteSpace(fileType) ? "others" : fileType.ToLowerInvariant();
+        fileType = string.IsNullOrWhiteSpace(fileType) ? "others" : fileType.ToLowerInvariant();
+        var date = DateTime.UtcNow;
 
-            var date = DateTime.UtcNow;
-            var uniqueFileName = $"{date:yyyyMMdd}_{Guid.NewGuid():N}_{originalFileName}";
+        if (string.IsNullOrWhiteSpace(tenantId))
+            return $"{fileType}/{date:yyyy}/{date:MM}/{originalFileName}";
 
-            return $"{fileType}/{date:yyyy}/{date:MM}/{uniqueFileName}";
-        }
+        return $"tenant/{tenantId}/{fileType}/{date:yyyy}/{date:MM}/{originalFileName}";
+    }
+
+    public static string UpdateBuildPath(string tenantId, string fileType, string originalFileName)
+    {
+        fileType = string.IsNullOrWhiteSpace(fileType) ? "others" : fileType.ToLowerInvariant();
+
+        if (string.IsNullOrWhiteSpace(tenantId))
+            return $"{fileType}/{originalFileName}";
+
+        return $"tenant/{tenantId}/{fileType}/{originalFileName}";
     }
 }

@@ -94,7 +94,7 @@ public class AppProfileAppService : ProfileAppService,
         {
             if (!string.IsNullOrWhiteSpace(input.FileName))
             {
-                input.ProfileImg = await _storage.SaveAsync(input.ProfileImg, input.FileName);
+                input.ProfileImg = await _storage.SaveImagesAsync(input.ProfileImg, input.FileName);
             }
         }
 
