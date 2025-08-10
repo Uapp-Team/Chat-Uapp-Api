@@ -1,139 +1,248 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.FileStorage;
+using ChatUapp.Infrastructure.FileStorage.Helpers;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp.BlobStoring;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Users;
 
-namespace ChatUapp.Infrastructure.FileStorage
+namespace ChatUapp.Infrastructure.FileStorage;
+
+/// <summary>
+/// Service for managing file storage operations in Azure Blob Storage.
+/// Supports file uploads, retrieval, deletion, and SAS URL generation.
+/// </summary>
+public class BlobStorageService : IBlobStorageService
 {
-    /// <summary>
-    /// Provides functionality to upload, retrieve, delete, and verify user profile images in Azure Blob Storage.
-    /// </summary>
-    public class BlobStorageService : IBlobStorageService
+    private readonly IBlobContainer _blobContainer;
+    private readonly BlobServiceClient _blobServiceClient;
+    private readonly ICurrentUser _currentUser;
+    private readonly ICurrentTenant _currentTenant;
+    private readonly string _connectionString;
+    private readonly string _containerPath;
+
+    public BlobStorageService(
+        IBlobContainer blobContainer,
+        IConfiguration configuration,
+        BlobServiceClient blobServiceClient,
+        ICurrentUser currentUser,
+        ICurrentTenant currentTenant)
     {
+        _blobContainer = blobContainer ?? throw new ArgumentNullException(nameof(blobContainer));
+        _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
+        _currentTenant = currentTenant ?? throw new ArgumentNullException(nameof(currentTenant));
 
-        private readonly IBlobContainer _blobContainer;
-        private readonly IConfiguration _configuration;
+        _connectionString = configuration["AzureBlobStorage:ConnectionString"]
+            ?? throw new AppValidationException("Azure Blob Storage connection string is not configured.");
 
-        public BlobStorageService(
-            IBlobContainer blobContainer,
-            IConfiguration configuration
-            )
+        _containerPath = configuration["AzureBlobStorage:ContainerName"]
+            ?? throw new AppValidationException("Azure Blob Storage container name is not configured.");
+
+        _blobServiceClient = new BlobServiceClient(_connectionString);
+    }
+
+    /// <summary>
+    /// Saves a file (Base64 string) to the default container.
+    /// Overwrites if the file already exists.
+    /// </summary>
+    public async Task<string> SaveAsync(string base64, string fileName)
+    {
+        using var stream = ConvertBase64ToStream(base64);
+        await _blobContainer.SaveAsync(fileName, stream, overrideExisting: true);
+        return fileName;
+    }
+
+    /// <summary>
+    /// Reads a file from the default container and returns it as a Base64 string.
+    /// </summary>
+    public async Task<string> ReadAsync(string fileName)
+    {
+        EnsureFileNameNotEmpty(fileName);
+
+        if (!await _blobContainer.ExistsAsync(fileName))
+            throw new FileNotFoundException($"File '{fileName}' not found in blob container.");
+
+        using var stream = await _blobContainer.GetAsync(fileName);
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+
+        return Convert.ToBase64String(memoryStream.ToArray());
+    }
+
+    /// <summary>
+    /// Deletes a file from the default container if it exists.
+    /// </summary>
+    public async Task DeleteAsync(string fileName)
+    {
+        EnsureFileNameNotEmpty(fileName);
+
+        if (await _blobContainer.ExistsAsync(fileName))
         {
-            _blobContainer = blobContainer;
-            _configuration = configuration;
+            await _blobContainer.DeleteAsync(fileName);
         }
+    }
 
-        //  CREATE or REPLACE FILE (auto-replaces if exists)
-        public async Task<string> SaveAsync(string fileStream, string fileName)
-        {
-            using var stream = ConvertBase64ToStream(fileStream);
-            await _blobContainer.SaveAsync(fileName, stream, overrideExisting: true);
-            return fileName;
-        }
-        // ✅ READ FILE (returns base64 string)
-        public async Task<string> ReadAsync(string fileName)
-        {
-            if (!await _blobContainer.ExistsAsync(fileName))
-                throw new FileNotFoundException("File not found in blob container.");
+    /// <summary>
+    /// Checks if a file exists in the default container.
+    /// </summary>
+    public Task<bool> ExistsAsync(string fileName)
+    {
+        EnsureFileNameNotEmpty(fileName);
+        return _blobContainer.ExistsAsync(fileName);
+    }
 
-            using var stream = await _blobContainer.GetAsync(fileName);
-            using var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream);
-            var bytes = memoryStream.ToArray();
-            return Convert.ToBase64String(bytes);
-        }
+    /// <summary>
+    /// Saves an image to Azure Blob Storage, replacing if exists.
+    /// If base64 stream is null/empty, keeps the old file name.
+    /// </summary>
+    /// <param name="fileStream">Base64 file content (nullable).</param>
+    /// <param name="newFileName">New file name (nullable).</param>
+    /// <param name="oldFileName">Old file name to keep if no new file provided.</param>
+    /// <returns>Final file name that should be stored in DB.</returns>
+    public async Task<string> SaveImagesAsync(string? fileStream, string? newFileName, string? oldFileName = null)
+    {
+        // No new stream provided → return old file name
+        if (string.IsNullOrWhiteSpace(fileStream))
+            return oldFileName ?? string.Empty;
 
-        // ✅ DELETE FILE
-        public async Task DeleteAsync(string fileName)
+        // No file name provided → keep old file
+        if (string.IsNullOrWhiteSpace(newFileName))
+            return oldFileName ?? string.Empty;
+
+        // Validate extension
+        var extension = Path.GetExtension(newFileName).ToLowerInvariant();
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        if (!allowedExtensions.Contains(extension))
+            throw new InvalidOperationException($"Invalid image type: {extension}");
+
+        // Prepare blob context
+        var context = await GetUserContainerAsync(newFileName);
+        var blobClient = context.ContainerClient.GetBlobClient(context.BlobPath);
+
+        // Always overwrite if exists
+        using var stream = ConvertBase64ToStream(fileStream);
+        var uploadOptions = new BlobUploadOptions
         {
-            if (await _blobContainer.ExistsAsync(fileName))
+            HttpHeaders = new BlobHttpHeaders
             {
-                await _blobContainer.DeleteAsync(fileName);
+                ContentType = GetMimeType(newFileName)
             }
-        }
+        };
 
-        //  CHECK IF FILE EXISTS
-        public async Task<bool> ExistsAsync(string fileName)
+        await blobClient.UploadAsync(stream, uploadOptions);
+
+        return context.BlobPath;
+    }
+
+
+
+    /// <summary>
+    /// Generates a SAS URL for accessing a file.
+    /// </summary>
+    public Task<string> GetUrlAsync(string fileName, int expireInDays = 365)
+    {
+        EnsureFileNameNotEmpty(fileName);
+
+        var (containerName, blobName) = GetContainerAndBlobName(fileName);
+
+        var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        var blobClient = containerClient.GetBlobClient(blobName);
+
+        if (!containerClient.CanGenerateSasUri)
+            throw new AppValidationException("SAS generation is not possible with the provided credentials.");
+
+        var sasBuilder = new BlobSasBuilder
         {
-            return await _blobContainer.ExistsAsync(fileName);
-        }
+            BlobContainerName = containerName,
+            BlobName = blobName,
+            Resource = "b",
+            StartsOn = DateTimeOffset.UtcNow.AddMinutes(-1),
+            ExpiresOn = DateTimeOffset.UtcNow.AddDays(expireInDays)
+        };
 
-        //  Convert Base64 to Stream
-        private Stream ConvertBase64ToStream(string base64)
+        sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+        return Task.FromResult(blobClient.GenerateSasUri(sasBuilder).ToString());
+    }
+
+    private Stream ConvertBase64ToStream(string base64)
+    {
+        if (string.IsNullOrWhiteSpace(base64))
+            throw new AppValidationException("Base64 string is null or empty.");
+
+        var commaIndex = base64.IndexOf(',');
+        var base64Data = commaIndex >= 0 ? base64[(commaIndex + 1)..] : base64;
+
+        try
         {
-            if (string.IsNullOrWhiteSpace(base64))
-                throw new AppValidationException("Base64 string is null or empty.");
-
-            // Remove data URI scheme if present (e.g., "data:image/png;base64,...")
-            var base64Data = base64;
-            var commaIndex = base64.IndexOf(',');
-            if (commaIndex >= 0)
-            {
-                base64Data = base64.Substring(commaIndex + 1);
-            }
-
-            // Clean whitespace/new lines
-            base64Data = base64Data.Trim();
-
-            try
-            {
-                var bytes = Convert.FromBase64String(base64Data);
-                return new MemoryStream(bytes);
-            }
-            catch (FormatException ex)
-            {
-                throw new AppValidationException($"Input is not a valid Base64 string : Error {ex.Message}");
-            }
+            var bytes = Convert.FromBase64String(base64Data.Trim());
+            return new MemoryStream(bytes);
         }
-
-
-        public Task<string> GetUrlAsync(string fileName, int expireInMinutes = 365)
+        catch (FormatException ex)
         {
-            var connectionString = _configuration["AzureBlobStorage:ConnectionString"];
-            var containerPath = _configuration["AzureBlobStorage:ContainerName"];
-
-
-            Ensure.NotNull(containerPath, nameof(containerPath));
-
-            // Extract container and virtual folder
-            var segments = containerPath!.Split('/', 2);
-            var containerName = segments[0]; // e.g., "chatuapp"
-            var virtualPath = segments.Length > 1 ? segments[1] : null;
-
-            var blobName = string.IsNullOrEmpty(virtualPath)
-                ? fileName
-                : $"{virtualPath.TrimEnd('/')}/{fileName}";
-
-            var blobServiceClient = new BlobServiceClient(connectionString);
-            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-            var blobClient = containerClient.GetBlobClient(blobName);
-
-            // Generate a SAS URL only if the container client supports generating it
-            if (!containerClient.CanGenerateSasUri)
-            {
-                throw new AppValidationException("SAS generation is not possible with the provided credentials.");
-            }
-
-            var sasBuilder = new BlobSasBuilder
-            {
-                BlobContainerName = containerName,
-                BlobName = blobName,
-                Resource = "b",
-                StartsOn = DateTimeOffset.UtcNow.AddMinutes(-1),
-                ExpiresOn = DateTimeOffset.UtcNow.AddDays(expireInMinutes)
-            };
-
-            sasBuilder.SetPermissions(BlobSasPermissions.Read);
-
-            var sasUri = blobClient.GenerateSasUri(sasBuilder);
-            return Task.FromResult(sasUri.ToString());
+            throw new AppValidationException($"Invalid Base64 string. Error: {ex.Message}");
         }
+    }
 
-        public Task<string> SaveImagesAsync(string fileStream, string fileName)
+    private async Task<BlobUploadContext> GetUserContainerAsync(string fileName)
+    {
+        var tenantId = GetCurrentTenantId();
+        var userId = GetCurrentUserId();
+        var fileCategory = FileTypeClassifier.GetFileCategory(fileName);
+        var containerName = FileTypeClassifier.GetContainerName(fileCategory);
+
+        var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        await containerClient.CreateIfNotExistsAsync();
+
+        var blobPath = BlobPathBuilder.BuildPath(tenantId, userId, fileCategory, fileName);
+        var context = new BlobUploadContext(containerClient, blobPath);
+
+        if (!context.IsValid)
+            throw new AppValidationException("Invalid blob upload context.");
+
+        return context;
+    }
+
+    private string GetCurrentUserId(string fallbackUserId = "anonymous") =>
+        _currentUser?.Id?.ToString() ?? fallbackUserId;
+
+    private string GetCurrentTenantId(string fallbackTenantId = "Default") =>
+        _currentTenant?.Id?.ToString() ?? fallbackTenantId;
+
+    private string GetMimeType(string fileName)
+    {
+        var ext = Path.GetExtension(fileName)?.ToLowerInvariant();
+        return ext switch
         {
-            throw new NotImplementedException();
-        }
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".webp" => "image/webp",
+            ".gif" => "image/gif",
+            _ => "application/octet-stream"
+        };
+    }
+
+    private (string containerName, string blobName) GetContainerAndBlobName(string fileName)
+    {
+        Ensure.NotNull(_containerPath, nameof(_containerPath));
+
+        var segments = _containerPath.Split('/', 2);
+        var containerName = segments[0];
+        var virtualPath = segments.Length > 1 ? segments[1] : null;
+
+        var blobName = string.IsNullOrEmpty(virtualPath)
+            ? fileName
+            : $"{virtualPath.TrimEnd('/')}/{fileName}";
+
+        return (containerName, blobName);
+    }
+
+    private static void EnsureFileNameNotEmpty(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new AppValidationException("File name cannot be null or empty.");
     }
 }

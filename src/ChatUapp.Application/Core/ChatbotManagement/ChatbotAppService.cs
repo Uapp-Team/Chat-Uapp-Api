@@ -73,16 +73,12 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
     public async Task<ChatbotDto> CreateAsync(CreateChatbotDto input)
     {
         Ensure.NotNull(input, nameof(input));
+        Ensure.NotNull(input.BrandImageStream, nameof(input.BrandImageStream));
+        Ensure.NotNull(input.BrandImageName, nameof(input.BrandImageName));
 
-        if (!string.IsNullOrEmpty(input.BrandImageStream) && !string.IsNullOrWhiteSpace(input.BrandImageName))
-        {
-            if (!string.IsNullOrWhiteSpace(input.BrandImageName))
-            {
+        input.BrandImageName = await _storage.SaveImagesAsync(input.BrandImageStream!, input.BrandImageName!);
+        input.iconName = await _storage.SaveImagesAsync(input.iconStream, input.iconName);
 
-                input.BrandImageName = await _storage.SaveAsync(input.BrandImageStream, input.BrandImageName);
-            }
-        }
-        input.iconName = await _storage.SaveAsync(input.iconStream, input.iconName);
 
         var chatbot = await _chatbotManager.CreateAsync(
             input.Name,
@@ -136,7 +132,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
         Ensure.Authenticated(_currentUser);
 
         // Create bot-user mapping with the new chatbot ID
-        var botUserMapping = await _chatbotUserManager.CreateAsync(copyChatbot.Id, _currentUser.Id.Value);
+        var botUserMapping = await _chatbotUserManager.CreateAsync(copyChatbot.Id, _currentUser.Id!.Value);
 
         // Save chatbot and mapping to the repositories
         await _botRepo.InsertAsync(copyChatbot);
@@ -263,42 +259,17 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
     public async Task<ChatbotDto> UpdateAsync(Guid id, UpdateChatbotDto input)
     {
+        Ensure.NotNull(input, nameof(input));
+        Ensure.NotNull(input.BrandImageStream, nameof(input.BrandImageStream));
+        Ensure.NotNull(input.BrandImageName, nameof(input.BrandImageName));
+
         var chatbot = await _botRepo.GetAsync(id);
 
         var bot = ObjectMapper.Map<Chatbot, ChatbotDto>(chatbot);
 
-        if (!string.IsNullOrEmpty(input.BrandImageStream))
-        {
-            if (!string.IsNullOrWhiteSpace(input.BrandImageName))
-            {
-                input.BrandImageName = await _storage.SaveAsync(input.BrandImageStream, input.BrandImageName);
-            }
-            else
-            {
-                input.BrandImageName = chatbot.BrandImageName;
-            }
-        }
-        else
-        {
-            input.BrandImageName = chatbot.BrandImageName;
-        }
+        input.BrandImageName = await _storage.SaveImagesAsync(input.BrandImageStream!, input.BrandImageName!, chatbot.BrandImageName);
+        input.iconName = await _storage.SaveImagesAsync(input.iconStream, input.iconName!, bot.iconName);
 
-
-        if (!string.IsNullOrEmpty(input.iconStream))
-        {
-            if (!string.IsNullOrWhiteSpace(input.iconName))
-            {
-                input.iconName = await _storage.SaveAsync(input.iconStream, input.iconName);
-            }
-            else
-            {
-                input.iconName = bot.iconName;
-            }
-        }
-        else
-        {
-            input.iconName = bot.iconName;
-        }
 
         var result = await _chatbotManager.UpdateChatbotAsync(
         chatbot,
