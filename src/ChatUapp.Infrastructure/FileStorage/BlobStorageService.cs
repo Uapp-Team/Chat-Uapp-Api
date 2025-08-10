@@ -130,5 +130,10 @@ namespace ChatUapp.Infrastructure.FileStorage
             var sasUri = blobClient.GenerateSasUri(sasBuilder);
             return Task.FromResult(sasUri.ToString());
         }
+
+        public Task<string> SaveImagesAsync(string fileStream, string fileName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
