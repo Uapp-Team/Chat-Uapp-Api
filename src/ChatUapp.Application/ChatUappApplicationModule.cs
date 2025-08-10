@@ -28,8 +28,7 @@ namespace ChatUapp;
     typeof(AbpIdentityApplicationModule),
     typeof(AbpAccountApplicationModule),
     typeof(AbpTenantManagementApplicationModule),
-    typeof(AbpSettingManagementApplicationModule),
-    typeof(AbpBlobStoringModule)
+    typeof(AbpSettingManagementApplicationModule)
     )]
 public class ChatUappApplicationModule : AbpModule
 {

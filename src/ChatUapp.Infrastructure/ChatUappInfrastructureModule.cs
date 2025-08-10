@@ -7,7 +7,6 @@ using ChatUapp.Infrastructure.BotEngineServices;
 using ChatUapp.Infrastructure.Emailing;
 using ChatUapp.Infrastructure.FileStorage;
 using ChatUapp.Infrastructure.Utility;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Volo.Abp.BlobStoring;
