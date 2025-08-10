@@ -357,6 +357,7 @@ public class ChatUappWebModule : AbpModule
     }
 }
 
+
 //code needs to add in ConfigureCors method to enable CORS with specific origins
 
 /*options.AddDefaultPolicy(builder =>
