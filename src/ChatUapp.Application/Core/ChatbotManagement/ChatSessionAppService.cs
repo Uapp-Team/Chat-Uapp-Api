@@ -4,6 +4,7 @@ using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.ChatbotManagement.VOs;
 using ChatUapp.Core.Exceptions;
+using ChatUapp.Core.Extensions;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Thirdparty.Interfaces;
 using System;
@@ -56,7 +57,8 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         var session = _sessionManager.CreateNewSession(_currentUser.Id.Value, input.chatbotId, input.sessionTitle, locationSnapshot, input.BrowserSessionKey);
 
         // Send the initial user message to the chatbot and get the response
-        var result = await _botEngineManageService.AskAnything(input.sessionTitle, session.ChatbotId.ToString(), session.Id.ToString());
+        var result = await _botEngineManageService.AskAnything(
+            input.sessionTitle, session.ChatbotId.ToBotName(), session.Id.ToSessionTitle());
 
         // Add the user's message to the session
         _sessionManager.AddMessageToSession(session, input.sessionTitle, MessageRole.User);
