@@ -17,7 +17,7 @@ public class MyChatbotPermissionDefinitionProvider : ChatbotPermissionDefinition
           );
         */
 
-        context.AddGroup("Chatbot.Dashboard", "Dashboard", true, "Dashboard")
+        context.AddGroup("Chatbot.Overview", "Overview", true, "Overview") 
           .WithPermissions(p => p
               .Add("Chatbot.Dashboard.View", "View Dasboard", true, "Dashboard")
               .Add("Chatbot.Analytics.View", "View Analytics", true, "Analytics")
@@ -35,6 +35,19 @@ public class MyChatbotPermissionDefinitionProvider : ChatbotPermissionDefinition
               .Add("Chatbot.TrainingCenter.Train", "Add Train Source", false, "Training Center")
               .Add("Chatbot.TrainingCenter.Edit", "Edit Train Source", false, "Training Center")
               .Add("Chatbot.TrainingCenter.Delete", "Delete Train Source", false, "Training Center")
+          );
+
+        context.AddGroup("Chatbot.Feedback", "Feedback", true, "Feedback")
+          .WithPermissions(p => p
+              .Add("Chatbot.Feedback.View", "View Feedback", false, "Feedback")
+              .Add("Chatbot.Feedback.Respond", "Respond to Feedback", false, "Feedback")
+          );
+
+        context.AddGroup("Chatbot.BotSettings", "Bot Settings", true, "Bot Settings")
+          .WithPermissions(p => p
+              .Add("Chatbot.BotSettings.ManageUsers.List", "View Chatbot Users", false, "Bot Settings")
+              .Add("Chatbot.BotSettings.ManageUsers.ViewPermission", "View User Permission", false, "Bot Settings")
+              .Add("Chatbot.BotSettings.ManageUsers.EditPermission", "Edit User Permission", false, "Bot Settings")
           );
     }
 }
