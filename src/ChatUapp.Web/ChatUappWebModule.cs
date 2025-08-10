@@ -189,15 +189,9 @@ public class ChatUappWebModule : AbpModule
             options.AddDefaultPolicy(builder =>
             {
                 builder
-                    .WithOrigins(
-                        configuration["App:CorsOrigins"]
-                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                            .Select(o => o.RemovePostFix("/"))
-                            .ToArray()
-                    )
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials(); // Important for cookies or token auth
+                    .AllowAnyMethod();
             });
         });
     }
@@ -362,3 +356,19 @@ public class ChatUappWebModule : AbpModule
         app.UseConfiguredEndpoints();
     }
 }
+
+//code needs to add in ConfigureCors method to enable CORS with specific origins
+
+/*options.AddDefaultPolicy(builder =>
+            {
+                builder
+                    .WithOrigins(
+                        configuration["App:CorsOrigins"]
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(o => o.RemovePostFix("/"))
+                            .ToArray()
+                    )
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials(); // Important for cookies or token auth
+ }); */
