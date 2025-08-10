@@ -14,17 +14,5 @@
                 _ => "others"
             };
         }
-
-        public static string GetContainerName(string fileCategory)
-        {
-            return fileCategory switch
-            {
-                "images" => "images-container",
-                "documents" => "docs-container",
-                "texts" => "texts-container",
-                _ => "misc-container"
-            };
-        }
     }
-
 }

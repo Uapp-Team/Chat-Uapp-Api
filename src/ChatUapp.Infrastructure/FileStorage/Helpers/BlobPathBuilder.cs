@@ -1,40 +1,25 @@
-﻿namespace ChatUapp.Infrastructure.FileStorage.Helpers
+﻿namespace ChatUapp.Infrastructure.FileStorage.Helpers;
+
+public static class BlobPathBuilder
 {
-    public static class BlobPathBuilder
+    public static string BuildPath(string tenantId, string fileType, string originalFileName)
     {
-        public static string BuildPath( string tenantId, string fileType, string originalFileName)
-        {
-            fileType = string.IsNullOrWhiteSpace(fileType) ? "others" : fileType.ToLowerInvariant();
+        fileType = string.IsNullOrWhiteSpace(fileType) ? "others" : fileType.ToLowerInvariant();
+        var date = DateTime.UtcNow;
 
-            var date = DateTime.UtcNow;
+        if (string.IsNullOrWhiteSpace(tenantId))
+            return $"{fileType}/{date:yyyy}/{date:MM}/{originalFileName}";
 
-            if (string.IsNullOrWhiteSpace(tenantId))
-            {
-                // Tenant ID is empty → no "tenant/{tenantId}" segment
-                return $"{fileType}/{date:yyyy}/{date:MM}/{originalFileName}";
-            }
-            else
-            {
-                // Tenant ID exists → include "tenant/{tenantId}"
-                return $"tenant/{tenantId}/{fileType}/{date:yyyy}/{date:MM}/{originalFileName}";
-            }
-        }
-        public static string UpdateBuildPath(string tenantId, string fileType, string originalFileName)
-        {
-            fileType = string.IsNullOrWhiteSpace(fileType) ? "others" : fileType.ToLowerInvariant();
+        return $"tenant/{tenantId}/{fileType}/{date:yyyy}/{date:MM}/{originalFileName}";
+    }
 
-            var date = DateTime.UtcNow;
+    public static string UpdateBuildPath(string tenantId, string fileType, string originalFileName)
+    {
+        fileType = string.IsNullOrWhiteSpace(fileType) ? "others" : fileType.ToLowerInvariant();
 
-            if (string.IsNullOrWhiteSpace(tenantId))
-            {
-                // Tenant ID is empty → no "tenant/{tenantId}" segment
-                return $"{fileType}/{originalFileName}";
-            }
-            else
-            {
-                // Tenant ID exists → include "tenant/{tenantId}"
-                return $"tenant/{tenantId}/{fileType}/{originalFileName}";
-            }
-        }
+        if (string.IsNullOrWhiteSpace(tenantId))
+            return $"{fileType}/{originalFileName}";
+
+        return $"tenant/{tenantId}/{fileType}/{originalFileName}";
     }
 }
