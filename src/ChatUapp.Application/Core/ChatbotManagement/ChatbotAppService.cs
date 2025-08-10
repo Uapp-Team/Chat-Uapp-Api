@@ -208,17 +208,9 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
         var chatbot = await _botRepo.GetAsync(id);
 
         var dto = ObjectMapper.Map<Chatbot, ChatbotDto>(chatbot);
-        // Set temporary profile image URL from blob if available
-        if (!string.IsNullOrEmpty(chatbot.BrandImageName))
-        {
-            dto.BrandImageName = await _storage.GetUrlAsync(chatbot.BrandImageName);
 
-        }
-        if (!string.IsNullOrEmpty(dto.iconName))
-        {
-            dto.iconName = await _storage.GetUrlAsync(dto.iconName);
-
-        }
+        dto.BrandImageName = await _storage.GetUrlAsync(chatbot.BrandImageName!);
+        dto.iconName = await _storage.GetUrlAsync(dto.iconName);
 
         return dto;
     }

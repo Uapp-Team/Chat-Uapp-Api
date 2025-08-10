@@ -1,7 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
-using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.FileStorage;
 using ChatUapp.Infrastructure.FileStorage.Helpers;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +39,6 @@ public class BlobStorageService : IBlobStorageService
 
         _containerPath = configuration["AzureBlobStorage:ContainerName"]
             ?? throw new AppValidationException("Azure Blob Storage container name is not configured.");
-
         _blobServiceClient = new BlobServiceClient(_connectionString);
     }
 
@@ -104,25 +102,31 @@ public class BlobStorageService : IBlobStorageService
     /// <returns>Final file name that should be stored in DB.</returns>
     public async Task<string> SaveImagesAsync(string? fileStream, string? newFileName, string? oldFileName = null)
     {
-        // No new stream provided → return old file name
         if (string.IsNullOrWhiteSpace(fileStream))
             return oldFileName ?? string.Empty;
 
-        // No file name provided → keep old file
         if (string.IsNullOrWhiteSpace(newFileName))
             return oldFileName ?? string.Empty;
 
-        // Validate extension
         var extension = Path.GetExtension(newFileName).ToLowerInvariant();
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
         if (!allowedExtensions.Contains(extension))
             throw new InvalidOperationException($"Invalid image type: {extension}");
 
-        // Prepare blob context
         var context = await GetUserContainerAsync(newFileName);
         var blobClient = context.ContainerClient.GetBlobClient(context.BlobPath);
 
-        // Always overwrite if exists
+        //  Check if file already exists
+        if (await blobClient.ExistsAsync())
+        {
+            // File exists → just return relative path without uploading
+            var parts = context.BlobPath.Split('/');
+            return parts.Length >= 3
+                ? string.Join('/', parts[^3..])
+                : context.BlobPath;
+        }
+
+        // File does not exist → upload it
         using var stream = ConvertBase64ToStream(fileStream);
         var uploadOptions = new BlobUploadOptions
         {
@@ -134,8 +138,12 @@ public class BlobStorageService : IBlobStorageService
 
         await blobClient.UploadAsync(stream, uploadOptions);
 
-        return context.BlobPath;
+        var finalParts = context.BlobPath.Split('/');
+        return finalParts.Length >= 3
+            ? string.Join('/', finalParts[^3..])
+            : context.BlobPath;
     }
+
 
 
 
@@ -190,14 +198,16 @@ public class BlobStorageService : IBlobStorageService
     private async Task<BlobUploadContext> GetUserContainerAsync(string fileName)
     {
         var tenantId = GetCurrentTenantId();
-        var userId = GetCurrentUserId();
-        var fileCategory = FileTypeClassifier.GetFileCategory(fileName);
-        var containerName = FileTypeClassifier.GetContainerName(fileCategory);
 
-        var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        var fileCategory = FileTypeClassifier.GetFileCategory(fileName);
+
+        // Use the project container name as container name
+        var containerClient = _blobServiceClient.GetBlobContainerClient(_containerPath);
+
+        // Create container if not exists
         await containerClient.CreateIfNotExistsAsync();
 
-        var blobPath = BlobPathBuilder.BuildPath(tenantId, userId, fileCategory, fileName);
+        var blobPath = BlobPathBuilder.BuildPath(tenantId, fileCategory, fileName);
         var context = new BlobUploadContext(containerClient, blobPath);
 
         if (!context.IsValid)
@@ -227,18 +237,25 @@ public class BlobStorageService : IBlobStorageService
 
     private (string containerName, string blobName) GetContainerAndBlobName(string fileName)
     {
-        Ensure.NotNull(_containerPath, nameof(_containerPath));
+        string containerName = _containerPath;
 
-        var segments = _containerPath.Split('/', 2);
-        var containerName = segments[0];
-        var virtualPath = segments.Length > 1 ? segments[1] : null;
+        // If fileName is already a full path from Azure, use it directly
+        if (fileName.StartsWith("tenant/") || fileName.Contains("/others/"))
+        {
+            return (containerName, fileName);
+        }
 
-        var blobName = string.IsNullOrEmpty(virtualPath)
-            ? fileName
-            : $"{virtualPath.TrimEnd('/')}/{fileName}";
+        // Otherwise reconstruct using BuildPath
+        var tenantId = GetCurrentTenantId();
+        var fileCategory = FileTypeClassifier.GetFileCategory(fileName);
+
+        // fileName here is assumed to be just the original file name, not the full blob path
+        string blobName = BlobPathBuilder.UpdateBuildPath(tenantId, fileCategory, fileName);
+
 
         return (containerName, blobName);
     }
+
 
     private static void EnsureFileNameNotEmpty(string fileName)
     {
