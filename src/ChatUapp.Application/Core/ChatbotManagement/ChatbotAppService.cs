@@ -79,7 +79,6 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
         input.BrandImageName = await _storage.SaveImagesAsync(input.BrandImageStream!, input.BrandImageName!);
         input.iconName = await _storage.SaveImagesAsync(input.iconStream, input.iconName);
 
-
         var chatbot = await _chatbotManager.CreateAsync(
             input.Name,
             input.Header,
@@ -190,11 +189,8 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
         var tasks = dtoList.Select(async dto =>
         {
-            if (!string.IsNullOrEmpty(dto.BrandImageName) && !string.IsNullOrEmpty(dto.iconName))
-            {
-                dto.BrandImageName = await _storage.GetUrlAsync(dto.BrandImageName);
-                dto.iconName = await _storage.GetUrlAsync(dto.iconName);
-            }
+            dto.BrandImageName = await _storage.GetUrlAsync(dto.BrandImageName!);
+            dto.iconName = await _storage.GetUrlAsync(dto.iconName!);
 
             return dto;
         });
@@ -239,11 +235,9 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
         await Task.WhenAll(dtoList.Select(async item =>
         {
-            if (!string.IsNullOrWhiteSpace(item.iconName))
-                item.iconName = await _storage.GetUrlAsync(item.iconName);
+            item.iconName = await _storage.GetUrlAsync(item.iconName!);
+            item.BrandImageName = await _storage.GetUrlAsync(item.BrandImageName!);
 
-            if (!string.IsNullOrWhiteSpace(item.BrandImageName))
-                item.BrandImageName = await _storage.GetUrlAsync(item.BrandImageName);
         }));
 
         return dtoList;
@@ -261,7 +255,6 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
         input.BrandImageName = await _storage.SaveImagesAsync(input.BrandImageStream!, input.BrandImageName!, chatbot.BrandImageName);
         input.iconName = await _storage.SaveImagesAsync(input.iconStream, input.iconName!, bot.iconName);
-
 
         var result = await _chatbotManager.UpdateChatbotAsync(
         chatbot,
@@ -340,8 +333,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
             var dto = ObjectMapper.Map<IdentityUser, UserByChatBotDto>(user);
 
             // Profile image URL
-            if (!string.IsNullOrEmpty(dto.profileImg))
-                dto.profileImg = await _storage.GetUrlAsync(dto.profileImg);
+            dto.profileImg = await _storage.GetUrlAsync(dto.profileImg);
 
             // Get roles for user
             if (user.Roles != null)
