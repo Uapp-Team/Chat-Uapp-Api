@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using ChatUapp.Core.Accounts.Consts;
+using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Guids;
@@ -25,8 +26,8 @@ public class RoleDataSeedContributor : IDataSeedContributor, ITransientDependenc
 
     public async Task SeedAsync(DataSeedContext context)
     {
-        await CreateRoleAsync("enduser");
-        await CreateRoleAsync("chatbotuser");
+        await CreateRoleAsync(SeedDataConsts.Enduser);
+        await CreateRoleAsync(SeedDataConsts.Chatbotuser);
     }
 
     private async Task CreateRoleAsync(string roleName)

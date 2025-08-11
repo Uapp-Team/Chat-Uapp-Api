@@ -1,4 +1,5 @@
-﻿using ChatUapp.Core.Accounts.DTOs;
+﻿using ChatUapp.Core.Accounts.Consts;
+using ChatUapp.Core.Accounts.DTOs;
 using ChatUapp.Core.Accounts.Interfaces;
 using ChatUapp.Core.Guards;
 using Microsoft.AspNetCore.Identity;
@@ -64,9 +65,9 @@ public class AppAccountAppService : AccountAppService,
         identityUser.SetProperty("TitlePrefix", input.TitlePrefix);
 
         // Assign Role
-        if (!await UserManager.IsInRoleAsync(identityUser, "chatbotuser"))
+        if (!await UserManager.IsInRoleAsync(identityUser, SeedDataConsts.Chatbotuser))
         {
-            await UserManager.AddToRoleAsync(identityUser, "chatbotuser");
+            await UserManager.AddToRoleAsync(identityUser, SeedDataConsts.Chatbotuser);
         }
 
         // Save updates
