@@ -63,6 +63,12 @@ public class AppAccountAppService : AccountAppService,
         identityUser.SetPhoneNumber(input.PhoneNumber, true);
         identityUser.SetProperty("TitlePrefix", input.TitlePrefix);
 
+        // Assign Role
+        if (!await UserManager.IsInRoleAsync(identityUser, "chatbotuser"))
+        {
+            await UserManager.AddToRoleAsync(identityUser, "chatbotuser");
+        }
+
         // Save updates
         await UserManager.UpdateAsync(identityUser);
 
