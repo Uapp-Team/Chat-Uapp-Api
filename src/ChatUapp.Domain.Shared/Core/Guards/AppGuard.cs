@@ -1,6 +1,8 @@
 ﻿using ChatUapp.Core.Exceptions;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using Volo.Abp.Authorization;
 
 namespace ChatUapp.Core.Guards;
 
@@ -57,6 +59,19 @@ public static class AppGuard
         if (condition)
         {
             throw exceptionFactory();
+        }
+    }
+
+    /// <summary>
+    /// Throws <see cref="AppBusinessException"/> if permission is not granted.
+    /// </summary>
+    public static void HasPermission(bool hasPermission, string permissionName)
+    {
+        if (!hasPermission)
+        {
+            throw new AppBusinessException(
+                $"You are not authorized to perform this action. Missing permission: {permissionName}"
+            );
         }
     }
 }

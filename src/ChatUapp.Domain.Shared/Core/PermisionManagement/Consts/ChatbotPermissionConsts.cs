@@ -19,4 +19,5 @@ public class ChatbotPermissionConsts
     public static string ChatbotBotSettingsManageUsersList { get; set; } = "Chatbot.BotSettings.ManageUsers.List";
     public static string ChatbotBotSettingsManageUsersViewPermission { get; set; } = "Chatbot.BotSettings.ManageUsers.ViewPermission";
     public static string ChatbotBotSettingsManageUsersEditPermission { get; set; } = "Chatbot.BotSettings.ManageUsers.EditPermission";
+    public static string ChatbotBotSettingsManageUsersInviteUser{ get; set; } = "Chatbot.BotSettings.ManageUsers.InviteUser";
 }

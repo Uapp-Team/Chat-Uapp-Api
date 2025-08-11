@@ -5,6 +5,7 @@ using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.FileStorage;
+using ChatUapp.Core.PermisionManagement.Consts;
 using ChatUapp.Core.PermissionManagement.Definitions;
 using ChatUapp.Core.PermissionManagement.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -86,8 +87,8 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
             input.iconName,
             input.iconColor
         );
-        
-        if(await _botRepo.CountAsync() <= 0) await _chatbotManager.SetDefaultAsync(chatbot);
+
+        if (await _botRepo.CountAsync() <= 0) await _chatbotManager.SetDefaultAsync(chatbot);
 
         chatbot.BrandImageName = input.BrandImageName;
         chatbot.Description = input.Description;
@@ -303,12 +304,24 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
     public async Task<PagedResultDto<GetAllChatDto>> GetAllChatAsync(GetAllChatFilterDto filter)
     {
+        if (filter.ChatbotId.HasValue)
+        {
+            var permissionName = ChatbotPermissionConsts.ChatbotChatsAllChat;
+            var hasPermission = await _permissionManager.CheckAsync(filter.ChatbotId.Value, permissionName);
+            AppGuard.HasPermission(hasPermission, permissionName);
+        }
+
         var result = await _userChatSummaryQueryService.GetUserChatSummariesAsync(filter);
         return result;
     }
 
     public async Task<List<UserByChatBotDto>> GetAllUserByBotAsync(Guid botId)
     {
+        var permissionName = ChatbotPermissionConsts.ChatbotBotSettingsManageUsersList;
+        var hasPermission = await _permissionManager.CheckAsync(botId, permissionName);
+
+        AppGuard.HasPermission(hasPermission, permissionName);
+
         // Get all linked users for the chatbot
         var tenantUserQuery = await _tenentBotUserRepo.GetQueryableAsync();
         var userLinks = tenantUserQuery
@@ -351,6 +364,11 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
     [HttpGet("api/app/chatbot/permissions")]
     public async Task<IReadOnlyList<PermissionGroupDefinition>> GetPermissions(Guid botId)
     {
+        var permissionName = ChatbotPermissionConsts.ChatbotBotSettingsManageUsersViewPermission;
+        var hasPermission = await _permissionManager.CheckAsync(botId, permissionName);
+
+        AppGuard.HasPermission(hasPermission, permissionName);
+
         var permisions = ChatbotPermissionRegistry.Groups;
 
         foreach (var p in permisions)
@@ -377,7 +395,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
     {
         var bot = await _botRepo.GetAsync(botId);
 
-        Ensure.NotNull(bot,nameof(bot));
+        Ensure.NotNull(bot, nameof(bot));
 
         await _chatbotManager.SetDefaultAsync(bot);
 

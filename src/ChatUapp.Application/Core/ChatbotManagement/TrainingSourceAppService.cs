@@ -5,6 +5,8 @@ using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Extensions;
 using ChatUapp.Core.Guards;
+using ChatUapp.Core.PermisionManagement.Consts;
+using ChatUapp.Core.PermissionManagement.Services;
 using ChatUapp.Core.Thirdparty.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,23 +21,32 @@ namespace ChatUapp.Core.ChatbotManagement;
 public class TrainingSourceAppService : ApplicationService, ITrainingSourceAppService
 {
     private readonly TrainingSourceManager _manager;
+    private readonly ChatbotPermissionManager _permissionManager;
     private readonly IRepository<TrainingSource, Guid> _repository;
     private readonly IBotEngineManageService _botEngineManageService;
 
     public TrainingSourceAppService(
         TrainingSourceManager manager,
         IRepository<TrainingSource, Guid> repository,
-        IBotEngineManageService botEngineManageService)
+        IBotEngineManageService botEngineManageService,
+        ChatbotPermissionManager permissionManager)
     {
         _manager = manager;
         _repository = repository;
         _botEngineManageService = botEngineManageService;
+        _permissionManager = permissionManager;
     }
 
     public async Task DeleteAsync(Guid id)
     {
         var entity = await _repository.GetAsync(id);
         Ensure.NotNull(entity, nameof(entity));
+
+        var permissionName = ChatbotPermissionConsts.ChatbotTrainingCenterDelete;
+        var hasPermission = await _permissionManager.CheckAsync(entity.ChatbotId, permissionName);
+
+        AppGuard.HasPermission(hasPermission, permissionName);
+
         var result = await _botEngineManageService.DeleteTrainAsync(
             entity.Id.ToTrainSourceTitle(), entity.ChatbotId.ToBotName());
 
@@ -48,6 +59,11 @@ public class TrainingSourceAppService : ApplicationService, ITrainingSourceAppSe
 
     public async Task<TrainingSourceDto> CreateAsync(CreateTrainingSourceDto input)
     {
+        var permissionName = ChatbotPermissionConsts.ChatbotTrainingCenterTrain;
+        var hasPermission = await _permissionManager.CheckAsync(input.ChatbotId, permissionName);
+
+        AppGuard.HasPermission(hasPermission, permissionName);
+
         var entity = _manager.CreateTextSource(input.ChatbotId, input.Name, input.TextContent);
 
         var result = await _botEngineManageService.TrainAsync(new Message.Interfaces.BotTrainRequestModel()
@@ -69,6 +85,12 @@ public class TrainingSourceAppService : ApplicationService, ITrainingSourceAppSe
     public async Task<TrainingSourceDto> UpdateAsync(Guid id, UpdateTrainingSourceDto input)
     {
         var entity = await _repository.GetAsync(id);
+
+        var permissionName = ChatbotPermissionConsts.ChatbotTrainingCenterEdit;
+        var hasPermission = await _permissionManager.CheckAsync(entity.ChatbotId, permissionName);
+
+        AppGuard.HasPermission(hasPermission, permissionName);
+
         Ensure.NotNull(entity, nameof(entity));
         _manager.UpdateTextSource(entity, input.Name, input.TextContent);
 
@@ -90,8 +112,13 @@ public class TrainingSourceAppService : ApplicationService, ITrainingSourceAppSe
 
     public async Task<PagedResultDto<TrainingSourceDto>> GetListAsync(GetTrainingSourceListDto input)
     {
-        var queryable = await _repository.GetQueryableAsync();
+        var permissionName = ChatbotPermissionConsts.ChatbotTrainingCenterView;
+        var hasPermission = await _permissionManager.CheckAsync(input.ChatbotId, permissionName);
 
+        AppGuard.HasPermission(hasPermission, permissionName);
+
+        var queryable = await _repository.GetQueryableAsync();
+        
         if (!string.IsNullOrWhiteSpace(input.TrainingSourceTitle))
         {
             queryable = queryable.Where(x => x.Name.Contains(input.TrainingSourceTitle));

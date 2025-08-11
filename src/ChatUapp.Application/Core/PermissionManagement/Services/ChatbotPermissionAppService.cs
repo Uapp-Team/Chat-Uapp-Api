@@ -1,4 +1,6 @@
-﻿using ChatUapp.Core.PermissionManagement.Definitions;
+﻿using ChatUapp.Core.Guards;
+using ChatUapp.Core.PermisionManagement.Consts;
+using ChatUapp.Core.PermissionManagement.Definitions;
 using ChatUapp.Core.PermissionManagement.Dtos;
 using ChatUapp.Core.PermissionManagement.Interfaces;
 using System;
@@ -26,6 +28,10 @@ public class ChatbotPermissionAppService :
 
     public async Task AssignAsync(ChatbotPermissionCreateDto input)
     {
+        var permissionName = ChatbotPermissionConsts.ChatbotBotSettingsManageUsersEditPermission;
+        var hasPermission = await _botPermissionManager.CheckAsync(input.ChatbotId, permissionName);
+
+        AppGuard.HasPermission(hasPermission, permissionName);
 
         var entity = _botPermissionManager.AssignPermission(input.UserId, input.ChatbotId, input.PermissionName);
         await _repository.InsertAsync(entity, autoSave: true);
