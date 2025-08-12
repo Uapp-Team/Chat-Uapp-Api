@@ -91,8 +91,8 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
             input.iconName,
             input.iconColor
         );
-        
-        if(await _botRepo.CountAsync() <= 0) await _chatbotManager.SetDefaultAsync(chatbot);
+
+        if (await _botRepo.CountAsync() <= 0) await _chatbotManager.SetDefaultAsync(chatbot);
 
         chatbot.BrandImageName = input.BrandImageName;
         chatbot.Description = input.Description;
@@ -422,7 +422,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
     {
         var bot = await _botRepo.GetAsync(botId);
 
-        Ensure.NotNull(bot,nameof(bot));
+        Ensure.NotNull(bot, nameof(bot));
 
         await _chatbotManager.SetDefaultAsync(bot);
 

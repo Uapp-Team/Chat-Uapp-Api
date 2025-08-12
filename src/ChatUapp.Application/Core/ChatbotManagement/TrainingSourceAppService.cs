@@ -57,7 +57,7 @@ public class TrainingSourceAppService : ApplicationService, ITrainingSourceAppSe
             BotName = input.ChatbotId.ToBotName()
         });
 
-       if(!result.Success)
+        if (!result.Success)
         {
             throw new AppBusinessException("Training source creation failed: " + result.Message);
         }

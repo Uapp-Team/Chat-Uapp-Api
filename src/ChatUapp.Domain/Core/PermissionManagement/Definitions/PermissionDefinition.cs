@@ -19,9 +19,9 @@ public class PermissionDefinition
         MenuDisplayName = menuDisplayName;
     }
 
-    public PermissionDefinition AddChild(string name, string displayName,bool isMenu, string menuDisplayName)
+    public PermissionDefinition AddChild(string name, string displayName, bool isMenu, string menuDisplayName)
     {
-        var child = new PermissionDefinition(name, displayName,isMenu, menuDisplayName);
+        var child = new PermissionDefinition(name, displayName, isMenu, menuDisplayName);
         Children.Add(child);
         return child;
     }

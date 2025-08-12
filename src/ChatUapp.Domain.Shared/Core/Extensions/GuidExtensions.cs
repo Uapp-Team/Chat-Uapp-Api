@@ -9,7 +9,7 @@ public static class GuidExtensions
     private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; // Base62 alphabet
     public static string ToBotName(this Guid guid)
     {
-        return "B"+ToBase62(guid.ToByteArray());
+        return "B" + ToBase62(guid.ToByteArray());
     }
 
     public static string ToTrainSourceTitle(this Guid guid)

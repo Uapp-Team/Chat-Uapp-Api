@@ -10,7 +10,7 @@ public class UserByChatBotDto
     public string surname { get; set; } = default!;
     public string email { get; set; } = default!;
     public string imageUrl { get; set; } = default!;
-    public  List<string> Roles { get; set; } = new();
+    public List<string> Roles { get; set; } = new();
     public string LastModificationTime { get; set; } = default!;
     public string CreationTime { get; set; } = default!;
     public string isAdmin { get; set; } = default!;
