@@ -44,7 +44,7 @@ public class ChatbotPermissionAppService :
         await _repository.HardDeleteAsync(entity, autoSave: true);
     }
 
-    public async Task<IList<ChatbotPermissionGroupDto>> GetByChatBotIdAsync(Guid botId)
+    public async Task<IList<ChatbotPermissionGroupDto>> GetByChatBotIdAsync(Guid botId, Guid userId)
     {
         var resutlPermisions = new List<ChatbotPermissionGroupDto>();
         var permisions = ChatbotPermissionRegistry.Groups;
@@ -69,12 +69,12 @@ public class ChatbotPermissionAppService :
                         DisplayName = np.DisplayName,
                     };
 
-                    perChild.Children.AddRange(await MapChildrenAsync(botId, np.Children));
+                    perChild.Children.AddRange(await MapChildrenAsync(botId, userId, np.Children));
                     perGroup.Children.Add(perChild);
                 }
                 else
                 {
-                    perGroup.Children.Add(await MapAsync(botId, np));
+                    perGroup.Children.Add(await MapAsync(botId, userId, np));
                 }
             }
             perGroup.isGranted = perGroup.Children.Any(x => x.IsGranted);
@@ -110,12 +110,12 @@ public class ChatbotPermissionAppService :
                         IsMenu = np.IsMenu,
                     };
 
-                    perChild.Children.AddRange(await MapChildrenAsync(botId, np.Children));
+                    perChild.Children.AddRange(await MapChildrenAsync(botId, null, np.Children));
                     perGroup.Children.Add(perChild);
                 }
                 else
                 {
-                    perGroup.Children.Add(await MapAsync(botId, np));
+                    perGroup.Children.Add(await MapAsync(botId, null, np));
                 }
             }
             perGroup.isGranted = perGroup.Children.Any(x=>x.IsGranted);
@@ -126,19 +126,20 @@ public class ChatbotPermissionAppService :
         return resutlPermisions;
     }
 
-    private async Task<List<ChatbotPermissionDto>> MapChildrenAsync(Guid botId, List<PermissionDefinition> children)
+    private async Task<List<ChatbotPermissionDto>> MapChildrenAsync(Guid botId, Guid? userId, List<PermissionDefinition> children)
     {
         var childPermissions = new List<ChatbotPermissionDto>();
         foreach (var child in children)
         {
-            childPermissions.Add(await MapAsync(botId, child));
+            childPermissions.Add(await MapAsync(botId, userId, child));
         }
         return childPermissions;
     }
 
-    private async Task<ChatbotPermissionDto> MapAsync(Guid botId, PermissionDefinition p)
+    private async Task<ChatbotPermissionDto> MapAsync(Guid botId, Guid? userId, PermissionDefinition p)
     {
-        var isAccess = await _botPermissionManager.CheckAsync(botId, p.Name);
+        var isAccess =userId.HasValue? await _botPermissionManager.CheckAsync(botId, userId.Value, p.Name)
+            : await _botPermissionManager.CheckAsync(botId, p.Name);
         return new ChatbotPermissionDto
         {
             Name = p.Name,
