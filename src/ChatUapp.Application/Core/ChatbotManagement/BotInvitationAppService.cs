@@ -4,9 +4,12 @@ using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.ChatbotManagement.Services;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Emailing;
+using ChatUapp.Core.PermisionManagement.Consts;
+using ChatUapp.Core.PermissionManagement.Services;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Authorization;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
@@ -18,6 +21,7 @@ public class BotInvitationAppService : ApplicationService, IBotInvitationAppServ
 {
     private readonly BotInvitationManager _botInvitatioManager;
     private readonly ChatBotUserManager _chatbotUserManager;
+    private readonly ChatbotPermissionManager _botParmissionManager;
     private readonly IRepository<BotInvitation, Guid> _botInvitationRepo;
     private readonly IRepository<TenantChatbotUser, Guid> _tenentBotUserRepo;
     private readonly IIdentityUserRepository _userRepo;
@@ -32,7 +36,8 @@ public class BotInvitationAppService : ApplicationService, IBotInvitationAppServ
         IAppEmailSender emailSender,
         IIdentityUserRepository userRepo,
         ChatBotUserManager chatbotUserManager,
-        IDataFilter<IMultiTenant> multitenant)
+        IDataFilter<IMultiTenant> multitenant,
+        ChatbotPermissionManager botParmissionManager)
     {
         _botInvitatioManager = botInvitatioManager;
         _botInvitationRepo = botInvitationRepo;
@@ -41,11 +46,17 @@ public class BotInvitationAppService : ApplicationService, IBotInvitationAppServ
         _userRepo = userRepo;
         _chatbotUserManager = chatbotUserManager;
         _multitenant = multitenant;
+        _botParmissionManager = botParmissionManager;
     }
 
     public async Task<bool> CreateInviteAsync(CreateInviteDto input)
     {
         Ensure.NotNull(input, nameof(input));
+
+        var permissionName = ChatbotPermissionConsts.ChatbotBotSettingsManageUsersInviteUser;
+        var hasPermission = await _botParmissionManager.CheckAsync(input.BotId, permissionName);
+
+        AppGuard.HasPermission(hasPermission, permissionName);
 
         var invited = await _botInvitatioManager.CreateAsync(input.BotId, input.UserEmail, input.Role);
 

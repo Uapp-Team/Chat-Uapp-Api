@@ -6,6 +6,7 @@ using ChatUapp.Core.ChatbotManagement.VOs;
 using ChatUapp.Core.Exceptions;
 using ChatUapp.Core.Extensions;
 using ChatUapp.Core.Guards;
+using ChatUapp.Core.PermissionManagement.Services;
 using ChatUapp.Core.Thirdparty.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace ChatUapp.Core.ChatbotManagement;
 public class ChatSessionAppService : ApplicationService, IChatSessionAppService
 {
     private readonly ChatSessionManager _sessionManager;
+    private readonly ChatbotPermissionManager _permissionManager;
     private readonly IRepository<ChatSession, Guid> _sessionRepo;
     private readonly IBotEngineManageService _botEngineManageService;
     private readonly ICurrentUser _currentUser;
@@ -30,12 +32,14 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         ChatSessionManager sessionManager,
         IRepository<ChatSession, Guid> sessionRepo,
         IBotEngineManageService message,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        ChatbotPermissionManager permissionManager)
     {
         _sessionManager = sessionManager;
         _sessionRepo = sessionRepo;
         _botEngineManageService = message;
         _currentUser = currentUser;
+        _permissionManager = permissionManager;
     }
 
     public async Task<ChatSessionDto> CreateAsync(CreateSessionInputDto input)
@@ -151,7 +155,7 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
         Ensure.NotNull(session, nameof(session));
 
         // Return the updated session as a DTO
-        return ObjectMapper.Map<ChatSession, ChatSessionDto>(session);
+        return ObjectMapper.Map<ChatSession, ChatSessionDto>(session!);
     }
     public async Task<PagedResultDto<ChatSessionTitleDto>> GetTitlesAsync(GetSessionTitlesListDto input)
     {
@@ -196,7 +200,6 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
 
         return true;
     }
-
     public async Task<bool> RenameAsync(Guid id, string updatedName)
     {
         Ensure.NotNull(id, nameof(id));

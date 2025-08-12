@@ -49,6 +49,7 @@ public class MyChatbotPermissionDefinitionProvider : ChatbotPermissionDefinition
               .Add(ChatbotPermissionConsts.ChatbotBotSettingsManageUsersList, "Edit User Permission", false, "Bot Settings")
               .Add(ChatbotPermissionConsts.ChatbotBotSettingsManageUsersViewPermission, "Edit User Permission", false, "Bot Settings")
               .Add(ChatbotPermissionConsts.ChatbotBotSettingsManageUsersEditPermission, "Edit User Permission", false, "Bot Settings")
+              .Add(ChatbotPermissionConsts.ChatbotBotSettingsManageUsersInviteUser, "Invitation User Permission", false, "Bot Settings")
           );
     }
 }

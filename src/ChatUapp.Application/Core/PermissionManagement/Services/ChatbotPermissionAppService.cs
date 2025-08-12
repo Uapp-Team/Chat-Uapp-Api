@@ -1,4 +1,7 @@
-﻿using ChatUapp.Core.PermissionManagement.Definitions;
+﻿using ChatUapp.Core.Guards;
+using ChatUapp.Core.PermisionManagement.Consts;
+using ChatUapp.Core.PermissionManagement.AggregateRoots;
+using ChatUapp.Core.PermissionManagement.Definitions;
 using ChatUapp.Core.PermissionManagement.Dtos;
 using ChatUapp.Core.PermissionManagement.Interfaces;
 using System;
@@ -26,6 +29,10 @@ public class ChatbotPermissionAppService :
 
     public async Task AssignAsync(ChatbotPermissionCreateDto input)
     {
+        var permissionName = ChatbotPermissionConsts.ChatbotBotSettingsManageUsersEditPermission;
+        var hasPermission = await _botPermissionManager.CheckAsync(input.ChatbotId, permissionName);
+
+        AppGuard.HasPermission(hasPermission, permissionName);
 
         var entity = _botPermissionManager.AssignPermission(input.UserId, input.ChatbotId, input.PermissionName);
         await _repository.InsertAsync(entity, autoSave: true);
@@ -34,7 +41,7 @@ public class ChatbotPermissionAppService :
     public async Task UnAssignAsync(ChatbotPermissionCreateDto input)
     {
         var entity = await _botPermissionManager.UnassignAsync(input.UserId, input.ChatbotId, input.PermissionName);
-        await _repository.DeleteAsync(entity, autoSave: true);
+        await _repository.HardDeleteAsync(entity, autoSave: true);
     }
 
     public async Task<IList<ChatbotPermissionGroupDto>> GetByChatBotIdAsync(Guid botId)
@@ -48,7 +55,9 @@ public class ChatbotPermissionAppService :
             {
                 Name = group.Name,
                 DisplayName = group.DisplayName,
-                Children = new List<ChatbotPermissionDto>()
+                Children = new List<ChatbotPermissionDto>(),
+                isGranted = group.Permissions.Count(x => x.IsGranted) > 0,
+                IsMenu = group.Permissions.Count(x => x.IsMenu) > 0
             };
             foreach (var np in group.Permissions)
             {
@@ -68,6 +77,8 @@ public class ChatbotPermissionAppService :
                     perGroup.Children.Add(await MapAsync(botId, np));
                 }
             }
+            perGroup.isGranted = perGroup.Children.Any(x => x.IsGranted);
+            perGroup.IsMenu = perGroup.Children.Any(x => x.IsMenu);
             resutlPermisions.Add(perGroup); // Add the group to the result list
         }
 
@@ -107,6 +118,8 @@ public class ChatbotPermissionAppService :
                     perGroup.Children.Add(await MapAsync(botId, np));
                 }
             }
+            perGroup.isGranted = perGroup.Children.Any(x=>x.IsGranted);
+            perGroup.IsMenu = perGroup.Children.Any(x => x.IsMenu);
             resutlPermisions.Add(perGroup); // Add the group to the result list
         }
 

@@ -1,6 +1,6 @@
 using ChatUapp.Core.ChatbotManagement.AggregateRoots;
 using ChatUapp.Core.Messages.AggregateRoots;
-using ChatUapp.Core.PermissionManagement;
+using ChatUapp.Core.PermissionManagement.AggregateRoots;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -68,7 +68,7 @@ public class ChatUappDbContext :
     public ChatUappDbContext(DbContextOptions<ChatUappDbContext> options)
         : base(options)
     {
-
+        
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

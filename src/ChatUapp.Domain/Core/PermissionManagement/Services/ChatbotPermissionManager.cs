@@ -1,5 +1,6 @@
 ﻿using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Chatbot;
+using ChatUapp.Core.PermissionManagement.AggregateRoots;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
