@@ -1,10 +1,11 @@
 ﻿using ChatUapp.Core.Constants;
 using ChatUapp.Core.PermisionManagement.Consts;
+using ChatUapp.Core.PermissionManagement.AggregateRoots;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 
-namespace ChatUapp.Core.PermissionManagement;
+namespace ChatUapp.Core.PermissionManagement.Configurations;
 
 public class ChatbotUserPermissionConfiguraton : IEntityTypeConfiguration<ChatbotUserPermission>
 {

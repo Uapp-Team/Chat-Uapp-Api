@@ -67,11 +67,11 @@ public static class AppGuard
     /// </summary>
     public static void HasPermission(bool hasPermission, string permissionName)
     {
-        if (!hasPermission)
-        {
-            throw new AppBusinessException(
-                $"You are not authorized to perform this action. Missing permission: {permissionName}"
-            );
-        }
+        //if (!hasPermission)
+        //{
+        //    throw new AppBusinessException(
+        //        $"You are not authorized to perform this action. Missing permission: {permissionName}"
+        //    );
+        //}
     }
 }

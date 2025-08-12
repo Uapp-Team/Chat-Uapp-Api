@@ -3,7 +3,7 @@ using System;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
-namespace ChatUapp.Core.PermissionManagement;
+namespace ChatUapp.Core.PermissionManagement.AggregateRoots;
 
 public class ChatbotUserPermission : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
