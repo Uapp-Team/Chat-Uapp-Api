@@ -36,7 +36,7 @@ public class BotEngineManageService : IBotEngineManageService
     public async Task<BotTrainResponseModel> DeleteTrainAsync(string uniqueKey, string botName)
     {
         var result = await _chatbotEngineApi.DeleteDocAsync(uniqueKey, botName);
-        if(result.IsSuccessful)
+        if (result.IsSuccessful)
         {
             return new BotTrainResponseModel
             {
@@ -82,7 +82,7 @@ public class BotEngineManageService : IBotEngineManageService
 
             //if (reply.Answer?.Contains("Sorry", StringComparison.OrdinalIgnoreCase) == true)
             //{
-                reply.Answer = await AskGptAsync(query, Guid.Parse(session));
+            reply.Answer = await AskGptAsync(query, Guid.Parse(session));
             //}
 
             reply.Answer = string.IsNullOrWhiteSpace(reply.Answer)
@@ -125,7 +125,7 @@ public class BotEngineManageService : IBotEngineManageService
             }
         };
 
-        if (session !=null && session.Messages.Count > 0)
+        if (session != null && session.Messages.Count > 0)
         {
             foreach (var message in session.Messages)
             {

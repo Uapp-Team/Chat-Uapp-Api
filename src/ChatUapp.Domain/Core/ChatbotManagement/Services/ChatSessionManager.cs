@@ -64,6 +64,6 @@ public class ChatSessionManager : DomainService
     public void Delete(ChatSession session)
     {
         Ensure.NotNull(session, nameof(session));
-       session.IsDeleted = true;
+        session.IsDeleted = true;
     }
 }

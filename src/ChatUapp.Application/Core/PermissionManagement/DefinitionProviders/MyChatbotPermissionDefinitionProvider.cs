@@ -18,7 +18,7 @@ public class MyChatbotPermissionDefinitionProvider : ChatbotPermissionDefinition
           );
         */
 
-        context.AddGroup("Chatbot.Overview", "Overview", true, "Overview") 
+        context.AddGroup("Chatbot.Overview", "Overview", true, "Overview")
           .WithPermissions(p => p
               .Add(ChatbotPermissionConsts.ChatbotDashboardView, "View Dasboard", true, "Dashboard")
               .Add(ChatbotPermissionConsts.ChatbotAnalyticsView,  "View Analytics", true, "Analytics")

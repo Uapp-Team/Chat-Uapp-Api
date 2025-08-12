@@ -184,7 +184,7 @@ public class ChatSessionAppService : ApplicationService, IChatSessionAppService
     }
     public async Task<bool> DeleteAsync(Guid Id)
     {
-        Ensure.NotNull(Id,nameof(Id));
+        Ensure.NotNull(Id, nameof(Id));
 
         var session = await _sessionRepo.GetAsync(Id);
 

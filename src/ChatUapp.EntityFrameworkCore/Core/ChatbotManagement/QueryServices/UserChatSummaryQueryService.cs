@@ -15,8 +15,6 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
-using Volo.Abp.Linq;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 
 namespace ChatUapp.Core.ChatbotManagement.QueryServices;
