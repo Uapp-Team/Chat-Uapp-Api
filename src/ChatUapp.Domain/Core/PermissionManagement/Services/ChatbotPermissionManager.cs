@@ -69,6 +69,17 @@ public class ChatbotPermissionManager : DomainService, ITransientDependency
         return permission != null;
     }
 
+    public async Task<bool> CheckAsync(Guid chatbotId, Guid userId, string permissionName)
+    {
+        //AppGuard.Check(
+        //    !_currentUser.IsAuthenticated,
+        //    "User is not authenticated. Cannot check permissions without a valid user context.");
+
+        var permission = await _chatbotUserRepository.FirstOrDefaultAsync(
+            p => p.UserId == userId && p.ChatBotId == chatbotId && p.PermissionName == permissionName);
+        return permission != null;
+    }
+
     public async Task<bool> HasPermissionAsync(Guid chatBotId, string permissionName)
     {
         return await CheckAsync(chatBotId, permissionName);
