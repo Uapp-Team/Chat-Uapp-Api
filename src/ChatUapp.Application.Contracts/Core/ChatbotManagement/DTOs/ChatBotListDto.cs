@@ -17,7 +17,11 @@ namespace ChatUapp.Core.ChatbotManagement.DTOs
         public string? iconName { get; set; } = default!;
         public string? iconColor { get; set; } = default!;
         public int? satisfactionRate { get; set; } = default!;
+        public DateTime? LastModificationTime { get; set; }
+        public DateTime? lastActive { get; set; }
+        public Guid CreatorId { get; private set; } 
         public List<UserInfo> Users { get; set; } = new List<UserInfo>();
+        public Owner owner { get; set; } = new Owner();
     }
 
     public class UserInfo
@@ -27,4 +31,10 @@ namespace ChatUapp.Core.ChatbotManagement.DTOs
         public string? Avatar { get; set; }
     }
 
+    public class Owner
+    {
+        public Guid id { get; set; }
+        public string? Name { get; set; }
+        public string? Avatar { get; set; }
+    }
 }
