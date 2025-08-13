@@ -8,6 +8,7 @@ using ChatUapp.Core.Guards;
 using ChatUapp.Core.PermisionManagement.Consts;
 using ChatUapp.Core.PermissionManagement.Services;
 using ChatUapp.Core.Thirdparty.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace ChatUapp.Core.ChatbotManagement;
 
+[Authorize]
 public class TrainingSourceAppService : ApplicationService, ITrainingSourceAppService
 {
     private readonly TrainingSourceManager _manager;

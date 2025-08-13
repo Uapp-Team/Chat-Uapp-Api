@@ -8,6 +8,7 @@ using ChatUapp.Core.Interfaces.FileStorage;
 using ChatUapp.Core.PermisionManagement.Consts;
 using ChatUapp.Core.PermissionManagement.Definitions;
 using ChatUapp.Core.PermissionManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ using Volo.Abp.Users;
 
 namespace ChatUapp.Core.ChatbotManagement;
 
+[Authorize]
 public class ChatbotAppService : ApplicationService, IChatbotAppService
 {
     private readonly ChatbotManager _chatbotManager;
