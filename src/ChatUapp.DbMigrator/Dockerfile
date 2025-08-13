@@ -1,5 +1,12 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
-COPY bin/Release/net9.0/publish/ app/
+# Build & publish
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /buildprocess
+COPY . .
+RUN dotnet restore "/buildprocess/src/ChatUapp.DbMigrator/ChatUapp.DbMigrator.csproj"
+RUN dotnet publish "/buildprocess/src/ChatUapp.DbMigrator/ChatUapp.DbMigrator.csproj" -c Release -o /app/publish
+
+# Runtime (console app; ASP.NET Core runtime not required)
+FROM mcr.microsoft.com/dotnet/runtime:9.0 AS final
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://+:80
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "ChatUapp.DbMigrator.dll"]
