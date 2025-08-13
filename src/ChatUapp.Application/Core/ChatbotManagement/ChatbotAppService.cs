@@ -348,7 +348,11 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
             var dto = ObjectMapper.Map<IdentityUser, UserByChatBotDto>(user);
 
             // Profile image URL
-            dto.profileImg = await _storage.GetUrlAsync(dto.profileImg);
+            if (user.ExtraProperties.TryGetValue("ProfileImg", out var profileImgObj) &&
+            profileImgObj is string blobPath && !string.IsNullOrWhiteSpace(blobPath))
+            {
+                dto.profileImg = await _storage.GetUrlAsync(blobPath);
+            }
 
             // Get roles for user
             if (user.Roles != null)
