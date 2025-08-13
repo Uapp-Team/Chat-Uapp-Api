@@ -235,11 +235,30 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
             .ToList();
 
         var dtoList = ObjectMapper.Map<List<Chatbot>, List<ChatBotListDto>>(chatbots);
-
+        
         await Task.WhenAll(dtoList.Select(async item =>
         {
             item.iconName = await _storage.GetUrlAsync(item.iconName!);
             item.BrandImageName = await _storage.GetUrlAsync(item.BrandImageName!);
+            item.lastActive = item.LastModificationTime;
+            
+            // Get bot users and map to UserInfo list
+            var botUsers = await GetAllUserByBotAsync(item.id);
+            item.Users = botUsers.Select(u => new UserInfo
+            {
+                id = u.id,
+                Name = u.name,
+                Avatar = u.profileImg
+            }).ToList();
+
+            var creatorUser = item.Users.FirstOrDefault(O => O.id == item.CreatorId);
+            Ensure.NotNull(creatorUser, nameof(creatorUser));
+            item.owner = new Owner
+            {
+                id = creatorUser!.id,
+                Name = creatorUser.Name,
+                Avatar = creatorUser.Avatar
+            };
 
         }));
 
