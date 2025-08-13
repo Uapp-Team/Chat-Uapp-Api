@@ -4,6 +4,7 @@ using ChatUapp.Core.PermissionManagement.AggregateRoots;
 using ChatUapp.Core.PermissionManagement.Definitions;
 using ChatUapp.Core.PermissionManagement.Dtos;
 using ChatUapp.Core.PermissionManagement.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace ChatUapp.Core.PermissionManagement.Services;
 
+[Authorize]
 public class ChatbotPermissionAppService :
     ApplicationService, IChatbotPermissionAppService
 {
@@ -40,12 +42,21 @@ public class ChatbotPermissionAppService :
 
     public async Task UnAssignAsync(ChatbotPermissionCreateDto input)
     {
+        var permissionName = ChatbotPermissionConsts.ChatbotBotSettingsManageUsersEditPermission;
+        var hasPermission = await _botPermissionManager.CheckAsync(input.ChatbotId, permissionName);
+
+        AppGuard.HasPermission(hasPermission, permissionName);
+
         var entity = await _botPermissionManager.UnassignAsync(input.UserId, input.ChatbotId, input.PermissionName);
         await _repository.HardDeleteAsync(entity, autoSave: true);
     }
 
     public async Task<IList<ChatbotPermissionGroupDto>> GetByChatBotIdAsync(Guid botId, Guid userId)
     {
+        var permissionName = ChatbotPermissionConsts.ChatbotBotSettingsManageUsersEditPermission;
+        var hasPermission = await _botPermissionManager.CheckAsync(botId, permissionName);
+        AppGuard.HasPermission(hasPermission, permissionName);
+
         var resutlPermisions = new List<ChatbotPermissionGroupDto>();
         var permisions = ChatbotPermissionRegistry.Groups;
 
@@ -87,6 +98,7 @@ public class ChatbotPermissionAppService :
 
     public async Task<IList<ChatbotPermissionGroupDto>> GetMenuByChatBotIdAsync(Guid botId)
     {
+
         var resutlPermisions = new List<ChatbotPermissionGroupDto>();
         var permisions = ChatbotPermissionRegistry.Groups;
 

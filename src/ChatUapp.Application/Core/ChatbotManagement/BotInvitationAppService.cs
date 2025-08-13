@@ -6,10 +6,10 @@ using ChatUapp.Core.Guards;
 using ChatUapp.Core.Interfaces.Emailing;
 using ChatUapp.Core.PermisionManagement.Consts;
 using ChatUapp.Core.PermissionManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
-using Volo.Abp.Authorization;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
@@ -17,6 +17,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace ChatUapp.Core.ChatbotManagement;
 
+[Authorize]
 public class BotInvitationAppService : ApplicationService, IBotInvitationAppService
 {
     private readonly BotInvitationManager _botInvitatioManager;

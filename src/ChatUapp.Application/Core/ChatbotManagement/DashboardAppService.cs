@@ -3,12 +3,14 @@ using ChatUapp.Core.ChatbotManagement.Interfaces;
 using ChatUapp.Core.Guards;
 using ChatUapp.Core.PermisionManagement.Consts;
 using ChatUapp.Core.PermissionManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
 namespace ChatUapp.Core.ChatbotManagement;
 
+[Authorize]
 public class DashboardAppService : ApplicationService, IDashboardAppService
 {
     private readonly IUserChatSummaryQueryService _userChatSummaryQueryService;
