@@ -331,7 +331,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
     private async Task MapExistingDataAsync(List<ChatBotListDto> dtoList)
     {
-        await Task.WhenAll(dtoList.Select(async item =>
+        foreach (var item in dtoList)
         {
             // Last active = last modification time
             //item.lastActive = item.LastModificationTime?.ToString("dd-MM-yyyy");
@@ -362,7 +362,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
                 // If creator not found, keep owner empty or default
                 item.owner = new Owner();
             }
-        }));
+        };
     }
 
     private async Task<List<ChatBotListDto>> GetChatBotsByUserInternalAsync(Guid? userId)
