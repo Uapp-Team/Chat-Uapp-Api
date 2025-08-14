@@ -25,7 +25,6 @@ COPY . .
 WORKDIR /buildprocess/src/ChatUapp.Web
 
 RUN dotnet dev-certs https -v -ep openiddict.pfx -p 58922e2f-ffbf-4d2b-9280-f30732b5f35a
-RUN ls -l
 
 # Install ABP CLI and client-side libs
 RUN dotnet tool install -g Volo.Abp.Cli
