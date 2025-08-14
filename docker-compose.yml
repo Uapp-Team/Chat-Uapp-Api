@@ -96,8 +96,8 @@
 
         # Abp
         - Abp__ExceptionHandling__SendExceptionsDetailsToClients=true
-    # volumes:
-    #   - ./certs/openiddict.pfx:/app/openiddict.pfx:ro
+    volumes:
+      - ./certs/openiddict.pfx:/app/openiddict.pfx:ro
     depends_on:
       postgres:
         condition: service_healthy
