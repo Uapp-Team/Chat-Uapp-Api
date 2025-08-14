@@ -1,6 +1,7 @@
 ﻿using ChatUapp.Core.ChatbotManagement.Enums;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Volo.Abp.ObjectExtending;
 
 namespace ChatUapp.Core.ChatbotManagement.DTOs
@@ -17,8 +18,10 @@ namespace ChatUapp.Core.ChatbotManagement.DTOs
         public string? iconName { get; set; } = default!;
         public string? iconColor { get; set; } = default!;
         public int? satisfactionRate { get; set; } = default!;
+        [JsonIgnore]
         public DateTime? LastModificationTime { get; set; }
-        public DateTime? lastActive { get; set; }
+        public string? lastActive { get; set; }
+        [JsonIgnore]
         public Guid CreatorId { get; private set; } 
         public List<UserInfo> Users { get; set; } = new List<UserInfo>();
         public Owner owner { get; set; } = new Owner();

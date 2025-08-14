@@ -176,29 +176,11 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
     public async Task<List<ChatBotListDto>> GetAllAsync()
     {
-        var tenantBotUserQueryable = await _tenentBotUserRepo.GetQueryableAsync();
+        var dtoList = await GetChatBotsByUserInternalAsync(null);
 
-        var chatbotIds = tenantBotUserQueryable
-            .Where(tbu => tbu.UserId == _currentUser.Id)
-            .Select(tbu => tbu.ChatbotId)
-            .ToList();
-        var chatbotQueryable = await _botRepo.GetQueryableAsync();
+        await MapExistingDataAsync(dtoList);
 
-        var chatbots = chatbotQueryable
-            .Where(cb => chatbotIds.Contains(cb.Id))
-            .ToList();
-
-        var dtoList = ObjectMapper.Map<List<Chatbot>, List<ChatBotListDto>>(chatbots);
-
-        var tasks = dtoList.Select(async dto =>
-        {
-            dto.BrandImageName = await _storage.GetUrlAsync(dto.BrandImageName!);
-            dto.iconName = await _storage.GetUrlAsync(dto.iconName!);
-
-            return dto;
-        });
-
-        return (await Task.WhenAll(tasks)).ToList();
+        return dtoList;
     }
 
     public async Task<ChatbotDto> GetAsync(Guid id)
@@ -216,51 +198,9 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
     public async Task<List<ChatBotListDto>> GetAllByUserAsync(Guid userId)
     {
-        // Get all TenantChatbotUser entries for the given user
-        var tenantUserQuery = await _tenentBotUserRepo.GetQueryableAsync();
-        var tenantUserLinks = tenantUserQuery
-            .Where(x => x.UserId == userId)
-            .ToList();
+        var dtoList = await GetChatBotsByUserInternalAsync(userId);
 
-        // Get all associated chatbot IDs
-        var chatbotIds = tenantUserLinks.Select(x => x.ChatbotId).Distinct().ToList();
-
-        if (!chatbotIds.Any())
-            return new List<ChatBotListDto>(); // No chatbots linked to this user
-
-        // Fetch chatbot entities based on collected IDs
-        var chatbotQuery = await _botRepo.GetQueryableAsync();
-        var chatbots = chatbotQuery
-            .Where(x => chatbotIds.Contains(x.Id))
-            .ToList();
-
-        var dtoList = ObjectMapper.Map<List<Chatbot>, List<ChatBotListDto>>(chatbots);
-        
-        await Task.WhenAll(dtoList.Select(async item =>
-        {
-            item.iconName = await _storage.GetUrlAsync(item.iconName!);
-            item.BrandImageName = await _storage.GetUrlAsync(item.BrandImageName!);
-            item.lastActive = item.LastModificationTime;
-            
-            // Get bot users and map to UserInfo list
-            var botUsers = await GetAllUserByBotAsync(item.id);
-            item.Users = botUsers.Select(u => new UserInfo
-            {
-                id = u.id,
-                Name = u.name,
-                Avatar = u.profileImg
-            }).ToList();
-
-            var creatorUser = item.Users.FirstOrDefault(O => O.id == item.CreatorId);
-            Ensure.NotNull(creatorUser, nameof(creatorUser));
-            item.owner = new Owner
-            {
-                id = creatorUser!.id,
-                Name = creatorUser.Name,
-                Avatar = creatorUser.Avatar
-            };
-
-        }));
+        await MapExistingDataAsync(dtoList);
 
         return dtoList;
     }
@@ -343,47 +283,7 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
         AppGuard.HasPermission(hasPermission, permissionName);
 
-        // Get all linked users for the chatbot
-        var tenantUserQuery = await _tenentBotUserRepo.GetQueryableAsync();
-        var userLinks = tenantUserQuery
-            .Where(x => x.ChatbotId == botId)
-            .ToList();
-
-        var userIds = userLinks.Select(x => x.UserId).Distinct().ToList();
-        if (!userIds.Any())
-            return new List<UserByChatBotDto>(); // No users found
-
-        // Get all users
-        var userQuery = await _userRepo.GetListAsync(includeDetails: true);
-        var allUsers = userQuery
-            .Where(u => userIds.Contains(u.Id))
-            .ToList();
-
-        // Step 3: Prepare final list
-        var dtos = new List<UserByChatBotDto>();
-
-        foreach (var user in allUsers)
-        {
-            var dto = ObjectMapper.Map<IdentityUser, UserByChatBotDto>(user);
-
-            // Profile image URL
-            if (user.ExtraProperties.TryGetValue("ProfileImg", out var profileImgObj) &&
-            profileImgObj is string blobPath && !string.IsNullOrWhiteSpace(blobPath))
-            {
-                dto.profileImg = await _storage.GetUrlAsync(blobPath);
-            }
-
-            // Get roles for user
-            if (user.Roles != null)
-            {
-                var roleIds = user.Roles.Select(r => r.RoleId).ToList();
-                var roles = await _roleRepo.GetListAsync(r => roleIds.Contains(r.Id));
-                dto.Roles = roles.Select(r => r.Name).ToList();
-            }
-            dtos.Add(dto);
-        }
-
-        return dtos;
+        return await GetMappedUsersByBotAsync(botId);
     }
 
     [HttpGet("api/app/chatbot/permissions")]
@@ -427,5 +327,129 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
         await _botRepo.UpdateAsync(bot);
 
         return ObjectMapper.Map<Chatbot, DefaultBotDto>(bot);
+    }
+
+    private async Task MapExistingDataAsync(List<ChatBotListDto> dtoList)
+    {
+        await Task.WhenAll(dtoList.Select(async item =>
+        {
+            // Last active = last modification time
+            //item.lastActive = item.LastModificationTime?.ToString("dd-MM-yyyy");
+            item.lastActive = item.LastModificationTime?.ToString();
+
+            // Get bot users
+            var botUsers = await GetMappedUsersByBotAsync(item.id);
+            item.Users = botUsers.Select(u => new UserInfo
+            {
+                id = u.id,
+                Name = u.name,
+                Avatar = u.profileImg
+            }).ToList();
+
+            // Map owner from CreatorId if exists
+            var creatorUser = item.Users.FirstOrDefault(o => o.id == item.CreatorId);
+            if (creatorUser != null)
+            {
+                item.owner = new Owner
+                {
+                    id = creatorUser.id,
+                    Name = creatorUser.Name,
+                    Avatar = creatorUser.Avatar
+                };
+            }
+            else
+            {
+                // If creator not found, keep owner empty or default
+                item.owner = new Owner();
+            }
+        }));
+    }
+
+    private async Task<List<ChatBotListDto>> GetChatBotsByUserInternalAsync(Guid? userId)
+    {
+        // Use current user ID if null
+        var effectiveUserId = userId ?? _currentUser.Id;
+
+        // Get all TenantChatbotUser entries for the given user
+        var tenantBotUserQueryable = await _tenentBotUserRepo.GetQueryableAsync();
+        var chatbotIds = tenantBotUserQueryable
+            .Where(tbu => tbu.UserId == effectiveUserId)
+            .Select(tbu => tbu.ChatbotId)
+            .Distinct()
+            .ToList();
+
+        if (!chatbotIds.Any())
+            return new List<ChatBotListDto>();
+
+        // Fetch chatbot entities
+        var chatbotQueryable = await _botRepo.GetQueryableAsync();
+        var chatbots = chatbotQueryable
+            .Where(cb => chatbotIds.Contains(cb.Id))
+            .ToList();
+
+        var botsDto = ObjectMapper.Map<List<Chatbot>, List<ChatBotListDto>>(chatbots);
+
+        await MapBotImagesUrlAsync(botsDto);
+        // Map to DTO list
+        return botsDto;
+    }
+
+    private async Task MapBotImagesUrlAsync(List<ChatBotListDto> bots)
+    {
+        Ensure.NotNull(bots,nameof(bots));
+
+        await Task.WhenAll(bots.Select(async bot =>
+        {
+            if (!string.IsNullOrEmpty(bot.iconName))
+                bot.iconName = await _storage.GetUrlAsync(bot.iconName);
+
+            if (!string.IsNullOrEmpty(bot.BrandImageName))
+                bot.BrandImageName = await _storage.GetUrlAsync(bot.BrandImageName);
+        }));
+    }
+
+    private async Task<List<UserByChatBotDto>> GetMappedUsersByBotAsync(Guid botId)
+    {
+        // Get all linked users for the chatbot
+        var tenantUserQuery = await _tenentBotUserRepo.GetQueryableAsync();
+        var userLinks = tenantUserQuery
+            .Where(x => x.ChatbotId == botId)
+            .ToList();
+
+        var userIds = userLinks.Select(x => x.UserId).Distinct().ToList();
+        if (!userIds.Any())
+            return new List<UserByChatBotDto>(); // No users found
+
+        // Get all users
+        var userQuery = await _userRepo.GetListAsync(includeDetails: true);
+        var allUsers = userQuery
+            .Where(u => userIds.Contains(u.Id))
+            .ToList();
+
+        // Map to DTOs
+        var dtos = new List<UserByChatBotDto>();
+        foreach (var user in allUsers)
+        {
+            var dto = ObjectMapper.Map<IdentityUser, UserByChatBotDto>(user);
+
+            // Map profile image URL
+            if (user.ExtraProperties.TryGetValue("ProfileImg", out var profileImgObj) &&
+                profileImgObj is string blobPath && !string.IsNullOrWhiteSpace(blobPath))
+            {
+                dto.profileImg = await _storage.GetUrlAsync(blobPath);
+            }
+
+            // Map roles
+            if (user.Roles != null)
+            {
+                var roleIds = user.Roles.Select(r => r.RoleId).ToList();
+                var roles = await _roleRepo.GetListAsync(r => roleIds.Contains(r.Id));
+                dto.Roles = roles.Select(r => r.Name).ToList();
+            }
+
+            dtos.Add(dto);
+        }
+
+        return dtos;
     }
 }
