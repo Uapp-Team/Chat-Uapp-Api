@@ -348,20 +348,9 @@ public class ChatbotAppService : ApplicationService, IChatbotAppService
 
             // Map owner from CreatorId if exists
             var creatorUser = item.Users.FirstOrDefault(o => o.id == item.CreatorId);
-            if (creatorUser != null)
-            {
-                item.owner = new Owner
-                {
-                    id = creatorUser.id,
-                    Name = creatorUser.Name,
-                    Avatar = creatorUser.Avatar
-                };
-            }
-            else
-            {
-                // If creator not found, keep owner empty or default
-                item.owner = new Owner();
-            }
+            item.owner = creatorUser != null
+            ? new Owner { id = creatorUser.id, Name = creatorUser.Name, Avatar = creatorUser.Avatar }
+            : new Owner();
         };
     }
 
