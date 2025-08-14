@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
-EXPOSE 44361
-ENV ASPNETCORE_URLS=http://+:44361
+EXPOSE 44360
+ENV ASPNETCORE_URLS=http://+:44360
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /buildprocess
