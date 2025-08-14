@@ -1,0 +1,109 @@
+﻿services:
+  postgres:
+    image: postgres:16
+    shm_size: 128mb
+    container_name: chatuapp-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "2025"
+      POSTGRES_DB: ChatUapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "ChatUapp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  adminer:
+    image: adminer
+    container_name: chatuapp-postgres-adminer
+    restart: always
+    ports:
+      - "9090:9090"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    command: ["php","-S","0.0.0.0:9090","-t","/var/www/html"]
+
+  migrator:
+    build:
+      context: .
+      dockerfile: src/ChatUapp.DbMigrator/Dockerfile
+    container_name: chatuapp-migrator
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=ChatUapp;Username=postgres;Password=2025;SSL Mode=Disable"
+      OpenIddict__Applications__ChatUapp_App__ClientId: ChatUapp_App
+      OpenIddict__Applications__ChatUapp_Swagger__ClientId: ChatUapp_Swagger
+      OpenIddict__Applications__ChatUapp_Swagger__RootUrl: "http://localhost:44360/"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  web:
+    build:
+      context: .
+      dockerfile: src/ChatUapp.Web/Dockerfile
+    container_name: chatuapp-web
+    ports:
+      - "44360:44360" # adjust or map behind a reverse proxy as needed
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Production
+
+        # App section
+        - App__SelfUrl=http://localhost:44360
+        - App__HealthCheckUrl=/health-status
+        - App__CorsOrigins=https://*.uapp.uk,http://localhost:4200,http://localhost:3000
+
+        # ConnectionStrings
+        - ConnectionStrings__Default=Host=postgres;Port=5432;Database=ChatUapp;Username=postgres;Password=2025
+
+        # AuthServer
+        - AuthServer__Authority=http://localhost:44360
+        - AuthServer__SwaggerClientId=ChatUapp_Swagger
+        - AuthServer__RequireHttpsMetadata=false
+        - AuthServer__CertificatePassPhrase=58922e2f-ffbf-4d2b-9280-f30732b5f35a
+
+        # StringEncryption
+        - StringEncryption__DefaultPassPhrase=snumRdKosC7jGWUe
+
+        # ChatBotEngine
+        - ChatBotEngine__BaseUrl=http://127.0.0.1:8000/
+        - ChatBotEngine__ApiKey=optional for now
+        - ChatBotEngine__ChatGptAPIKey=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
+
+        # Settings (Mail)
+        - Settings__Abp.Mailing.Smtp.Host=sandbox.smtp.mailtrap.io
+        - Settings__Abp.Mailing.Smtp.Port=25
+        - Settings__Abp.Mailing.Smtp.UserName=8e90ef595c832b
+        - Settings__Abp.Mailing.Smtp.Password=932ea08ef33750
+        - Settings__Abp.Mailing.Smtp.Domain=
+        - Settings__Abp.Mailing.Smtp.EnableSsl=false
+        - Settings__Abp.Mailing.Smtp.UseDefaultCredentials=false
+        - Settings__Abp.Mailing.DefaultFromAddress=noreply@abp.io
+        - Settings__Abp.Mailing.DefaultFromDisplayName=ABP application
+
+        # AzureBlobStorage
+        - AzureBlobStorage__ConnectionString=DefaultEndpointsProtocol=https;AccountName=chatuappmamun;AccountKey=AwOzjYFshIzi6Y3rEFfYurHhQerTxauSU26yRT7U1VyPUyjTN90YjLJEr6UniPfAUoNYTg90RgWz+AStw7L8kw==;EndpointSuffix=core.windows.net
+        - AzureBlobStorage__ContainerName=default
+        - AzureBlobStorage__AccountName=
+        - AzureBlobStorage__AccountKey=
+
+        # Abp
+        - Abp__ExceptionHandling__SendExceptionsDetailsToClients=true
+    volumes:
+      - ./certs/openiddict.pfx:/app/openiddict.pfx:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  pg-data:

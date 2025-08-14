@@ -1,0 +1,27 @@
+# Ignore build output
+bin/
+obj/
+out/
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore git and VS folders
+.git/
+.vs/
+.idea/
+
+# Ignore test results
+TestResults/
+*.log
+
+# Ignore node_modules (if present)
+node_modules/
+
+# Ignore Docker files themselves
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
